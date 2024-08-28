@@ -4,15 +4,17 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>c8baef01-3b7f-40ef-951f-3988008103cc</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
       <Folder Include="Contracts\" />
-      <Folder Include="Controllers\" />
-      <Folder Include="Data\" />
-      <Folder Include="Model\Enums\" />
       <Folder Include="Service\Authentication\" />
-      <Folder Include="Service\Repositories\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.20" />
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
     </ItemGroup>
 
 </Project>
