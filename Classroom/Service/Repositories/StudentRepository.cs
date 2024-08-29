@@ -1,5 +1,6 @@
 using Classroom.Data;
 using Classroom.Model.DataModels;
+using Classroom.Model.RequestModels;
 
 namespace Classroom.Service.Repositories;
 
@@ -11,10 +12,29 @@ public class StudentRepository : IStudentRepository
     {
         _dbContext = context;
     }
-    
-    
-    public void Add(Student student)
+
+    public IEnumerable<Student> GetAll()
     {
+        return _dbContext.Students.ToList();
+    }
+    
+    public void Add(StudentRequest request)
+    {
+        DateTime birthDate;
+        if (!DateTime.TryParse(request.BirthDate, out birthDate))
+        {
+            throw new ArgumentException("Invalid birth date format.");
+        }
+        
+        var student = new Student
+        {
+            FamilyName = request.FamilyName,
+            FirstName = request.FirstName,
+            BirthDate = birthDate,
+            BirthPlace = request.BirthPlace,
+            StudentNo = request.StudentNo,
+            Grades = new List<Grade>()
+        };
         _dbContext.Add(student);
         _dbContext.SaveChanges();
     }
