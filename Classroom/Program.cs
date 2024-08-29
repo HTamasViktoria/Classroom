@@ -4,18 +4,22 @@ using Microsoft.EntityFrameworkCore;
 using Classroom.Data;
 using Classroom.Service.Repositories;
 using Microsoft.OpenApi.Models;
+
 public partial class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // Configure services
         ConfigureServices(builder.Services, builder.Configuration);
         ConfigureSwagger(builder.Services);
         ConfigureDatabaseContexts(builder.Services, builder.Configuration);
         ConfigureCustomServices(builder.Services);
 
         var app = builder.Build();
+
+        // Configure middleware
         ConfigureMiddleware(app);
         
         app.Run();
@@ -43,7 +47,6 @@ public partial class Program
         {
             options.UseSqlServer(connectionString);
         });
-   
     }
 
     private static void ConfigureCustomServices(IServiceCollection services)
@@ -58,11 +61,16 @@ public partial class Program
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Demo API V1");
+                c.RoutePrefix = string.Empty; // Swagger UI elérhető a gyökér URL-en
+            });
             app.UseDeveloperExceptionPage();
         }
 
         app.UseHttpsRedirection();
+        app.UseAuthorization();
         app.MapControllers();
     }
 }
