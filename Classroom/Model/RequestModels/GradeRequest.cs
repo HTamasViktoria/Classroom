@@ -1,12 +1,13 @@
 using Classroom.Model.DataModels;
+using Classroom.Model.DataModels.Enums;
 
 namespace Classroom.Model.RequestModels;
 
 public class GradeRequest
 {
-    public Teacher Teacher { get; init; }
-    public Student Student { get; init; }
+    public string TeacherId { get; init; }
+    public string StudentId { get; init; }
     public string Subject { get; init; }
-    public int Value { get; init; }
-    public DateTime Date { get; init; }
+    public string Value { get; init; }
+    public string Date { get; init; }
 }
