@@ -1,37 +1,70 @@
-
-import {AppBar} from '@mui/material'
-import {Toolbar, Typography, Box} from "@mui/material";
-
+import TeacherNavbar from "../components/TeacherNavbar.jsx";
+import { useEffect, useState } from "react";
+import { Select, MenuItem, FormControl, InputLabel, Typography, Container, Box } from '@mui/material';
+import GradeAddingForm from "../components/GradeAddingForm.jsx";
 
 function Starter() {
+    const [teachers, setTeachers] = useState([]);
+    const [selectedTeacherId, setSelectedTeacherId] = useState('');
+    const [selectedTeacher, setSelectedTeacher] = useState(null);
+
+    useEffect(() => {
+        fetch('/api/teachers')
+            .then(response => response.json())
+            .then(data => {
+                setTeachers(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    useEffect(() => {
+        const teacher = teachers.find(teacher => teacher.id === selectedTeacherId);
+        setSelectedTeacher(teacher);
+    }, [selectedTeacherId, teachers]);
+
+    const handleChange = (event) => {
+        setSelectedTeacherId(event.target.value);
+    };
+
     return (
-        <AppBar  sx={{
-            backgroundColor: '#d2a679'
-        }}>
-            <Toolbar>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                    <Typography component='div'>
-                        Üzenetek
+        <>
+            <TeacherNavbar />
+            <Container>
+                <Box my={4}>
+                    <Typography variant="h4" gutterBottom>
+                        {selectedTeacher ? (
+                            `Üdv, ${selectedTeacher.familyName} ${selectedTeacher.firstName}`
+                        ) : (
+                            'Én vagyok:'
+                        )}
                     </Typography>
-                    <Typography component='div'>
-                        Osztályzatok
-                    </Typography>
-                    <Typography component='div'>
-                        Értesítések
-                    </Typography>
-                    <Typography component='div'>
-                        Hiányzások
-                    </Typography>
-                    <Typography component='div'>
-                        Órarend
-                    </Typography>
-                    <Typography component='div'>
-                        Csengetési rend
-                    </Typography>
+                    {selectedTeacher ? (
+                        <GradeAddingForm teacherId={selectedTeacherId} />
+                    ) : (
+                        <FormControl fullWidth variant="outlined">
+                            <InputLabel id="teacher-select-label">Tanár kiválasztása:</InputLabel>
+                            <Select
+                                labelId="teacher-select-label"
+                                value={selectedTeacherId}
+                                onChange={handleChange}
+                                label="Select Teacher"
+                            >
+                                {teachers.length > 0 ? (
+                                    teachers.map((teacher) => (
+                                        <MenuItem key={teacher.id} value={teacher.id}>
+                                            {teacher.familyName} {teacher.firstName}
+                                        </MenuItem>
+                                    ))
+                                ) : (
+                                    <MenuItem disabled>No teachers available</MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                    )}
                 </Box>
-            </Toolbar>
-        </AppBar>
-    )
+            </Container>
+        </>
+    );
 }
 
-export default Starter
+export default Starter;

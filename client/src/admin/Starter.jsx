@@ -1,23 +1,15 @@
 
-import {AppBar} from '@mui/material'
-import {Toolbar, Typography, Box} from "@mui/material";
+import AdminNavbar from "../components/AdminNavbar.jsx";
+
+function Starter() {   
 
 
-function Starter() {
     return (
-        <AppBar  sx={{
-            backgroundColor: '#d2a679'
-        }}>
-            <Toolbar>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                    <Typography component='div'>
-                        Tanár hozzáadása
-                    </Typography>
-                    
-                </Box>
-            </Toolbar>
-        </AppBar>
-    )
+        <>
+   <AdminNavbar/>
+            
+        </>
+    );
 }
 
 export default Starter
