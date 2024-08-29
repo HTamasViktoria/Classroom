@@ -12,7 +12,7 @@ public class Student
     public DateTime BirthDate { get; init; }
     public string BirthPlace { get; init; }
     public string StudentNo { get; init; }
-    public ICollection<GradeValues> Grades { get; init; } = new List<GradeValues>();
+    public ICollection<Grade> Grades { get; init; } = new List<Grade>();
     
     
     
