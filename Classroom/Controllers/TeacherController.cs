@@ -1,3 +1,4 @@
+using Classroom.Model.DataModels;
 using Classroom.Model.RequestModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,23 @@ namespace Classroom.Controllers
             _teacherRepository = teacherRepository;
         }
 
+        
+        
+        [HttpGet(Name = "teachers")]
+        public ActionResult<IEnumerable<Teacher>> GetAll()
+        {
+            try
+            {
+                return Ok(_teacherRepository.GetAll());
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(500, $"Internal server error: {e.Message}");
+            }
+        }
+        
+        
         [HttpPost("add")]
         public ActionResult<string> Post([FromBody] TeacherRequest request)
         {

@@ -5,5 +5,6 @@ namespace Classroom.Service.Repositories;
 
 public interface ITeacherRepository
 {
+    IEnumerable<Teacher> GetAll();
     void Add(TeacherRequest request);
 }

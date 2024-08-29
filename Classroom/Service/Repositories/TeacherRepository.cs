@@ -14,10 +14,22 @@ public class TeacherRepository : ITeacherRepository
     }
 
 
+    public IEnumerable<Teacher> GetAll()
+    {
+        return _dbContext.Teachers.ToList();
+    }
+    
     public void Add(TeacherRequest request)
     {
-        _dbContext.Add(request);
+        var teacher = new Teacher
+        {
+            FamilyName = request.FamilyName,
+            FirstName = request.FirstName
+        };
+        _dbContext.Add(teacher);
         _dbContext.SaveChanges();
     }
+    
+    
 
 }
