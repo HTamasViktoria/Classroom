@@ -24,7 +24,7 @@ public class GradeRepository : IGradeRepository
 
     public void Add(GradeRequest request)
     {
-        // Convert TeacherId and StudentId from string to int
+        
         if (!int.TryParse(request.TeacherId, out var teacherId))
         {
             throw new ArgumentException("Invalid teacher ID format");
@@ -35,19 +35,19 @@ public class GradeRepository : IGradeRepository
             throw new ArgumentException("Invalid student ID format");
         }
 
-        // Convert Value from string to GradeValues enum
+        
         if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
         {
             throw new ArgumentException($"Invalid grade value: {request.Value}");
         }
 
-        // Convert Date from string to DateTime
+        
         if (!DateTime.TryParse(request.Date, out var date))
         {
             throw new ArgumentException($"Invalid date format: {request.Date}");
         }
 
-        // Create and save the Grade entity
+       
         var grade = new Grade
         {
             TeacherId = teacherId,
