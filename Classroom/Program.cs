@@ -2,6 +2,7 @@ using System.Text;
 //using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Classroom.Data;
+using Classroom.Service;
 using Classroom.Service.Repositories;
 using Microsoft.OpenApi.Models;
 
@@ -54,6 +55,8 @@ public partial class Program
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationService, NotificationService>();
     }
 
     private static void ConfigureMiddleware(WebApplication app)
