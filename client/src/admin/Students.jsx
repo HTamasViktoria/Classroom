@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import {useEffect, useState} from "react";
 import Button from '@mui/material/Button';
-import AdminStudentList from "../components/AdminStudentList.jsx";
-import AdminNavbar from "../components/AdminNavbar.jsx";
-import AdminTeacherList from "../components/AdminTeacherList.jsx";
+import AdminStudentList from "../components/Admin/AdminStudentList.jsx";
+import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
+import AdminTeacherList from "../components/Admin/AdminTeacherList.jsx";
 
 function Students(){
 
