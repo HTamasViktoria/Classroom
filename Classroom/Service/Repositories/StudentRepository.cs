@@ -17,6 +17,14 @@ public class StudentRepository : IStudentRepository
     {
         return _dbContext.Students.ToList();
     }
+
+
+    public Student GetStudentById(int id)
+    {
+        return _dbContext.Students.FirstOrDefault(student=> student.Id == id);
+    }
+    
+    
     
     public void Add(StudentRequest request)
     {
