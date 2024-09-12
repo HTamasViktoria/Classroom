@@ -1,6 +1,5 @@
 
-import AdminNavbar from "../components/AdminNavbar.jsx";
-
+import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
 function Starter() {   
 
 

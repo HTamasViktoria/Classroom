@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import TeacherAddingForm from "../components/TeacherAddingForm.jsx";
-import AdminNavbar from "../components/AdminNavbar.jsx";
+import TeacherAddingForm from "../components/Admin/TeacherAddingForm.jsx";
+import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
 
 function TeacherAdding() {
     const navigate = useNavigate();
