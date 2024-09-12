@@ -22,26 +22,24 @@ function GradeAddingForm({ teacherId }) {
             .catch(error => console.error('Error fetching data:', error));
     }, []);
 
-    const handleStudentChange = (e) => setSelectedStudentId(e.target.value);
-    const handleSubjectChange = (e) => setSelectedSubject(e.target.value);
-    const handleGradeChange = (e) => setSelectedGrade(e.target.value);
-    const handleDateChange = (e) => setSelectedDate(e.target.value);
+    const studentChangeHandler = (e) => setSelectedStudentId(e.target.value);
+    const subjectChangeHandler = (e) => setSelectedSubject(e);
+    const gradeChangeHandler = (e) => setSelectedGrade(e.target.value);
+    const dateChangeHandler = (e) => setSelectedDate(e);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // ISO 8601 formátumban biztosítjuk a dátumot
+        
         const formattedDate = new Date(selectedDate).toISOString();
 
         const gradeData = {
-            teacherId: teacherId.toString(), // Győződj meg róla, hogy string típusú
-            studentId: selectedStudentId.toString(), // Győződj meg róla, hogy string típusú
+            teacherId: teacherId.toString(),
+            studentId: selectedStudentId.toString(),
             subject: selectedSubject,
             value: selectedGrade,
             date: formattedDate
         };
-
-        console.log('Submitting data:', gradeData);
+        
 
         fetch('/api/grades/add', {
             method: 'POST',
@@ -66,10 +64,10 @@ function GradeAddingForm({ teacherId }) {
             <h1>Jegy hozzáadása</h1>
             <form noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} width={400}>
-                    <SubjectSelector selectedSubject={selectedSubject} handleSubjectChange={handleSubjectChange} />
-                    <StudentSelector students={students} selectedStudentId={selectedStudentId} handleStudentChange={handleStudentChange} />
-                    <GradeValueSelector selectedGrade={selectedGrade} handleGradeChange={handleGradeChange} />
-                    <DateSelector selectedDate={selectedDate} handleDateChange={handleDateChange} />
+                    <SubjectSelector selectedSubject={selectedSubject} onSubjectChange={subjectChangeHandler} />
+                    <StudentSelector selectedStudentId={selectedStudentId} students={students} handleStudentChange={studentChangeHandler} />
+                    <GradeValueSelector selectedGrade={selectedGrade} handleGradeChange={gradeChangeHandler} />
+                    <DateSelector selectedDate={selectedDate} onDateChange={dateChangeHandler} />
                     <Button
                         type='submit'
                         variant='contained'
