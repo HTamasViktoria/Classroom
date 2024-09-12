@@ -35,6 +35,25 @@ public class StudentController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+
+    [HttpGet("{id}", Name = "GetStudentById")]
+    public ActionResult<Student> GetStudentById(int id)
+    {
+        try
+        {
+            var student = _studentRepository.GetStudentById(id);
+            if (student == null)
+            {
+                return NotFound($"Student with ID {id} not found.");
+            }
+            return Ok(student);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
         
         
     [HttpPost("add")]
