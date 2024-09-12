@@ -13,7 +13,8 @@ public class Student
     public string BirthPlace { get; init; }
     public string StudentNo { get; init; }
     public ICollection<Grade> Grades { get; init; } = new List<Grade>();
-    
-    
-    
+    public ICollection<NotificationBase> Notifications = new List<NotificationBase>();
+
+
+
 }
