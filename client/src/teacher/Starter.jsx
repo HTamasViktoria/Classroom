@@ -1,8 +1,8 @@
-import TeacherNavbar from "../components/TeacherNavbar.jsx";
+import TeacherNavbar from "../components/Teacher/TeacherNavbar.jsx";
 import { useEffect, useState } from "react";
 import { Select, MenuItem, FormControl, InputLabel, Typography, Container, Box } from '@mui/material';
-import GradeAddingForm from "../components/GradeAddingForm.jsx";
-
+import GradeAddingForm from "../components/Teacher/GradeAddingForm.jsx";
+import Tasks from "../components/Teacher/Tasks.jsx";
 function Starter() {
     const [teachers, setTeachers] = useState([]);
     const [selectedTeacherId, setSelectedTeacherId] = useState('');
@@ -28,18 +28,15 @@ function Starter() {
 
     return (
         <>
-            <TeacherNavbar />
+            <TeacherNavbar teacher={selectedTeacher} />
             <Container>
                 <Box my={4}>
                     <Typography variant="h4" gutterBottom>
-                        {selectedTeacher ? (
-                            `Üdv, ${selectedTeacher.familyName} ${selectedTeacher.firstName}`
-                        ) : (
-                            'Én vagyok:'
-                        )}
+                        {selectedTeacher ? '' : 'Én vagyok:'}
                     </Typography>
                     {selectedTeacher ? (
-                        <GradeAddingForm teacherId={selectedTeacherId} />
+                        <Tasks teacherId={selectedTeacherId}/>
+                        
                     ) : (
                         <FormControl fullWidth variant="outlined">
                             <InputLabel id="teacher-select-label">Tanár kiválasztása:</InputLabel>
