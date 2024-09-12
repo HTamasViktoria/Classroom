@@ -19,7 +19,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
   <BrowserRouter>
       <Routes>
-          <Route path='/parent' element={<ParentStarter/>}/>
+          <Route path='/parent/:id' element={<ParentStarter />} />
           <Route path='/admin' element={<AdminStarter/>}/>
           <Route path='/teacher' element={<TeacherStarter/>}/>
           <Route path='/students' element={<Students/>}/>
