@@ -6,7 +6,7 @@ import NotificationAdder from "./NotificationAdder.jsx";
 
 
 
-function NotificationMain({teacherId, teacherSubjects}) {
+function NotificationMain({teacherId, teacherSubjects, teacherName}) {
 
     const [chosenNotificationType, setChosenNotificationType] = useState("")
 
@@ -16,7 +16,7 @@ function NotificationMain({teacherId, teacherSubjects}) {
         <>
             <TeacherNavbar />
             {chosenNotificationType === "" && (<NotificationSelector teacherId={teacherId}  onChosenType={typeHandler}/>)}
-            {chosenNotificationType != "" && (<NotificationAdder teacherId={teacherId} teacherSubjects={teacherSubjects} type={chosenNotificationType}/>)}
+            {chosenNotificationType != "" && (<NotificationAdder teacherId={teacherId} teacherName={teacherName} teacherSubjects={teacherSubjects} type={chosenNotificationType}/>)}
         </>
     );
 }
