@@ -3,8 +3,13 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import React, { useState, useEffect } from 'react';
 
 function ParentNavbar(props) {
-   
 
+    const [newNotificationsLength, setNewNotificationsLength] = useState("");
+    
+    useEffect(() => {
+        const newNotifications = props.notifications.filter(n=>n.read == false);
+        setNewNotificationsLength(newNotifications.length)
+    }, [props]);
 
 
     const clickHandler = (event) => {
@@ -26,7 +31,7 @@ function ParentNavbar(props) {
                     <Typography onClick={clickHandler} component='div' data-value="notifications">
                         Értesítések
                         <span style={{ marginLeft: '8px', backgroundColor: '#f44336', color: 'white', borderRadius: '12px', padding: '4px 8px' }}>
-        {props.notifications.length}
+        {newNotificationsLength}
     </span>
                     </Typography>
 
