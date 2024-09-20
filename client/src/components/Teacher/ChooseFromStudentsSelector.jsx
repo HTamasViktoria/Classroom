@@ -2,27 +2,19 @@ import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import { useEffect, useState } from "react";
 
 function ChooseFromStudentsSelector(props) {
-    const [students, setStudents] = useState([]);
+ 
     const [selectedStudents, setSelectedStudents] = useState([]);
     const [selectAll, setSelectAll] = useState(false);
-
-    useEffect(() => {
-        fetch("/api/students")
-            .then((response) => response.json())
-            .then((data) => {
-                setStudents(data);
-            })
-            .catch((error) => console.error("Error fetching data:", error));
-    }, []);
+    
 
     
     useEffect(() => {
         if (selectAll) {
-            setSelectedStudents(students.map((student) => student.id));
+            setSelectedStudents(props.students.map((student) => student.id));
         } else {
             setSelectedStudents([]);
         }
-    }, [selectAll, students]);
+    }, [selectAll, props.students]);
 
     
     const handleSelectAllChange = (event) => {
@@ -53,7 +45,7 @@ function ChooseFromStudentsSelector(props) {
                 }
                 label="Összes diák kiválasztása"
             />
-            {students.map((student) => (
+            {props.students.map((student) => (
                 <FormControlLabel
                     key={student.id}
                     control={
