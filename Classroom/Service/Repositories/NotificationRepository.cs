@@ -49,10 +49,13 @@ public class NotificationRepository : INotificationRepository
             var notification = new NotificationBase
             {
                 TeacherId = request.TeacherId,
+                TeacherName = request.TeacherName,
                 Type = request.Type,
                 Date = request.Date,
                 Students = students,
+                Read = request.Read,
                 Description = request.Description,
+                SubjectName = request.Subject,
                 Subject = subjectEnum,
                 OptionalDescription = request.OptionalDescription
             };
