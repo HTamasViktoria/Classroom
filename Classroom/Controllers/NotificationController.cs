@@ -37,10 +37,33 @@ public class NotificationController : ControllerBase
     }
     
     
+    [HttpGet("byStudentId/{id}", Name = "GetByStudentId")]
+    public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(int id)
+    {
+        try
+        {
+            var notifications = _notificationRepository.GetByStudentId(id);
+        
+            if (!notifications.Any())
+            {
+                return Ok(new List<NotificationBase>());
+            }
+        
+            return Ok(notifications);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
+    
+    
+    
     [HttpPost("add")]
     public IActionResult Post([FromBody] NotificationRequest request)
     {
-        Console.WriteLine("----------------------bejövő kérés--------------------------------------");
         try
         {
             _notificationService.PostToDb(request);

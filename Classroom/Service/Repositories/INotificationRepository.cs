@@ -7,4 +7,5 @@ public interface INotificationRepository
 {
     IEnumerable<NotificationBase> GetAll();
     void Add(NotificationRequest request);
+    IEnumerable<NotificationBase> GetByStudentId(int id);
 }

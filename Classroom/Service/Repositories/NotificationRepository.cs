@@ -20,6 +20,14 @@ public class NotificationRepository : INotificationRepository
     }
 
 
+    public IEnumerable<NotificationBase> GetByStudentId(int id)
+    {
+        return _dbContext.Notifications
+            .Where(notification => notification.Students.Any(student => student.Id == id));
+    }
+
+
+
     public void Add(NotificationRequest request)
     {
         var students = _dbContext.Students
