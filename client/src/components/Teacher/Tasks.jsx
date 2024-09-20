@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import TeacherNavbar from "./TeacherNavbar.jsx";
 import SubjectSelector from "./SubjectSelector.jsx";
 import GradeAddingForm from "./GradeAddingForm.jsx";
@@ -7,7 +7,16 @@ import NotificationMain from "./NotificationMain.jsx";
 
 function Tasks(props) {
     const [chosenTask, setChosenTask] = useState("");
+    const [teacherSubjects, setTeacherSubjects] = useState([])
 
+    useEffect(() => {
+        fetch(`/api/teacherSubjects/getByTeacherId/${props.teacherId}`)
+            .then(response => response.json())
+            .then(data => {
+                setTeacherSubjects(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }, [props.teacherId]);
   const taskHandler = (chosenTask) =>{
      setChosenTask(chosenTask)
     }
@@ -17,8 +26,8 @@ function Tasks(props) {
         <>
             <TeacherNavbar />
             { chosenTask == "" &&(  <TaskSelector onChosenTask={taskHandler}/>)}
-            {chosenTask == "addNotification" && <NotificationMain teacherId={props.teacherId}/>}
-            {chosenTask == "addGrade" && <GradeAddingForm teacherId={props.teacherId} />}
+            {chosenTask == "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId}/>}
+            {chosenTask == "addGrade" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} />}
             {chosenTask == "addMessage" && <div>Adding messages</div>}
                 
            

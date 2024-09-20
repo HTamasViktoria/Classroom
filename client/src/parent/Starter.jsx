@@ -2,12 +2,13 @@ import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import ParentNavbar from "../components/Parent/ParentNavbar.jsx";
 import ParentNotifications from "../components/Parent/ParentNotifications.jsx";
+import ParentGrades from "../components/Parent/ParentGrades.jsx";
 
 function Starter() {
     const { id } = useParams();
     const [student, setStudent] = useState(null);
     const [chosen, setChosen] = useState("");
-
+    
     useEffect(() => {
         fetch(`/api/students/${id}`)
             .then(response => response.json())
@@ -27,7 +28,8 @@ function Starter() {
         <>
             <ParentNavbar student={student} onChosen={navbarHandler} />
             <h1>Hello, {student.firstName} szülője</h1>
-            {chosen == "notifications" && <ParentNotifications student={student}/>}
+            {chosen === "notifications" && <ParentNotifications student={student}/>}
+            {chosen === "grades" && <ParentGrades student={student}/> }
         </>
     );
 }
