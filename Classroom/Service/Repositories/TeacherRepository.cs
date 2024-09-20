@@ -13,6 +13,10 @@ public class TeacherRepository : ITeacherRepository
         _dbContext = context;
     }
 
+    public Teacher GetTeacherById(int id)
+    {
+        return _dbContext.Teachers.FirstOrDefault(teacher=> teacher.Id == id);
+    }
 
     public IEnumerable<Teacher> GetAll()
     {

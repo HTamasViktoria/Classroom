@@ -12,13 +12,35 @@ namespace Classroom.Controllers
     {
         private readonly ILogger<TeacherController> _logger;
         private readonly ITeacherRepository _teacherRepository;
+      
 
         public TeacherController(ILogger<TeacherController> logger, ITeacherRepository teacherRepository)
         {
             _logger = logger;
             _teacherRepository = teacherRepository;
+      
         }
 
+        
+        [HttpGet("{id}", Name = "GetByTeacherId")]
+        public ActionResult<Teacher> GetByTeacherId(int id)
+        {
+            try
+            {
+                var teacher = _teacherRepository.GetTeacherById(id);
+                
+                if (teacher == null)
+                {
+                    return NotFound($"Teacher with ID {id} not found.");
+                }
+                return Ok(teacher);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, e.Message);
+                return StatusCode(500, $"Internal server error: {e.Message}");
+            }
+        }
         
         
         [HttpGet(Name = "teachers")]
@@ -50,5 +72,9 @@ namespace Classroom.Controllers
                 return StatusCode(500, $"Internal server error: {e.Message}");
             }
         }
+        
+        
+        
+       
     }
 }
