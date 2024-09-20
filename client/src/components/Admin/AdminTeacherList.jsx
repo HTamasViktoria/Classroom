@@ -1,6 +1,13 @@
 import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import {useNavigate} from "react-router-dom";
 
 function AdminTeacherList({ teachers }) {
+    
+    const navigate = useNavigate()
+    const handleTeacherChoosing = (id) => {
+        navigate(`/teachers/${id}`);
+    };
+    
     return (
         <Box sx={{ padding: 2 }}>
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
@@ -17,7 +24,7 @@ function AdminTeacherList({ teachers }) {
                     </TableHead>
                     <TableBody>
                         {teachers.map((teacher) => (
-                            <TableRow key={teacher.id}>
+                            <TableRow   onClick={() => handleTeacherChoosing(teacher.id)} key={teacher.id}>
                                 <TableCell>{teacher.id}</TableCell>
                                 <TableCell>{teacher.familyName}</TableCell>
                                 <TableCell>{teacher.firstName}</TableCell>
