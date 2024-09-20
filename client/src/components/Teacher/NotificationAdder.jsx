@@ -8,14 +8,15 @@ import OptionalDescriptionSelector from "./OptionalDescriptionSelector.jsx";
 
 function NotificationAdder(props) {
     const [selectedDate, setSelectedDate] = useState("");
-    const [selectedSubject, setSelectedSubject] = useState("");
+    const [selectedSubjectId, setSelectedSubjectId] = useState("")
+    const [selectedSubjectName, setSelectedSubjectName] = useState("")
     const [description, setDescription] = useState("");
     const [optionalDescription, setOptionalDescription] = useState("");
+    const [allStudents, setAllStudents] = useState([])
     const [students, setStudents] = useState([]);
     const [alertMessage, setAlertMessage] = useState("");
 
     const dateChangeHandler = (date) => setSelectedDate(date);
-    const subjectChangeHandler = (subject) => setSelectedSubject(subject);
     const textChangeHandler = (text) => setDescription(text);
     const selectedStudentsHandler = (students) => setStudents(students);
     const descriptionHandler = (description) => setOptionalDescription(description);
@@ -35,7 +36,7 @@ function NotificationAdder(props) {
         } else if (students.length === 0) {
             newAlertMessage = "Legalább egy diák megadása kötelező!";
             isValid = false;
-        } else if (["Exam", "MissingEquipment", "Homework"].includes(props.type) && selectedSubject === "") {
+        } else if (["Exam", "MissingEquipment", "Homework"].includes(props.type) && selectedSubjectName === "") {
             newAlertMessage = "Tantárgy megadása kötelező!";
             isValid = false;
         }
@@ -51,7 +52,7 @@ function NotificationAdder(props) {
             type: props.type,
             teacherId: props.teacherId,
             date: formattedDate,
-            subject: selectedSubject,
+            subject: selectedSubjectName,
             description: description,
             studentIds: students,
             optionalDescription: optionalDescription,
@@ -74,15 +75,26 @@ function NotificationAdder(props) {
             .catch(error => console.error('Error adding grade:', error));
     };
 
+    const subjectChangeHandler = (subjectId, subjectName) => {
+        setSelectedSubjectId(subjectId);
+        setSelectedSubjectName(subjectName);
+        fetch(`/api/teacherSubjects/getStudentsByTeacherSubjectId/${subjectId}`)
+            .then(response => response.json())
+            .then(data => {
+                setAllStudents(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    };
+
     return (
         <Box sx={{ padding: 2 }}>
             <Stack spacing={2} direction="column">
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                     <DateSelector selectedDate={selectedDate} onDateChange={dateChangeHandler} />
-                    <SubjectSelector selectedSubject={selectedSubject} onSubjectChange={subjectChangeHandler} />
+                    <SubjectSelector teacherSubjects={props.teacherSubjects} selectedSubjectId ={selectedSubjectId} onSubjectChange={subjectChangeHandler} />
                 </Box>
                 <DescriptionSelector type={props.type} onDescriptionChange={textChangeHandler} />
-                <ChooseFromStudentsSelector onStudentChange={selectedStudentsHandler} />
+                <ChooseFromStudentsSelector students={allStudents} onStudentChange={selectedStudentsHandler} />
                 {props.type !== "Other" && <OptionalDescriptionSelector onOptionalDescriptionChange={descriptionHandler} />}
                 <Button
                     variant="contained"
