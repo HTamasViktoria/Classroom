@@ -57,6 +57,8 @@ public partial class Program
         services.AddScoped<IStudentRepository, StudentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<IClassOfStudentsRepository, ClassOfStudentsRepository>();
+        services.AddScoped<ITeacherSubjectRepository, TeacherSubjectRepository>();
     }
 
     private static void ConfigureMiddleware(WebApplication app)
