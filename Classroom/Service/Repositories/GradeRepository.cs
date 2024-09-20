@@ -61,12 +61,22 @@ public class GradeRepository : IGradeRepository
         _dbContext.SaveChanges();
     }
 
+    public IEnumerable<Grade> GetByStudentId(int id)
+    {
+        return _dbContext.Grades.Where(grade => grade.StudentId == id).ToList();
+    }
+    
+
+    
     private string ExtractGradeValue(string valueWithLabel)
     {
         
         var parts = valueWithLabel.Split('=');
         return parts.Length > 1 ? parts[0].Trim() : valueWithLabel.Trim();
     }
+    
+    
+    
 }
 
 

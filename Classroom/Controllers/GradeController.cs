@@ -22,6 +22,7 @@ public class GradeController : ControllerBase
     }
     
     
+    
     [HttpGet(Name = "grades")]
     public ActionResult<IEnumerable<Grade>> GetAll()
     {
@@ -68,5 +69,33 @@ public class GradeController : ControllerBase
             return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
         }
     }
+    
+    
+    
+    
+    [HttpGet("{id}", Name = "GetGradesByStudentId")]
+    public ActionResult<IEnumerable<Grade>> GetGradesByStudentId(int id)
+    {
+        try
+        {
+            var grades = _gradeRepository.GetByStudentId(id);
+        
+            if (grades == null)
+            {
+                return NotFound($"Grades with student ID {id} not found.");
+            }
+        
+            return Ok(grades);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
+
+    
+    
 
 }

@@ -9,5 +9,7 @@ public interface  IGradeRepository
     void Add(GradeRequest request);
     IEnumerable<Grade> GetAll();
 
-    
+    IEnumerable<Grade> GetByStudentId(int id);
+
+
 }
