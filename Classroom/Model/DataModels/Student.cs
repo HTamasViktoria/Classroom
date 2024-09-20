@@ -1,5 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Classroom.Model.DataModels.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Classroom.Model.DataModels;
 
@@ -12,9 +14,8 @@ public class Student
     public DateTime BirthDate { get; init; }
     public string BirthPlace { get; init; }
     public string StudentNo { get; init; }
+    
+
     public ICollection<Grade> Grades { get; init; } = new List<Grade>();
     public ICollection<NotificationBase> Notifications = new List<NotificationBase>();
-
-
-
 }
