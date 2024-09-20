@@ -26,7 +26,7 @@ function Tasks(props) {
         <>
             <TeacherNavbar />
             { chosenTask == "" &&(  <TaskSelector onChosenTask={taskHandler}/>)}
-            {chosenTask == "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId}/>}
+            {chosenTask == "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName}/>}
             {chosenTask == "addGrade" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} />}
             {chosenTask == "addMessage" && <div>Adding messages</div>}
                 
