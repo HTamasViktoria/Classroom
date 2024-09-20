@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace Classroom.Model.DataModels;
 
@@ -9,6 +9,5 @@ public class Teacher
     public int Id { get; init; }
     public string FamilyName { get; set; }
     public string FirstName { get; set; }
-   
     
 }
