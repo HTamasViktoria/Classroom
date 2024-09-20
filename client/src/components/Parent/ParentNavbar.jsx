@@ -3,14 +3,9 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import React, { useState, useEffect } from 'react';
 
 function ParentNavbar(props) {
-    const [notifications, setNotifications] = useState([]);
+   
 
-    useEffect(() => {
-        fetch(`/api/notifications/byStudentId/${props.student.id}`)
-            .then(response => response.json())
-            .then(data => setNotifications(data))
-            .catch(error => console.error('Error fetching data:', error));
-    }, [props.student]);
+
 
     const clickHandler = (event) => {
         const chosen = event.target.getAttribute('data-value');
@@ -28,10 +23,10 @@ function ParentNavbar(props) {
                     <Typography onClick={clickHandler} component='div' data-value="grades">
                         Osztályzatok
                     </Typography>
-                    <Typography>
+                    <Typography onClick={clickHandler} component='div' data-value="notifications">
                         Értesítések
                         <span style={{ marginLeft: '8px', backgroundColor: '#f44336', color: 'white', borderRadius: '12px', padding: '4px 8px' }}>
-        {notifications.length}
+        {props.notifications.length}
     </span>
                     </Typography>
 
