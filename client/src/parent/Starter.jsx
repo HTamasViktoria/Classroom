@@ -7,6 +7,7 @@ import ParentGrades from "../components/Parent/ParentGrades.jsx";
 function Starter() {
     const { id } = useParams();
     const [student, setStudent] = useState(null);
+    const [notifications, setNotifications] = useState([]);
     const [chosen, setChosen] = useState("");
     
     useEffect(() => {
@@ -18,7 +19,17 @@ function Starter() {
             .catch(error => console.error('Error fetching data:', error));
     }, [id]);
 
-    const navbarHandler = (chosen) => setChosen(chosen);
+    useEffect(() => {
+        fetch(`/api/notifications/byStudentId/${id}`)
+            .then(response => response.json())
+            .then(data => setNotifications(data))
+            .catch(error => console.error('Error fetching data:', error));
+    }, [id]);
+
+    const navbarHandler = (chosen) => {
+        
+        setChosen(chosen)
+    };
 
     if (!student) {
         return <h1>Loading...</h1>;
@@ -26,9 +37,9 @@ function Starter() {
 
     return (
         <>
-            <ParentNavbar student={student} onChosen={navbarHandler} />
+            <ParentNavbar student={student} onChosen={navbarHandler} notifications={notifications} />
             <h1>Hello, {student.firstName} szülője</h1>
-            {chosen === "notifications" && <ParentNotifications student={student}/>}
+            {chosen === "notifications" && <ParentNotifications student={student} notifications={notifications}/>}
             {chosen === "grades" && <ParentGrades student={student}/> }
         </>
     );
