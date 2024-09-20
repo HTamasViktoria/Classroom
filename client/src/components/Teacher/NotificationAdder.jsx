@@ -51,10 +51,12 @@ function NotificationAdder(props) {
         const notificationData = {
             type: props.type,
             teacherId: props.teacherId,
+            teacherName: props.teacherName,
             date: formattedDate,
             subject: selectedSubjectName,
             description: description,
             studentIds: students,
+            read: false,
             optionalDescription: optionalDescription,
         };
 
