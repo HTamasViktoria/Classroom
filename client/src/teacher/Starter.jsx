@@ -35,8 +35,9 @@ function Starter() {
                         {selectedTeacher ? '' : 'Én vagyok:'}
                     </Typography>
                     {selectedTeacher ? (
-                        <Tasks teacherId={selectedTeacherId}/>
-                        
+                        <Tasks teacherId={selectedTeacherId} teacherName={`${selectedTeacher.familyName} ${selectedTeacher.firstName}`} />
+
+
                     ) : (
                         <FormControl fullWidth variant="outlined">
                             <InputLabel id="teacher-select-label">Tanár kiválasztása:</InputLabel>
