@@ -11,6 +11,7 @@ namespace Classroom.Model.DataModels
 
         [ForeignKey("TeacherId")]
         public int TeacherId { get; set; }
+        public string TeacherName { get; set; }
         public string Type { get; set; }
         public DateTime Date { get; set; }
         
@@ -18,6 +19,8 @@ namespace Classroom.Model.DataModels
     
         public string Description { get; set; }
         public Subjects? Subject { get; set; }
+        public string? SubjectName { get; set; }
+        public bool Read { get; set; }
         public string? OptionalDescription { get; set; }
     }
 }
