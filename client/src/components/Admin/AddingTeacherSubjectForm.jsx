@@ -1,109 +1,68 @@
-import { Button, Stack } from "@mui/material";
-import React, { useState, useEffect } from 'react';
+import { Button, Stack, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import React from "react";
 
-function AddingTeacherSubjectForm(props) {
-    const [subjects, setSubjects] = useState([]);
-    const [selectedSubject, setSelectedSubject] = useState(null);
-    const [classes, setClasses] = useState([]);
-    const [selectedClass, setSelectedClass] = useState(null);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        Promise.all([
-            fetch('/api/subjects'),
-            fetch('/api/classes')
-        ])
-            .then(([subjectsResponse, classesResponse]) => {
-                if (!subjectsResponse.ok || !classesResponse.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return Promise.all([
-                    subjectsResponse.json(),
-                    classesResponse.json()
-                ]);
-            })
-            .then(([subjectsData, classesData]) => {
-                setSubjects(subjectsData);
-                setClasses(classesData);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                setError(error);
-            });
-    }, [props.teacher]);
-
-    const handleSubjectClick = (subject) => {
-        setSelectedSubject(subject);
-    };
-
-    const handleClassClick = (cls) => {
-        setSelectedClass(cls);
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        
-        const teacherSubjectData = {
-            subject: selectedSubject,
-            teacherId: props.teacher.id,
-            classOfStudentsId: selectedClass.id,
-        };
-
-
-
-        fetch('/api/teacherSubjects/add', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(teacherSubjectData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('TeacherSubject added:', data);
-            })
-            .catch(error => console.error('Error adding teachersubject:', error));
-    };
-
+function AddingTeacherSubjectForm({ teacher, subjects, classes, selectedSubject, selectedClass, handleSubjectClick, handleClassClick, handleSubmit }) {
     return (
-        <Stack spacing={2}>
-            {error && <div style={{ color: 'red' }}>Error: {error.message}</div>}
+        <Stack spacing={4} sx={{ width: '100%' }}>
             <div>
-                <h3>Subjects</h3>
-                {subjects.length > 0 ? (
-                    subjects.map(subject => (
-                        <Button
-                            key={subject}
-                            variant={selectedSubject === subject ? "contained" : "outlined"}
-                            onClick={() => handleSubjectClick(subject)}
+                <h2>{`Tantárgy hozzáadása ${teacher.familyName} ${teacher.firstName} tanárhoz`}</h2>
+
+                <Stack direction="row" spacing={6}>
+                    <FormControl variant="outlined" sx={{ minWidth: 250 }}>
+                        <InputLabel id="select-subject-label">Tantárgy:</InputLabel>
+                        <Select
+                            labelId="select-subject-label"
+                            value={selectedSubject || ""}
+                            onChange={(e) => handleSubjectClick(e.target.value)}
+                            label="Select Subject"
                         >
-                            {subject}
-                        </Button>
-                    ))
-                ) : (
-                    <div>No subjects available</div>
-                )}
-            </div>
-            <div>
-                <h3>Classes</h3>
-                {classes.length > 0 ? (
-                    classes.map(cls => (
-                        <Button
-                            key={cls.id}
-                            variant={selectedClass === cls ? "contained" : "outlined"}
-                            onClick={() => handleClassClick(cls)}
+                            {subjects.length > 0 ? (
+                                subjects.map((subject) => (
+                                    <MenuItem key={subject} value={subject}>
+                                        {subject}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem disabled>No subjects available</MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                    <FormControl variant="outlined" sx={{ minWidth: 250 }}>
+                        <InputLabel id="select-class-label">Osztály:</InputLabel>
+                        <Select
+                            labelId="select-class-label"
+                            value={selectedClass ? selectedClass.id : ""}
+                            onChange={(e) => handleClassClick(classes.find(cls => cls.id === e.target.value))}
+                            label="Select Class"
                         >
-                            {cls.name}
-                        </Button>
-                    ))
-                ) : (
-                    <div>No classes available</div>
-                )}
+                            {classes.length > 0 ? (
+                                classes.map((cls) => (
+                                    <MenuItem key={cls.id} value={cls.id}>
+                                        {cls.name}
+                                    </MenuItem>
+                                ))
+                            ) : (
+                                <MenuItem disabled>No classes available</MenuItem>
+                            )}
+                        </Select>
+                    </FormControl>
+                </Stack>
             </div>
-            <Button variant="contained" onClick={handleSubmit}>Hozzáad</Button>
+            <Button
+                variant="contained"
+                sx={{
+                    width: '60%',
+                    backgroundColor: '#b5a58d',
+                    color: '#fff',
+                    '&:hover': {
+                        backgroundColor: '#b8865a',
+                    },
+                    alignSelf: 'flex-end'
+                }}
+                onClick={handleSubmit}
+            >
+                Hozzáad
+            </Button>
         </Stack>
     );
 }
