@@ -9,12 +9,15 @@ function Starter() {
     const [student, setStudent] = useState(null);
     const [notifications, setNotifications] = useState([]);
     const [chosen, setChosen] = useState("");
+    const [resfreshNeeded, setRefreshNeeded] = useState(false)
     
     useEffect(() => {
         fetch(`/api/students/${id}`)
             .then(response => response.json())
-            .then(data => 
-                setStudent(data)
+            .then(data => {
+                console.log(data)
+                    setStudent(data)
+                }
             )
             .catch(error => console.error('Error fetching data:', error));
     }, [id]);
@@ -24,7 +27,7 @@ function Starter() {
             .then(response => response.json())
             .then(data => setNotifications(data))
             .catch(error => console.error('Error fetching data:', error));
-    }, [id]);
+    }, [id, resfreshNeeded]);
 
     const navbarHandler = (chosen) => {
         
@@ -35,11 +38,16 @@ function Starter() {
         return <h1>Loading...</h1>;
     }
 
+    const refreshHandler=()=>{
+        setRefreshNeeded((prevState)=>!prevState)
+    }
+    
+    
     return (
         <>
             <ParentNavbar student={student} onChosen={navbarHandler} notifications={notifications} />
             <h1>Hello, {student.firstName} szülője</h1>
-            {chosen === "notifications" && <ParentNotifications student={student} notifications={notifications}/>}
+            {chosen === "notifications" && <ParentNotifications onRefreshing={refreshHandler} student={student} notifications={notifications}/>}
             {chosen === "grades" && <ParentGrades student={student}/> }
         </>
     );
