@@ -9,23 +9,23 @@ function AdminNavbar() {
 
     return (
         <>
-            <AppBar sx={{backgroundColor: '#b5a58d'}}>
+            <AppBar sx={{backgroundColor: '#cfc5b0'}}>
                 <Toolbar>
-                    <Box sx={{display: 'flex', justifyContent: 'left', gap: 4, width: '100%'}}>
+                    <Box sx={{display: 'flex', justifyContent: 'left', gap:6, width: '100%'}}>
                         <Typography
                             component='div'
-                            onClick={() => navigate("/teachers")}
+                            onClick={() => navigate("/admin/teachers")}
                             style={{cursor: 'pointer'}}
                         >
                             Tanárok
                         </Typography>
                         <Typography
                             component='div'
-                            onClick={() => navigate("/students")}
+                            onClick={() => navigate("/admin/students")}
                             style={{cursor: 'pointer'}}>Diákok</Typography>
                         <Typography
                             component='div'
-                            onClick={() => navigate("/classes")}
+                            onClick={() => navigate("/admin/classes")}
                             style={{cursor: 'pointer'}}>Osztályok</Typography>
 
                     </Box>
@@ -33,6 +33,10 @@ function AdminNavbar() {
             </AppBar>
         </>
     );
+    
+    
+    
+
 }
 
 export default AdminNavbar
