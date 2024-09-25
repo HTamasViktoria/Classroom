@@ -2,10 +2,9 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
 import StudentAddingForm from "../components/Admin/StudentAddingForm.jsx";
-function StudentAdding(){
-
+function StudentAdding() {
+    
     const navigate = useNavigate();
-
 
     const postStudent = (student) => {
         console.log('Posting student data:', JSON.stringify(student, null, 2));
@@ -31,9 +30,10 @@ function StudentAdding(){
                 throw error;
             });
     };
+
     const handleCreateStudent = (student) => {
         postStudent(student)
-            .then(() => navigate("/students"))
+            .then(() => navigate("/admin/students"))
             .catch(error => console.error('Error:', error));
     };
 
@@ -41,15 +41,13 @@ function StudentAdding(){
         onSave: handleCreateStudent,
         onCancel: () => navigate("/admin")
     };
-    
-    
-    
-    return (<>
-    <AdminNavbar/>
-        <StudentAddingForm {...props}/>
-        </>)
+
+    return (
+        <>
+            <AdminNavbar />
+            <StudentAddingForm {...props} />
+        </>
+    );
 }
 
-
-
-export default StudentAdding
+export default StudentAdding;
