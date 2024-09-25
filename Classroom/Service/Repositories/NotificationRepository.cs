@@ -63,7 +63,39 @@ public class NotificationRepository : INotificationRepository
             _dbContext.Notifications.Add(notification);
             _dbContext.SaveChanges();
         }
-
-
     }
+    
+    
+    public void SetToRead(int id)
+    {
+        var notification = _dbContext.Notifications.FirstOrDefault(not => not.Id == id);
+        if (notification == null)
+        {
+            throw new ArgumentException("Értesítés nem található.");
+        }
+
+        notification.Read = !notification.Read;
+        _dbContext.SaveChanges();
+    }
+    
+    
+    public IEnumerable<NotificationBase> GetHomeworks()
+    {
+        return _dbContext.Notifications.Where(n => n.Type == "Homework").ToList();
+    }
+
+
+    public void Delete(int id)
+    {
+        var notification = _dbContext.Notifications.FirstOrDefault(n => n.Id == id);
+        
+        if (notification == null)
+        {
+            throw new KeyNotFoundException($"Notification with ID {id} not found.");
+        }
+
+        _dbContext.Notifications.Remove(notification);
+        _dbContext.SaveChanges();
+    }
+
 }

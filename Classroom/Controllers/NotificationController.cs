@@ -37,6 +37,7 @@ public class NotificationController : ControllerBase
     }
     
     
+    
     [HttpGet("byStudentId/{id}", Name = "GetByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(int id)
     {
@@ -80,5 +81,66 @@ public class NotificationController : ControllerBase
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
     }
+    
+    
+    [HttpPost("setToRead/{id}")]
+    public IActionResult SetToRead(int id)
+    {
+        try
+        {
+            _notificationRepository.SetToRead(id);
+            return Ok(new { message = "Értesítés sikeresen elmentve az adatbázisba." });
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogError(ex, "Hibás értesítési adat.");
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Hiba történt az értesítés mentése során.");
+            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+        }
+    }
 
+    
+    
+    [HttpGet("homeworks", Name = "GetHomeworks")]
+    public ActionResult<IEnumerable<NotificationBase>> GetHomeworks()
+    {
+        try
+        {
+            var homeworks = _notificationRepository.GetHomeworks();
+            return Ok(homeworks);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+    
+    [HttpDelete("delete/{id}")]
+    public ActionResult<object> Delete(int id)
+    {
+        try
+        {
+            _notificationRepository.Delete(id);
+            return Ok(new { message = "Successful delete" });
+        }
+        catch (KeyNotFoundException e)
+        {
+            _logger.LogWarning(e, e.Message);
+            return NotFound(new { error = e.Message });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, new { error = "An error occurred while processing your request." });
+        }
+    }
+
+
+
+    
 }
