@@ -52,7 +52,8 @@ namespace Classroom.Service.Repositories
                 TeacherId = request.TeacherId,
                 Teacher = teacher,
                 ClassOfStudentsId = request.ClassOfStudentsId,
-                ClassOfStudents = classOfStudents
+                ClassOfStudents = classOfStudents,
+                ClassName = request.ClassName
             };
             
             _dbContext.TeacherSubjects.Add(teacherSubject);
@@ -69,22 +70,11 @@ namespace Classroom.Service.Repositories
 
             if (teacherSubject == null)
             {
-                return null; // Vagy dobj egy kivételt, ha szükséges
+                return null;
             }
 
-            return teacherSubject.ClassOfStudents; // Visszaadja az osztályt, ami tartalmazza a diákokat
+            return teacherSubject.ClassOfStudents;
         }
 
-        
-        
-        /*public async Task<IEnumerable<TeacherSubject>> GetSubjectsAndStudentsByTeacherIdAsync(int teacherId)
-        {
-            return await _dbContext.TeacherSubjects
-                .Include(ts => ts.ClassOfStudents)
-                .ThenInclude(cs => cs.Students)
-                .Where(ts => ts.TeacherId == teacherId)
-                .ToListAsync();
-        }*/
-    
     }
 }

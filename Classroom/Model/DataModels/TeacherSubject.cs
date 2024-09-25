@@ -19,5 +19,6 @@ namespace Classroom.Model.DataModels
         [ForeignKey(nameof(ClassOfStudentsId))]
         public int ClassOfStudentsId { get; set; }
         public ClassOfStudents ClassOfStudents { get; set; }
+        public string ClassName { get; set; }
     }
 }

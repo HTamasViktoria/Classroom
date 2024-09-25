@@ -8,5 +8,6 @@ public class TeacherSubjectRequest
     public string Subject { get; set; }
     public int TeacherId { get; set; }
     public int ClassOfStudentsId { get; set; }
+    public string ClassName { get; set; }
     
 }
