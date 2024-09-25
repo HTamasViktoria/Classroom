@@ -33,7 +33,7 @@ function TeacherAdding() {
 
     const handleCreateTeacher = (teacher) => {
         postTeacher(teacher)
-            .then(() => navigate("/admin"))
+            .then(() => navigate("/admin/teachers"))
             .catch(error => console.error('Error:', error));
     };
 
