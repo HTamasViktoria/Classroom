@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box} from '@mui/material';
+import Button from "@mui/material/Button";
 
 function StudentsOfClass(props) {
     const [students, setStudents] = useState([]);
@@ -23,50 +24,59 @@ function StudentsOfClass(props) {
             .catch(error => {
                 console.error('Error fetching data:', error);
             });
-    }, [props.classId]); // Add props.classId as a dependency
+    }, [props.classId]);
 
+
+    const goBackHandler = () => {
+        navigate("/admin")
+    }
+    
+    
     return (
-        <div style={{ padding: '16px' }}>
-            <Typography variant="h4" gutterBottom>
-                Students of Class {props.className}
+        <>
+        <Box sx={{ padding: 2 }}>
+            <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                Diákok
             </Typography>
             <TableContainer component={Paper}>
-                <Table>
+                <Table sx={{ minWidth: 650 }} aria-label="students table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>First Name</TableCell>
-                            <TableCell>Family Name</TableCell>
-                            <TableCell>Birth Date</TableCell>
-                            <TableCell>Birth Place</TableCell>
-                            <TableCell>Student No</TableCell>
-                            <TableCell>Class</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>ID</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>Családnév</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>Keresztnév</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>Születési hely</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>Születési idő</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>OM azonosító</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {students.length > 0 ? (
-                            students.map(student => (
-                                <TableRow key={student.id}>
-                                    <TableCell>{student.id}</TableCell>
-                                    <TableCell>{student.firstName}</TableCell>
-                                    <TableCell>{student.familyName}</TableCell>
-                                    <TableCell>{new Date(student.birthDate).toLocaleDateString()}</TableCell>
-                                    <TableCell>{student.birthPlace}</TableCell>
-                                    <TableCell>{student.studentNo}</TableCell>
-                                    <TableCell>{props.className}</TableCell>
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={7} align="center">
-                                    No students found
-                                </TableCell>
+                        {students.map((student) => (
+                            <TableRow key={student.id}>
+                                <TableCell>{student.id}</TableCell>
+                                <TableCell>{student.familyName}</TableCell>
+                                <TableCell>{student.firstName}</TableCell>
+                                <TableCell>{student.birthPlace}</TableCell>
+                                <TableCell>{student.birthDate.substring(0, 10)}</TableCell>
+                                <TableCell>{student.studentNo}</TableCell>
                             </TableRow>
-                        )}
+                        ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-        </div>
+        </Box>
+    <Button variant="contained"
+            sx={{
+                backgroundColor: '#bacfb0',
+                color: '#fff',
+                '&:hover': {
+                    backgroundColor: '#a8bfa1',
+                },
+            }}
+            onClick={props.onGoBack}>
+        Vissza
+    </Button>
+    </>
     );
 }
 
