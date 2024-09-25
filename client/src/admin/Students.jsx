@@ -18,6 +18,11 @@ function Students(){
             .then(data => setAllStudents(data))
             .catch(error => console.error('Error fetching data:', error));
     }, []);
+
+
+    const goBackHandler =()=>{
+        navigate("/admin")
+    }
     
     return(<>
         <AdminNavbar/>
@@ -35,7 +40,15 @@ function Students(){
             Diák hozzáadása
         </Button>
 
-        <AdminStudentList students={allStudents}/></>)
+        <AdminStudentList students={allStudents}/>
+        <Button variant="contained"
+                sx={{
+                    backgroundColor: '#bacfb0',
+                    color: '#fff',
+                    '&:hover': {
+                        backgroundColor: '#a8bfa1',
+                    },
+                }} onClick={goBackHandler}>Vissza</Button></>)
 }
 
 export default Students
