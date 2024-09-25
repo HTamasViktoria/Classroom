@@ -17,16 +17,19 @@ function Teachers(){
             .catch(error => console.error('Error fetching data:', error));
     }, []);
     
+    const goBackHandler =()=>{
+        navigate("/admin")
+    }
     
     return(<>
         <AdminNavbar/>
         <Button
             variant="contained"
             sx={{
-                backgroundColor: '#b5a58d',
+                backgroundColor: '#b29a88',
                 color: '#fff',
                 '&:hover': {
-                    backgroundColor: '#b5a58d',
+                    backgroundColor: '#a0887a',
                 },
             }}
             onClick={() => navigate("/add-teacher")}
@@ -35,6 +38,14 @@ function Teachers(){
         </Button>
         
         <AdminTeacherList teachers={allTeachers}/>
+        <Button variant="contained"
+                sx={{
+                    backgroundColor: '#bacfb0',
+                    color: '#fff',
+                    '&:hover': {
+                        backgroundColor: '#a8bfa1',
+                    },
+                }} onClick={goBackHandler}>Vissza</Button>
     </>)
 }
 
