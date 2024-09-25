@@ -2,22 +2,34 @@ import {Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, T
 import React from "react";
 import { useNavigate } from 'react-router-dom';
 
-function MainClasses(props){
+function AdminClassList(props){
 
     const navigate = useNavigate();
     const handleNavigate = () => {
         navigate("/add-class");
     }
     
-    return (<>   <Button onClick={handleNavigate}>Adding new classes</Button>
+    return (<>    <Button
+        variant="contained"
+        sx={{
+            backgroundColor: '#b29a88',
+            color: '#fff',
+            '&:hover': {
+                backgroundColor: '#a0887a',
+            },
+        }}
+        onClick={() => navigate("/add-class")}
+    >
+        Új osztály létrehozása
+    </Button>
         <TableContainer component={Paper} sx={{ marginTop: 2 }}>
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Grade</TableCell>
-                        <TableCell>Section</TableCell>
-                        <TableCell>Students</TableCell>
-                        <TableCell>Actions</TableCell>
+                        <TableCell>Évfolyam</TableCell>
+                        <TableCell>Osztály</TableCell>
+                        <TableCell>Tanulók</TableCell>
+                        <TableCell>Műveletek</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -28,19 +40,31 @@ function MainClasses(props){
                             <TableCell>
                                 <Button
                                     variant="contained"
-                                    color="primary"
+                                    sx={{
+                                        backgroundColor: '#bacfb0',
+                                        color: '#fff',
+                                        '&:hover': {
+                                            backgroundColor: '#a8bfa1 ',
+                                        },
+                                    }}
                                     onClick={() => props.onViewStudents(classItem.id, classItem.name)}
                                 >
-                                    View Students
+                                   Diákok megtekintése
                                 </Button>
                             </TableCell>
                             <TableCell>
                                 <Button
                                     variant="contained"
-                                    color="primary"
+                                    sx={{
+                                        backgroundColor: '#bacfb0',
+                                        color: '#fff',
+                                        '&:hover': {
+                                            backgroundColor: '#a8bfa1 ',
+                                        },
+                                    }}
                                     onClick={() => props.onAddStudent(classItem.id, classItem.name)}
                                 >
-                                    Adding Student
+                                    Diák hozzáadása az osztályhoz
                                 </Button>
                             </TableCell>
                         </TableRow>
@@ -49,4 +73,4 @@ function MainClasses(props){
             </Table>
         </TableContainer></>)
 }
-export default MainClasses
+export default AdminClassList
