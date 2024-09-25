@@ -43,18 +43,22 @@ function ClassAdding(){
     const handleGradeChange=(e)=>{
         setGrade(e.target.value)
     }
+    
+    const goBackHandler=()=>{
+      navigate("/admin/classes")  
+    }
 
     return(<> <h1>Osztály létrehozása</h1>
         <form noValidate onSubmit={handleSubmit}>
             <Stack spacing={2} width={400}>
                 <TextField
-                    label='Grade'
+                    label='Évfolyam'
                     type='text'
                     value={grade}
                     onChange={handleGradeChange}
                 />
                 <TextField
-                    label='Section'
+                    label='Osztály'
                     type='text'
                     value={section}
                     onChange={handleSectionChange}
@@ -68,6 +72,18 @@ function ClassAdding(){
                 </Button>
             </Stack>
         </form>
+        <Button variant="contained"
+                sx={{
+                    backgroundColor: '#c7b19f',
+                    color: '#fff',
+                    '&:hover': {
+                        backgroundColor: '#b29f8f',
+                    },
+                    marginTop: 2,
+                }}
+                onClick={goBackHandler}>
+            Vissza
+        </Button>
     </>)
 }
 
