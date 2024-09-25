@@ -5,7 +5,7 @@ function AdminTeacherList({ teachers }) {
     
     const navigate = useNavigate()
     const handleTeacherChoosing = (id) => {
-        navigate(`/teachers/${id}`);
+        navigate(`/admin/teachers/${id}`);
     };
     
     return (
