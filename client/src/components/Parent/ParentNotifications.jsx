@@ -1,73 +1,31 @@
 import React, {useEffect, useState} from 'react';
-import IconButton from '@mui/material/IconButton';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import BackpackIcon from '@mui/icons-material/Backpack';
-import HomeWorkIcon from '@mui/icons-material/HomeWork';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import Badge from '@mui/material/Badge';
-import Box from '@mui/material/Box';
+import ParentNotificationsMain from "./ParentNotificationsMain.jsx";
+import ExamNotifications from "./ExamNotifications.jsx";
+import HomeworkNotifications from "./HomeworkNotifications.jsx";
+import MissingEquipNotifications from "./MissingEquipNotifications.jsx";
+import OtherNotifications from "./OtherNotifications.jsx";
 
-function ParentNotifications(props) {
-    
-    const [homeworks, setHomeWorks] = useState([])
-    const [exams, setExams] = useState([])
-    const [missingEquipments, setMissingEquipmentes] = useState([])
-    const [others, setOthers] = useState([])
-    const handleClick = (iconName) => {
-        console.log(`${iconName} icon clicked`);
-    };
-    
-    useEffect(()=>{
-       const examsArray =  props.notifications.filter(n=> n.type === "Exam");
-       setExams(examsArray);
-       
-       const homeworksArray = props.notifications.filter(n => n.type === "Homework");
-       setHomeWorks(homeworksArray);
-       
-       const missingEquipmentsArray = props.notifications.filter(n=>n.type==="MissingEquipment");
-       setMissingEquipmentes(missingEquipmentsArray);
-       
-       const othersArray = props.notifications.filter(n=>n.type === "OtherNotifications");
-       setOthers(othersArray);
-       
-    }, [props])
+
+function ParentNotifications(props) {  
+   
+ const [chosenType, setChosenType] = useState("")
+  
+    const resfresHandler=()=>{
+     props.onRefreshing();
+    }
+
+    const choosingHandler = (type) =>{
+     setChosenType(type)         
+    }
 
     return (
-        <Box
-            display="flex"
-            justifyContent="space-around"
-            alignItems="center"
-            p={2}
-        >
-            <Box position="relative">
-                <Badge badgeContent={exams.length} color="secondary">
-                    <IconButton onClick={() => handleClick('Assignment')} sx={{ fontSize: 40 }}>
-                        <AssignmentIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-            <Box position="relative">
-                <Badge badgeContent={missingEquipments.length} color="secondary">
-                    <IconButton onClick={() => handleClick('Backpack')} sx={{ fontSize: 40 }}>
-                        <BackpackIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-            <Box position="relative">
-                <Badge badgeContent={homeworks.length} color="secondary">
-                    <IconButton onClick={() => handleClick('HomeWork')} sx={{ fontSize: 40 }}>
-                        <HomeWorkIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-            <Box position="relative">
-                <Badge badgeContent={others.length} color="secondary">
-                    <IconButton onClick={() => handleClick('Notifications')} sx={{ fontSize: 40 }}>
-                        <InfoOutlinedIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-        </Box>
+       <>
+           {chosenType === "exams" && <ExamNotifications exams={props.notifications.filter(n=>n.type=== "Exam")} />}
+           {chosenType === "missingEquipments" && <MissingEquipNotifications missingEquipments={props.notifications.filter(n=>n.type=== "MissingEquipments")} />}
+           {chosenType === "homeworks" && <HomeworkNotifications onRefreshing={resfresHandler} homeworks={props.notifications.filter(n=>n.type=== "Homework")} />}
+           {chosenType === "others" && <OtherNotifications others={props.notifications.filter(n=>n.type=== "Other")} />}
+           {chosenType === "" &&<ParentNotificationsMain notifications={props.notifications} onChoosing={choosingHandler}/>}
+       </>
     );
 }
 
