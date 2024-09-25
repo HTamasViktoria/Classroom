@@ -25,8 +25,8 @@ function AdminStudentList({ students }) {
                                 <TableCell>{student.familyName}</TableCell>
                                 <TableCell>{student.firstName}</TableCell>
                                 <TableCell>{student.birthPlace}</TableCell>
-                                <TableCell>{student.birthDate}</TableCell>
-                                <TableCell>{student.studentIdentifier}</TableCell>
+                                <TableCell>{student.birthDate.substring(0, 10)}</TableCell>
+                                <TableCell>{student.studentNo}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
