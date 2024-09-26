@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, Typography, Button, Stack } from '@mui/material';
 import AddingTeacherSubject from "../components/Admin/AddingTeacherSubject.jsx";
 import TeacherDetailed from "../components/Admin/TeacherDetailed.jsx";
+import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
 
 function TeacherMain() {
     const navigate = useNavigate();    
@@ -67,7 +68,7 @@ function TeacherMain() {
    }
 
     return (
-        <>
+        <><AdminNavbar/>
             <div>
                 {!addingSubject ? (
                     <Card sx={{ maxWidth: 600, margin: '3em auto 2em auto', padding: 2 }}>
@@ -75,10 +76,10 @@ function TeacherMain() {
                         <Button
                             variant="contained"
                             sx={{
-                                backgroundColor: '#b5a58d',
+                                backgroundColor: '#82b2b8',
                                 color: '#fff',
                                 '&:hover': {
-                                    backgroundColor: '#b8865a',
+                                    backgroundColor: '#6e9ea4',
                                 },
                             }}
                             onClick={() => setAddingSubject(true)}
