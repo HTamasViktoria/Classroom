@@ -30,7 +30,7 @@ function ClassAdding(){
             })
             .then(data => {
                 console.log('class added:', data);
-                navigate("/classes")
+                navigate("/admin/classes")
             })
             .catch(error => console.error('Error adding class:', error));
     };
