@@ -4,14 +4,12 @@ import { useNavigate } from "react-router-dom";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
-
-function TeacherNavbar() {
+function TeacherNavbar(props) {
 
     const navigate = useNavigate();
-
     return (
         <>
-            <AppBar sx={{ backgroundColor: '#b5a58d' }}>
+            <AppBar sx={{ backgroundColor: '#c6ac85' }}>
                 <Toolbar>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 4, width: '100%' }}>
                         <Typography
