@@ -1,73 +1,71 @@
 import React, { useEffect, useState } from 'react';
-import Box from "@mui/material/Box";
-import Badge from "@mui/material/Badge";
-import IconButton from "@mui/material/IconButton";
-import AssignmentIcon from "@mui/icons-material/Assignment";
-import BackpackIcon from "@mui/icons-material/Backpack";
-import HomeWorkIcon from "@mui/icons-material/HomeWork";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import { useParams } from 'react-router-dom';
+import ParentNavbar from "./ParentNavbar.jsx";
+import NotificationIcons from "./NotificationIcons.jsx";
+import HomeworkNotifications from "./HomeworkNotifications.jsx";
 
-function ParentNotificationsMain(props) {
+function ParentNotificationsMain() {
+    const { id } = useParams();
+    const [allNotifications, setAllNotifications] = useState([]);
     const [homeworks, setHomeWorks] = useState([]);
     const [exams, setExams] = useState([]);
     const [missingEquipments, setMissingEquipmentes] = useState([]);
     const [others, setOthers] = useState([]);
+    const [chosen, setChosen] = useState("");
+    const [refreshNeeded, setRefreshNeeded] = useState(false);
 
     useEffect(() => {
-        const examsArray = props.notifications.filter(n => n.type === "Exam");
+        fetchNotifications();
+    }, [id, refreshNeeded]);
+
+    const fetchNotifications = () => {
+        fetch(`/api/notifications/byStudentId/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                setAllNotifications(data);
+                categorizeNotifications(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    };
+
+    const categorizeNotifications = (notifications) => {
+        const examsArray = notifications.filter(n => n.type === "Exam" && n.read === false);
         setExams(examsArray);
 
-        const homeworksArray = props.notifications.filter(n => n.type === "Homework");
+        const homeworksArray = notifications.filter(n => n.type === "Homework" && n.read === false);
         setHomeWorks(homeworksArray);
 
-        const missingEquipmentsArray = props.notifications.filter(n => n.type === "MissingEquipment");
+        const missingEquipmentsArray = notifications.filter(n => n.type === "MissingEquipment" && n.read === false);
         setMissingEquipmentes(missingEquipmentsArray);
 
-        const othersArray = props.notifications.filter(n => n.type === "OtherNotifications");
+        const othersArray = notifications.filter(n => n.type === "OtherNotifications" && n.read === false);
         setOthers(othersArray);
-    }, [props.notifications]);
+    };
 
-    const clickHandler = (e) => {
-        const chosenValue = e.currentTarget.getAttribute('data-value');
-        props.onChoosing(chosenValue); // Helyes
+    const clickHandler = (chosenName) => {
+        setChosen(chosenName);
+    };
+
+    const refreshHandler = () => {
+        setRefreshNeeded(prevState => !prevState);
     };
 
     return (
-        <Box
-            display="flex"
-            justifyContent="space-around"
-            alignItems="center"
-            p={2}
-        >
-            <Box position="relative">
-                <Badge badgeContent={exams.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"exams"} sx={{ fontSize: 40 }}>
-                        <AssignmentIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-            <Box position="relative">
-                <Badge badgeContent={missingEquipments.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"missingEquipments"} sx={{ fontSize: 40 }}>
-                        <BackpackIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-            <Box position="relative">
-                <Badge badgeContent={homeworks.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"homeworks"} sx={{ fontSize: 40 }}>
-                        <HomeWorkIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-            <Box position="relative">
-                <Badge badgeContent={others.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"others"} sx={{ fontSize: 40 }}>
-                        <InfoOutlinedIcon />
-                    </IconButton>
-                </Badge>
-            </Box>
-        </Box>
+        <>
+            <ParentNavbar studentId={id} notifications={allNotifications} />
+            {chosen === "" && (
+                <NotificationIcons
+                    exams={exams}
+                    homeworks={homeworks}
+                    missingEquipments={missingEquipments}
+                    others={others}
+                    onClick={clickHandler}
+                />
+            )}
+            {chosen === "homeworks" && (
+                <HomeworkNotifications homeworks={homeworks} onRefreshing={refreshHandler} />
+            )}
+        </>
     );
 }
 

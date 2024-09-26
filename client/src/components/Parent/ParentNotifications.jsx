@@ -24,7 +24,7 @@ function ParentNotifications(props) {
            {chosenType === "missingEquipments" && <MissingEquipNotifications missingEquipments={props.notifications.filter(n=>n.type=== "MissingEquipments")} />}
            {chosenType === "homeworks" && <HomeworkNotifications onRefreshing={resfresHandler} homeworks={props.notifications.filter(n=>n.type=== "Homework")} />}
            {chosenType === "others" && <OtherNotifications others={props.notifications.filter(n=>n.type=== "Other")} />}
-           {chosenType === "" &&<ParentNotificationsMain notifications={props.notifications} onChoosing={choosingHandler}/>}
+           {chosenType === "" &&<ParentNotificationsMain studentId={props.studentId} notifications={props.notifications} onChoosing={choosingHandler}/>}
        </>
     );
 }
