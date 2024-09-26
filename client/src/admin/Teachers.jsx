@@ -26,10 +26,10 @@ function Teachers(){
         <Button
             variant="contained"
             sx={{
-                backgroundColor: '#b29a88',
+                backgroundColor: '#82b2b8',
                 color: '#fff',
                 '&:hover': {
-                    backgroundColor: '#a0887a',
+                    backgroundColor: '#6e9ea4',
                 },
             }}
             onClick={() => navigate("/add-teacher")}
@@ -40,10 +40,10 @@ function Teachers(){
         <AdminTeacherList teachers={allTeachers}/>
         <Button variant="contained"
                 sx={{
-                    backgroundColor: '#bacfb0',
+                    backgroundColor: '#a2c4c6',
                     color: '#fff',
                     '&:hover': {
-                        backgroundColor: '#a8bfa1',
+                        backgroundColor: '#8ab2b5',
                     },
                 }} onClick={goBackHandler}>Vissza</Button>
     </>)
