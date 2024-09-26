@@ -21,10 +21,10 @@ function TeacherDetailed({ teacher, subjects }) {
                 <Table sx={{ minWidth: 650 }} aria-label="teachers table">
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>
                                 Tantárgyak
                             </TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#b5a58d', fontSize: '1.1rem' }}>
+                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>
                                 Osztályok
                             </TableCell>
                         </TableRow>
