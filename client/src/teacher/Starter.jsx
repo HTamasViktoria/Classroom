@@ -1,8 +1,8 @@
 import TeacherNavbar from "../components/Teacher/TeacherNavbar.jsx";
 import { useEffect, useState } from "react";
 import { Select, MenuItem, FormControl, InputLabel, Typography, Container, Box } from '@mui/material';
-import GradeAddingForm from "../components/Teacher/GradeAddingForm.jsx";
 import Tasks from "../components/Teacher/Tasks.jsx";
+
 function Starter() {
     const [teachers, setTeachers] = useState([]);
     const [selectedTeacherId, setSelectedTeacherId] = useState('');
@@ -34,18 +34,16 @@ function Starter() {
                     <Typography variant="h4" gutterBottom>
                         {selectedTeacher ? '' : 'Én vagyok:'}
                     </Typography>
-                    {selectedTeacher ? (
-                        <Tasks teacherId={selectedTeacherId} teacherName={`${selectedTeacher.familyName} ${selectedTeacher.firstName}`} />
-
-
-                    ) : (
-                        <FormControl fullWidth variant="outlined">
-                            <InputLabel id="teacher-select-label">Tanár kiválasztása:</InputLabel>
+                    {selectedTeacher &&  <Tasks teacherId={selectedTeacherId} teacherName={`${selectedTeacher.familyName} ${selectedTeacher.firstName}`} />}
+                    { !selectedTeacher &&
+                        <FormControl fullWidth variant="outlined" sx={{ width: '120%', maxWidth: '600px', margin: '0 auto' }}>
+                            <InputLabel id="teacher-select-label" sx={{ width: '100%' }}>Tanár kiválasztása:</InputLabel>
                             <Select
                                 labelId="teacher-select-label"
                                 value={selectedTeacherId}
                                 onChange={handleChange}
-                                label="Select Teacher"
+                                label="Tanár kiválasztása:"
+                                sx={{ width: '100%' }}
                             >
                                 {teachers.length > 0 ? (
                                     teachers.map((teacher) => (
@@ -57,8 +55,7 @@ function Starter() {
                                     <MenuItem disabled>No teachers available</MenuItem>
                                 )}
                             </Select>
-                        </FormControl>
-                    )}
+                        </FormControl>}
                 </Box>
             </Container>
         </>
