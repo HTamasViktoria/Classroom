@@ -10,6 +10,7 @@ public class NotificationRequest
         public int TeacherId { get; set; }
         public string TeacherName { get; set; }
         public DateTime Date { get; set; }
+        public DateTime DueDate { get; set; }
         public string? Subject { get; set; }
         public bool Read { get; set; }
         public string Description { get; set; }
