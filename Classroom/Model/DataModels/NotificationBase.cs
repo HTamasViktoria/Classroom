@@ -14,6 +14,7 @@ namespace Classroom.Model.DataModels
         public string TeacherName { get; set; }
         public string Type { get; set; }
         public DateTime Date { get; set; }
+        public DateTime DueDate { get; set; }
         
         public List<Student> Students { get; set; } = new List<Student>();
     
