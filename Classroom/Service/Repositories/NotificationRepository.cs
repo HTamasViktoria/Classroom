@@ -27,6 +27,16 @@ public class NotificationRepository : INotificationRepository
     }
 
 
+    public IEnumerable<NotificationBase> GetLastsByStudentId(int id)
+    {
+        return _dbContext.Notifications
+            .Where(not => not.Students.Any(student => student.Id == id) && not.Read == false)
+            .OrderByDescending(not => not.Date)
+            .Take(3)
+            .ToList();
+    }
+
+
 
     public void Add(NotificationRequest request)
     {
@@ -52,6 +62,7 @@ public class NotificationRepository : INotificationRepository
                 TeacherName = request.TeacherName,
                 Type = request.Type,
                 Date = request.Date,
+                DueDate = request.DueDate,
                 Students = students,
                 Read = request.Read,
                 Description = request.Description,

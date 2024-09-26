@@ -58,6 +58,28 @@ public class NotificationController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+    
+    
+    [HttpGet("lastsByStudentId/{id}", Name = "GetLastsByStudentId")]
+    public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(int id)
+    {
+        try
+        {
+            var notifications = _notificationRepository.GetLastsByStudentId(id);
+        
+            if (!notifications.Any())
+            {
+                return Ok(new List<NotificationBase>());
+            }
+        
+            return Ok(notifications);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
 
     
     

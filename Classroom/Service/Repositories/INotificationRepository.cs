@@ -11,4 +11,5 @@ public interface INotificationRepository
     void SetToRead(int id);
     IEnumerable<NotificationBase> GetHomeworks();
     void Delete(int id);
+    IEnumerable<NotificationBase> GetLastsByStudentId(int id);
 }
