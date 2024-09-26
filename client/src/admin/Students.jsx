@@ -29,10 +29,10 @@ function Students(){
         <Button
             variant="contained"
             sx={{
-                backgroundColor: '#b5a58d',
+                backgroundColor: '#82b2b8',
                 color: '#fff',
                 '&:hover': {
-                    backgroundColor: '#b5a58d',
+                    backgroundColor: '#6e9ea4',
                 },
             }}
             onClick={() => navigate("/add-student")}
