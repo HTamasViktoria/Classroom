@@ -9,7 +9,7 @@ function AdminNavbar() {
 
     return (
         <>
-            <AppBar sx={{backgroundColor: '#cfc5b0'}}>
+            <AppBar sx={{backgroundColor: '#c6ac85'}}>
                 <Toolbar>
                     <Box sx={{display: 'flex', justifyContent: 'left', gap:6, width: '100%'}}>
                         <Typography
