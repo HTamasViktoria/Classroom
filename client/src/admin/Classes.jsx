@@ -48,12 +48,17 @@ function Classes() {
         navigate("/admin")
     }
 
+    
+    const successfulAddingHandler=()=>{
+        setAddingOrViewing("")
+    }
+    
     return (
         <>
             <AdminNavbar/>
 
             {addingOrViewing === "adding" ? (
-                <><StudentAddingToClass classId={classId} className={className}/>
+                <><StudentAddingToClass classId={classId} className={className} onSuccessfulAdding={successfulAddingHandler}/>
                     <Button variant="contained"
                             sx={{
                                 backgroundColor: '#c7b19f',
@@ -75,10 +80,10 @@ function Classes() {
                     onAddStudent={handleAddStudent}
                 /><Button variant="contained"
                           sx={{
-                              backgroundColor: '#c7b19f',
+                              backgroundColor: '#a2c4c6',
                               color: '#fff',
                               '&:hover': {
-                                  backgroundColor: '#b29f8f',
+                                  backgroundColor: '#8ab2b5',
                               },
                               marginTop: 2,
                           }}
@@ -94,21 +99,3 @@ function Classes() {
 }
 
 export default Classes;
-
-
-/*
-* <>
-        <AdminNavbar/>
-            {addingOrViewing === "adding" ? (
-                <StudentAddingToClass classId={classId} className={className} />
-            ) : addingOrViewing === "viewing"? (
-                <StudentsOfClass classId={classId} className={className} />
-            ) : (
-                <MainClasses
-                    classes={classes}
-                    onViewStudents={handleViewStudents}
-                    onAddStudent={handleAddStudent}
-                />
-            )}
-        </>
-* */
