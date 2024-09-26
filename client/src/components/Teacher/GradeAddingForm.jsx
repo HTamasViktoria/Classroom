@@ -6,7 +6,7 @@ import DateSelector from "./DateSelector.jsx";
 import GradeValueSelector from "./GradeValueSelector.jsx";
 import { useNavigate } from 'react-router-dom';
 
-function GradeAddingForm({ teacherId }) {
+function GradeAddingForm({ teacherId, onGoBack }) {
     const [students, setStudents] = useState([]);
     const [teacherSubjects, setTeacherSubjects] = useState([]);
     const [selectedStudentId, setSelectedStudentId] = useState("");
@@ -68,10 +68,14 @@ function GradeAddingForm({ teacherId }) {
             })
             .then(data => {
                 console.log('Grade added:', data);
-                navigate("/teacher");
+                onGoBack();
             })
             .catch(error => console.error('Error adding grade:', error));
     };
+    
+    const goBackHandler=()=>{
+       onGoBack();
+    }
 
     return (
         <>
@@ -99,10 +103,18 @@ function GradeAddingForm({ teacherId }) {
                     <Button
                         type='submit'
                         variant='contained'
-                        sx={{ backgroundColor: '#b5a58d', '&:hover': { backgroundColor: '#b8865a' } }}
+                        sx={{ backgroundColor: '#82b2b8', '&:hover': { backgroundColor: '#6e9ea4' } }}
                     >
-                        Hozzáad
-                    </Button>
+                        Jegy hozzáadása
+                    </Button> 
+                    <Button
+                    type='submit'
+                    variant='contained'
+                    sx={{ backgroundColor: '#a2c4c6', '&:hover': { backgroundColor: '#8ab2b5' } }}
+                    onClick={goBackHandler}
+                >
+                    Mégse
+                </Button>
                 </Stack>
             </form>
         </>
