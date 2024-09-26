@@ -52,10 +52,10 @@ function AddingTeacherSubjectForm({ teacher, subjects, classes, selectedSubject,
                 variant="contained"
                 sx={{
                     width: '60%',
-                    backgroundColor: '#b5a58d',
+                    backgroundColor: '#d9c2bd',
                     color: '#fff',
                     '&:hover': {
-                        backgroundColor: '#b8865a',
+                        backgroundColor: '#c2a6a0',
                     },
                     alignSelf: 'flex-end'
                 }}

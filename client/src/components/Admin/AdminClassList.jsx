@@ -12,10 +12,10 @@ function AdminClassList(props){
     return (<>    <Button
         variant="contained"
         sx={{
-            backgroundColor: '#b29a88',
+            backgroundColor: '#82b2b8',
             color: '#fff',
             '&:hover': {
-                backgroundColor: '#a0887a',
+                backgroundColor: '#6e9ea4',
             },
         }}
         onClick={() => navigate("/add-class")}
@@ -41,10 +41,10 @@ function AdminClassList(props){
                                 <Button
                                     variant="contained"
                                     sx={{
-                                        backgroundColor: '#bacfb0',
+                                        backgroundColor: '#d9c2bd',
                                         color: '#fff',
                                         '&:hover': {
-                                            backgroundColor: '#a8bfa1 ',
+                                            backgroundColor: '#c2a6a0 ',
                                         },
                                     }}
                                     onClick={() => props.onViewStudents(classItem.id, classItem.name)}
