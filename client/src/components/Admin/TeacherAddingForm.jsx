@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { TextField, Button, Stack } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 
 function TeacherAddingForm({ onSave, onCancel }) {
+
+    const navigate = useNavigate();
+    
     const [familyName, setFamilyName] = useState("");
     const [firstName, setFirstName] = useState("");
 
@@ -18,6 +21,10 @@ function TeacherAddingForm({ onSave, onCancel }) {
     const handleFirstNameChange = (e) => {
         setFirstName(e.target.value);
     };
+    
+    const goBackHandler=()=>{
+        navigate("/admin/teachers");
+    }
 
     return (
         <>
@@ -40,9 +47,17 @@ function TeacherAddingForm({ onSave, onCancel }) {
                     <Button
                         type='submit'
                         variant='contained'
-                        sx={{ backgroundColor: '#b5a58d', '&:hover': { backgroundColor: '#b8865a' } }}
+                        sx={{ backgroundColor: '#82b2b8', '&:hover': { backgroundColor: '#6e9ea4' } }}
                     >
                         Hozzáad
+                    </Button>
+                    <Button
+                        type='submit'
+                        variant='contained'
+                        sx={{ backgroundColor: '#d9c2bd', '&:hover': { backgroundColor: '#c2a6a0' } }}
+                        onClick={goBackHandler}
+                    >
+                        Vissza
                     </Button>
                 </Stack>
             </form>
