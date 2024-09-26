@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import TeacherNavbar from "./TeacherNavbar.jsx";
-import SubjectSelector from "./SubjectSelector.jsx";
 import GradeAddingForm from "./GradeAddingForm.jsx";
 import TaskSelector from "./TaskSelector.jsx";
 import NotificationMain from "./NotificationMain.jsx";
@@ -21,13 +20,16 @@ function Tasks(props) {
      setChosenTask(chosenTask)
     }
  
+    const goBackHandler=()=>{
+      setChosenTask("");
+    }
 
     return (
         <>
             <TeacherNavbar />
             { chosenTask == "" &&(  <TaskSelector onChosenTask={taskHandler}/>)}
-            {chosenTask == "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName}/>}
-            {chosenTask == "addGrade" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} />}
+            {chosenTask == "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName} onGoBack={goBackHandler}/>}
+            {chosenTask == "addGrade" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler} />}
             {chosenTask == "addMessage" && <div>Adding messages</div>}
                 
            
