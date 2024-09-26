@@ -38,6 +38,7 @@ function StudentAddingToClass(props) {
             })
             .then(data => {
                 console.log('Student added:', data);
+                props.onSuccessfulAdding();
             })
             .catch(error => console.error('Error adding student:', error));
     
