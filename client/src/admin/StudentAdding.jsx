@@ -2,8 +2,9 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
 import StudentAddingForm from "../components/Admin/StudentAddingForm.jsx";
+import { StyledButton } from "../../StyledComponents";
+
 function StudentAdding() {
-    
     const navigate = useNavigate();
 
     const postStudent = (student) => {
@@ -42,10 +43,17 @@ function StudentAdding() {
         onCancel: () => navigate("/admin")
     };
 
+    const goBackHandler = () => {
+        navigate("/admin/students");
+    };
+
     return (
         <>
             <AdminNavbar />
             <StudentAddingForm {...props} />
+            <StyledButton onClick={goBackHandler}>
+                Vissza
+            </StyledButton>
         </>
     );
 }

@@ -1,17 +1,32 @@
 import { useEffect, useState } from 'react';
-import { Button, Stack } from "@mui/material";
+import { Stack, Typography, CircularProgress } from "@mui/material";
+import { CustomBox } from '../../../StyledComponents';
 import StudentSelector from "../Teacher/StudentSelector.jsx";
-
+import {StyledButton} from '../../../StyledComponents';
+import { useTheme } from '@mui/material/styles';
 
 function StudentAddingToClass(props) {
+    const theme = useTheme();
     const [students, setStudents] = useState([]);
     const [selectedStudentId, setSelectedStudentId] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetch('/api/students')
-            .then(response => response.json())
-            .then(data => setStudents(data))
-            .catch(error => console.error('Error fetching data:', error));
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                setStudents(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            });
     }, []);
 
     const handleStudentChange = (e) => {
@@ -19,12 +34,19 @@ function StudentAddingToClass(props) {
     };
 
     const handleSubmit = (e) => {
+        e.preventDefault();
+
+        
+        if (!selectedStudentId) {
+            alert("Kérjük, válasszon ki egy diákot.");
+            return;
+        }
 
         const addingStudentToClassData = {
-            studentId: selectedStudentId, 
+            studentId: selectedStudentId,
             classId: props.classId
         };
-        e.preventDefault();
+
         fetch('/api/classes/addStudent', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -41,29 +63,33 @@ function StudentAddingToClass(props) {
                 props.onSuccessfulAdding();
             })
             .catch(error => console.error('Error adding student:', error));
-    
     };
 
     return (
-        <>
-            <h1>Diák hozzáadása az {props.className} osztályhoz</h1>
-            <form noValidate onSubmit={handleSubmit}>
-                <Stack spacing={2} width={400}>
-                    <StudentSelector
-                        selectedStudentId={selectedStudentId}
-                        students={students}
-                        handleStudentChange={handleStudentChange}
-                    />
-                    <Button
-                        type='submit'
-                        variant='contained'
-                        sx={{backgroundColor: '#b5a58d', '&:hover': {backgroundColor: '#b8865a'}}}
-                    >
-                        Hozzáad
-                    </Button>
-                </Stack>
-            </form>
-        </>
+        <CustomBox>
+            <Typography variant="h6" sx={{ marginBottom: 2, color: theme.palette.tertiary.main }}>
+                Diák hozzáadása az {props.className} osztályhoz
+            </Typography>
+            {loading ? (
+                <CircularProgress />
+            ) : (
+                <form noValidate onSubmit={handleSubmit}>
+                    <Stack spacing={2} width={400}>
+                        <StudentSelector
+                            selectedStudentId={selectedStudentId}
+                            students={students}
+                            handleStudentChange={handleStudentChange}
+                        />
+                        <StyledButton
+                            type='submit'
+                            variant='contained'
+                        >
+                            Hozzáad
+                        </StyledButton>
+                    </Stack>
+                </form>
+            )}
+        </CustomBox>
     );
 }
 

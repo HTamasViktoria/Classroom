@@ -1,85 +1,88 @@
-import {TextField, Button, Stack} from "@mui/material";
+import { TextField, Stack, Typography } from "@mui/material";
+import { CustomBox } from '../../../StyledComponents';
 import React, { useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import {StyledButton, StyledTextField} from '../../../StyledComponents';
 
-function StudentAddingForm({ onSave, onCancel }){
-
-    const [familyName, setFamilyName ] = useState("");
+function StudentAddingForm({ onSave, onCancel }) {
+    
+    const theme = useTheme();
+    const [familyName, setFamilyName] = useState("");
     const [firstName, setFirstName] = useState("");
     const [birthDate, setBirthDate] = useState("");
-    const [birthPlace,setBirthPlace] = useState("");
+    const [birthPlace, setBirthPlace] = useState("");
     const [studentNo, setStudentNo] = useState("");
-    
-
 
     const handleSubmit = (e) => {
         e.preventDefault();
+      
+        if (!familyName || !firstName || !birthDate || !birthPlace || !studentNo) {
+            alert("Kérjük, töltse ki az összes mezőt.");
+            return;
+        }
         onSave({ familyName, firstName, birthDate, birthPlace, studentNo });
     };
- 
 
-    const handleFamilyNameChange = (e) => {
-        setFamilyName(e.target.value);
-    };
-
-    const handleFirstNameChange = (e) => {
-        setFirstName(e.target.value);
-    };
-    const handleBirthDateChange = (e)=>{
-        setBirthDate(e.target.value);
-    }
-    
-    const handleBirthPlaceChange = (e)=>{
-        setBirthPlace(e.target.value);
-    }
-    
-    const handleStudentNoChange =(e)=>{
-        setStudentNo(e.target.value);
-    }
     return (
-        <>
-            <h1>Diák hozzáadása</h1>
+        <CustomBox>
+            <Typography variant="h6" sx={{ marginBottom: 2, color: theme.palette.tertiary.main }}>
+                Diák hozzáadása
+            </Typography>
             <form noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} width={400}>
-                    <TextField
+                    <StyledTextField
                         label='Vezetéknév'
                         type='text'
                         value={familyName}
-                        onChange={handleFamilyNameChange}
+                        onChange={(e) => setFamilyName(e.target.value)}
+                        required
                     />
-                    <TextField
+                    <StyledTextField
                         label='Keresztnév'
                         type='text'
                         value={firstName}
-                        onChange={handleFirstNameChange}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        required
                     />
-                    <TextField 
-                        label="Születési idő" 
-                               type="date"
+                    <StyledTextField
+                        label="Születési idő"
+                        type="date"
                         value={birthDate}
-                               InputLabelProps={{shrink: true}}
-                    onChange = {handleBirthDateChange}/>
-                    <TextField 
-                        label="Születési hely" 
+                        InputLabelProps={{ shrink: true }}
+                        onChange={(e) => setBirthDate(e.target.value)}
+                        required
+                    />
+                    <StyledTextField
+                        label="Születési hely"
                         type='text'
                         value={birthPlace}
-                    onChange={handleBirthPlaceChange}/>
-                    <TextField 
-                        label='OM azonosító' 
+                        onChange={(e) => setBirthPlace(e.target.value)}
+                        required
+                    />
+                    <StyledTextField
+                        label='OM azonosító'
                         type='text'
-                    value={studentNo}
-                    onChange={handleStudentNoChange}/>
-                    
-                    <Button
+                        value={studentNo}
+                        onChange={(e) => setStudentNo(e.target.value)}
+                        required
+                    />
+                    <StyledButton
                         type='submit'
                         variant='contained'
-                        sx={{backgroundColor: '#b5a58d', '&:hover': {backgroundColor: '#b8865a'}}}
                     >
                         Hozzáad
-                    </Button>
+                    </StyledButton>
+                    <StyledButton
+                        type='button'
+                        variant='outlined'
+                        onClick={onCancel}
+                    >
+                        Mégse
+                    </StyledButton>
                 </Stack>
             </form>
-        </>
+        </CustomBox>
     );
 }
 
-export default StudentAddingForm
+export default StudentAddingForm;
