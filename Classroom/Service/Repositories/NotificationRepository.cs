@@ -94,6 +94,21 @@ public class NotificationRepository : INotificationRepository
     {
         return _dbContext.Notifications.Where(n => n.Type == "Homework").ToList();
     }
+    
+    public IEnumerable<NotificationBase> GetOthers()
+    {
+        return _dbContext.Notifications.Where(n => n.Type == "Other").ToList();
+    }
+    
+    public IEnumerable<NotificationBase> GetMissingEquipments()
+    {
+        return _dbContext.Notifications.Where(n => n.Type == "MissingEquipment").ToList();
+    }
+    
+    public IEnumerable<NotificationBase> GetExams()
+    {
+        return _dbContext.Notifications.Where(n => n.Type == "Exam").ToList();
+    }
 
 
     public void Delete(int id)

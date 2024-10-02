@@ -142,6 +142,54 @@ public class NotificationController : ControllerBase
         }
     }
     
+    
+    [HttpGet("exams", Name = "GetExams")]
+    public ActionResult<IEnumerable<NotificationBase>> GetExams()
+    {
+        try
+        {
+            var exams = _notificationRepository.GetExams();
+            return Ok(exams);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+    
+    
+    [HttpGet("others", Name = "GetOthers")]
+    public ActionResult<IEnumerable<NotificationBase>> GetOthers()
+    {
+        try
+        {
+            var others = _notificationRepository.GetOthers();
+            return Ok(others);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+    
+    
+    [HttpGet("missingEquipments", Name = "GetMissingEquipments")]
+    public ActionResult<IEnumerable<NotificationBase>> GetMissingEquipments()
+    {
+        try
+        {
+            var missingEquipments = _notificationRepository.GetMissingEquipments();
+            return Ok(missingEquipments);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+    
     [HttpDelete("delete/{id}")]
     public ActionResult<object> Delete(int id)
     {
