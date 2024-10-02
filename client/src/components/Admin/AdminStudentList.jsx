@@ -1,23 +1,24 @@
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import React from 'react';
+import { Box, Typography, Table, TableBody, TableContainer, TableHead, TableRow, Paper, TableCell } from "@mui/material";
+import { CustomBox, StyledTableCell, StyledTableHead } from '../../../StyledComponents';
 
 function AdminStudentList({ students }) {
     return (
-        <Box sx={{ padding: 2 }}>
+        <CustomBox>
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
                 Diákok
             </Typography>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="students table">
-                    <TableHead>
+                    <StyledTableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>ID</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Családnév</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Keresztnév</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Születési hely</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Születési idő</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>OM azonosító</TableCell>
+                            {['ID', 'Családnév', 'Keresztnév', 'Születési hely', 'Születési idő', 'OM azonosító'].map((header) => (
+                                <StyledTableCell key={header}>
+                                    {header}
+                                </StyledTableCell>
+                            ))}
                         </TableRow>
-                    </TableHead>
+                    </StyledTableHead>
                     <TableBody>
                         {students.map((student) => (
                             <TableRow key={student.id}>
@@ -32,7 +33,7 @@ function AdminStudentList({ students }) {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </Box>
+        </CustomBox>
     );
 }
 

@@ -1,7 +1,11 @@
-import { Button, Stack, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import { Stack, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import React from "react";
+import { useTheme } from '@mui/material/styles'; 
+import { StyledButton } from "../../../StyledComponents";
 
 function AddingTeacherSubjectForm({ teacher, subjects, classes, selectedSubject, selectedClass, handleSubjectClick, handleClassClick, handleSubmit }) {
+    const theme = useTheme();
+
     return (
         <Stack spacing={4} sx={{ width: '100%' }}>
             <div>
@@ -48,21 +52,15 @@ function AddingTeacherSubjectForm({ teacher, subjects, classes, selectedSubject,
                     </FormControl>
                 </Stack>
             </div>
-            <Button
-                variant="contained"
+            <StyledButton
                 sx={{
                     width: '60%',
-                    backgroundColor: '#d9c2bd',
-                    color: '#fff',
-                    '&:hover': {
-                        backgroundColor: '#c2a6a0',
-                    },
                     alignSelf: 'flex-end'
                 }}
                 onClick={handleSubmit}
             >
                 Hozzáad
-            </Button>
+            </StyledButton>
         </Stack>
     );
 }

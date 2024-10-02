@@ -1,13 +1,13 @@
-import React, {useState} from "react";
-import {Button, Stack, TextField} from "@mui/material";
+import React, { useState } from "react";
+import { Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
+import { StyledButton } from "../../StyledComponents";
 
-function ClassAdding(){
-
+function ClassAdding() {
     const navigate = useNavigate();
-    
-    const [grade, setGrade] = useState("")
-    const [section, setSection] = useState("")
+
+    const [grade, setGrade] = useState("");
+    const [section, setSection] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,61 +30,54 @@ function ClassAdding(){
             })
             .then(data => {
                 console.log('class added:', data);
-                navigate("/admin/classes")
+                navigate("/admin/classes");
             })
             .catch(error => console.error('Error adding class:', error));
     };
 
+    const handleSectionChange = (e) => {
+        setSection(e.target.value);
+    };
 
-    const handleSectionChange=(e)=>{
-        setSection(e.target.value)
-    }
+    const handleGradeChange = (e) => {
+        setGrade(e.target.value);
+    };
 
-    const handleGradeChange=(e)=>{
-        setGrade(e.target.value)
-    }
-    
-    const goBackHandler=()=>{
-      navigate("/admin/classes")  
-    }
+    const goBackHandler = () => {
+        navigate("/admin/classes");
+    };
 
-    return(<> <h1>Osztály létrehozása</h1>
-        <form noValidate onSubmit={handleSubmit}>
-            <Stack spacing={2} width={400}>
-                <TextField
-                    label='Évfolyam'
-                    type='text'
-                    value={grade}
-                    onChange={handleGradeChange}
-                />
-                <TextField
-                    label='Osztály'
-                    type='text'
-                    value={section}
-                    onChange={handleSectionChange}
-                />
-                <Button
-                    type='submit'
-                    variant='contained'
-                    sx={{backgroundColor: '#b5a58d', '&:hover': {backgroundColor: '#b8865a'}}}
-                >
-                    Hozzáad
-                </Button>
-            </Stack>
-        </form>
-        <Button variant="contained"
-                sx={{
-                    backgroundColor: '#c7b19f',
-                    color: '#fff',
-                    '&:hover': {
-                        backgroundColor: '#b29f8f',
-                    },
-                    marginTop: 2,
-                }}
-                onClick={goBackHandler}>
-            Vissza
-        </Button>
-    </>)
+    return (
+        <>
+            <Typography variant="h4" gutterBottom>
+                Osztály létrehozása
+            </Typography>
+            <form noValidate onSubmit={handleSubmit}>
+                <Stack spacing={2} width={400}>
+                    <TextField
+                        label='Évfolyam'
+                        type='text'
+                        value={grade}
+                        onChange={handleGradeChange}
+                        sx={{ marginBottom: 2 }}
+                    />
+                    <TextField
+                        label='Osztály'
+                        type='text'
+                        value={section}
+                        onChange={handleSectionChange}
+                        sx={{ marginBottom: 2 }}
+                    />
+                    <StyledButton type='submit'>
+                        Hozzáad
+                    </StyledButton>
+                </Stack>
+            </form>
+            <StyledButton onClick={goBackHandler}>
+                Vissza
+            </StyledButton>
+        </>
+    );
 }
 
-export default ClassAdding
+export default ClassAdding;
