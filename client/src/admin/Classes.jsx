@@ -1,20 +1,18 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import AdminClassList from "../components/Admin/AdminClassList.jsx";
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
-import Button from "@mui/material/Button";
+import { StyledButton } from "../../StyledComponents";
 import StudentAddingToClass from "../components/Admin/StudentAddingToClass.jsx";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import StudentsOfClass from "../components/Admin/StudentsOfClass.jsx";
 
-
 function Classes() {
-
     const navigate = useNavigate();
 
     const [classes, setClasses] = useState([]);
-    const [classId, setClassId] = useState(null)
-    const [className, setClassName] = useState("")
-    const [addingOrViewing, setAddingOrViewing] = useState("")
+    const [classId, setClassId] = useState(null);
+    const [className, setClassName] = useState("");
+    const [addingOrViewing, setAddingOrViewing] = useState("");
 
     useEffect(() => {
         fetch('/api/classes')
@@ -23,77 +21,71 @@ function Classes() {
             .catch(error => console.error('Error fetching data:', error));
     }, []);
 
-
     const handleViewStudents = (classId, className) => {
-        setClassId(classId)
-        setClassName(className)
-        setAddingOrViewing("viewing")
-    }
+        setClassId(classId);
+        setClassName(className);
+        setAddingOrViewing("viewing");
+    };
 
     const handleAddStudent = (classId, className) => {
         setClassName(className);
-        setClassId(classId)
-        setAddingOrViewing("adding")
-    }
+        setClassId(classId);
+        setAddingOrViewing("adding");
+    };
 
-    const goBackFromAddingHandler=()=>{
-        setAddingOrViewing("")
-    }
+    const goBackFromAddingHandler = () => {
+        setAddingOrViewing("");
+    };
 
-    const goBackFromViewingHandler=()=>{
-        setAddingOrViewing("")
-    }
-    
+    const goBackFromViewingHandler = () => {
+        setAddingOrViewing("");
+    };
+
     const goBackHandler = () => {
-        navigate("/admin")
-    }
+        navigate("/admin");
+    };
 
-    
-    const successfulAddingHandler=()=>{
-        setAddingOrViewing("")
-    }
-    
+    const successfulAddingHandler = () => {
+        setAddingOrViewing("");
+    };
+
     return (
         <>
-            <AdminNavbar/>
+            <AdminNavbar />
 
             {addingOrViewing === "adding" ? (
-                <><StudentAddingToClass classId={classId} className={className} onSuccessfulAdding={successfulAddingHandler}/>
-                    <Button variant="contained"
-                            sx={{
-                                backgroundColor: '#c7b19f',
-                                color: '#fff',
-                                '&:hover': {
-                                    backgroundColor: '#b29f8f',
-                                },
-                                marginTop: 2,
-                            }}
-                            onClick={goBackFromAddingHandler}>
+                <>
+                    <StudentAddingToClass
+                        classId={classId}
+                        className={className}
+                        onSuccessfulAdding={successfulAddingHandler}
+                    />
+                    <StyledButton
+                        onClick={goBackFromAddingHandler}
+                    >
                         Vissza
-                    </Button></>
+                    </StyledButton>
+                </>
             ) : addingOrViewing === "viewing" ? (
-                <StudentsOfClass classId={classId} className={className} onGoBack={goBackFromViewingHandler}/>
-            ) : (<>
-                <AdminClassList
-                    classes={classes}
-                    onViewStudents={handleViewStudents}
-                    onAddStudent={handleAddStudent}
-                /><Button variant="contained"
-                          sx={{
-                              backgroundColor: '#a2c4c6',
-                              color: '#fff',
-                              '&:hover': {
-                                  backgroundColor: '#8ab2b5',
-                              },
-                              marginTop: 2,
-                          }}
-                          onClick={goBackHandler}>
-                    Vissza
-                </Button>
-                    </>
+                <StudentsOfClass
+                    classId={classId}
+                    className={className}
+                    onGoBack={goBackFromViewingHandler}
+                />
+            ) : (
+                <>
+                    <AdminClassList
+                        classes={classes}
+                        onViewStudents={handleViewStudents}
+                        onAddStudent={handleAddStudent}
+                    />
+                    <StyledButton
+                        onClick={goBackHandler}
+                    >
+                        Vissza
+                    </StyledButton>
+                </>
             )}
-           {/* */}
-
         </>
     );
 }
