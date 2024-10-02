@@ -1,34 +1,29 @@
-import {AppBar} from '@mui/material'
-import {Toolbar, Typography, Box} from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { AppBar, Toolbar } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { useTheme } from '@mui/material/styles';
+import { StyledTypography } from '../../../StyledComponents';
 
-
-function TeacherNavbar(props) {
-
+function TeacherNavbar() {
     const navigate = useNavigate();
+    const theme = useTheme();
+
     return (
-        <>
-            <AppBar sx={{ backgroundColor: '#c6ac85' }}>
-                <Toolbar>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 4, width: '100%' }}>
-                        <Typography
-                            component='div'
-                            onClick={() => navigate("/grades") }
-                            style={{ cursor: 'pointer' }}
-                        >
-                            Jegyek
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
-                            <AccountCircleIcon
-                                sx={{ cursor: 'pointer', fontSize: 30 }}
-                            />
-                        </Box>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-        </>
+        <AppBar sx={{ backgroundColor: theme.palette.navbar.main }}>
+            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', gap: 4, width: '100%' }}>
+                <StyledTypography
+                    variant="h6"
+                    onClick={() => navigate("/grades")}
+                    sx={{ cursor: 'pointer' }}
+                >
+                    Jegyek
+                </StyledTypography>
+                <AccountCircleIcon
+                    sx={{ cursor: 'pointer', fontSize: 30, color: theme.palette.text.primary }}
+                />
+            </Toolbar>
+        </AppBar>
     );
 }
 
-export default TeacherNavbar
+export default TeacherNavbar;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, Button, Box } from "@mui/material";
+import { InputLabel, Select, MenuItem } from "@mui/material";
+import { StyledButton, StyledSecondaryButton, StyledFormControl, CustomBox } from '../../../StyledComponents';
 
 function NotificationSelector(props) {
     const [selectedValue, setSelectedValue] = useState('');
@@ -11,15 +12,15 @@ function NotificationSelector(props) {
 
     const goBackHandler = () => {
         props.onGoBack();
-    }
+    };
 
     return (
-        <Box display="flex" alignItems="center" width="100%">
-            <FormControl sx={{ minWidth: 200, mr: 2 }}>
-                <InputLabel id="demo-simple-select-label">Értesítés típusa</InputLabel>
+        <CustomBox display="flex" alignItems="center" width="100%">
+            <StyledFormControl sx={{ minWidth: 200, mr: 2 }}>
+                <InputLabel id="notification-type-label">Értesítés típusa</InputLabel>
                 <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
+                    labelId="notification-type-label"
+                    id="notification-type-select"
                     value={selectedValue}
                     label="Értesítés típusa"
                     onChange={handleChange}
@@ -29,41 +30,30 @@ function NotificationSelector(props) {
                     <MenuItem value={"MissingEquipment"}>Felszereléshiány</MenuItem>
                     <MenuItem value={"OtherNotification"}>Egyéb</MenuItem>
                 </Select>
-            </FormControl>
+            </StyledFormControl>
 
-            <Button
+            <StyledButton
                 variant="contained"
-                sx={{
-                    flexGrow: 1,
-                    backgroundColor: '#82b2b8',
-                    color: '#fff',
-                    '&:hover': {
-                        backgroundColor: '#6e9ea4',
-                    },
-                }}
                 onClick={() => props.onChosenType(selectedValue)}
+                sx={{
+                    height: '40px',
+                    marginRight: '16px',
+                    padding: '30px 30px',
+                }}
             >
                 Típus kiválasztása
-            </Button>
+            </StyledButton>
 
-          
-            <Box sx={{ mx: 1 }} />
-
-            <Button
+            <StyledSecondaryButton
                 variant="contained"
-                sx={{
-                    flexGrow: 1,
-                    backgroundColor: '#a2c4c6',
-                    color: '#fff',
-                    '&:hover': {
-                        backgroundColor: '#8ab2b5 ',
-                    },
-                }}
                 onClick={goBackHandler}
+                sx={{
+                    height: '40px',
+                }}
             >
                 Vissza
-            </Button>
-        </Box>
+            </StyledSecondaryButton>
+        </CustomBox>
     );
 }
 

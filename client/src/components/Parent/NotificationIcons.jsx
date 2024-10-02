@@ -1,19 +1,43 @@
 import Box from "@mui/material/Box";
 import Badge from "@mui/material/Badge";
-import IconButton from "@mui/material/IconButton";
-import AssignmentIcon from "@mui/icons-material/Assignment.js";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import BackpackIcon from "@mui/icons-material/Backpack";
+import HomeWorkIcon from "@mui/icons-material/HomeWork";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Typography from "@mui/material/Typography";
-import BackpackIcon from "@mui/icons-material/Backpack.js";
-import HomeWorkIcon from "@mui/icons-material/HomeWork.js";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined.js";
 import React from "react";
 
-function NotificationIcons({ exams, homeworks, missingEquipments, others, onClick }) {
+const NotificationIconItem = ({ count, onClick, dataValue, Icon, label }) => (
+    <Box display="flex" flexDirection="row" alignItems="center" sx={{ textAlign: 'center', margin: 1 }}>
+        <Badge
+            badgeContent={count}
+            sx={{
+                '& .MuiBadge-dot': {
+                    backgroundColor: 'red',
+                },
+                '& .MuiBadge-standard': {
+                    backgroundColor: 'red',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '0 4px',
+                },
+            }}
+        >
+            <Box onClick={onClick} data-value={dataValue} sx={{ cursor: 'pointer', padding: 0 }}>
+                <Icon sx={{ fontSize: '4em' }} />
+            </Box>
+        </Badge>
+        <Typography variant="body1" sx={{ marginLeft: 1 }}>
+            {label}
+        </Typography>
+    </Box>
+);
 
+function NotificationIcons({ exams, homeworks, missingEquipments, others, onClick }) {
     const clickHandler = (e) => {
         const chosen = e.currentTarget.getAttribute("data-value");
         onClick(chosen);
-    }
+    };
 
     return (
         <Box
@@ -23,41 +47,34 @@ function NotificationIcons({ exams, homeworks, missingEquipments, others, onClic
             alignItems="flex-start"
             p={4}
         >
-            <Box display="flex" flexDirection="row" alignItems="center" sx={{ textAlign: 'center', margin: 1 }}>
-                <Badge badgeContent={exams.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"exams"} sx={{ fontSize: 60 }}>
-                        <AssignmentIcon fontSize="inherit" />
-                    </IconButton>
-                </Badge>
-                <Typography variant="body1">Vizsgák</Typography>
-            </Box>
-
-            <Box display="flex" flexDirection="row" alignItems="center" sx={{ textAlign: 'center', margin: 1 }}>
-                <Badge badgeContent={missingEquipments.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"missingEquipments"} sx={{ fontSize: 60 }}>
-                        <BackpackIcon fontSize="inherit" />
-                    </IconButton>
-                </Badge>
-                <Typography variant="body1">Hiányzó Eszközök</Typography>
-            </Box>
-
-            <Box display="flex" flexDirection="row" alignItems="center" sx={{ textAlign: 'center', margin: 1 }}>
-                <Badge badgeContent={homeworks.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"homeworks"} sx={{ fontSize: 60 }}>
-                        <HomeWorkIcon fontSize="inherit" />
-                    </IconButton>
-                </Badge>
-                <Typography variant="body1">Házi Feladatok</Typography>
-            </Box>
-
-            <Box display="flex" flexDirection="row" alignItems="center" sx={{ textAlign: 'center', margin: 1 }}>
-                <Badge badgeContent={others.length} color="secondary">
-                    <IconButton onClick={clickHandler} data-value={"others"} sx={{ fontSize: 60 }}>
-                        <InfoOutlinedIcon fontSize="inherit" />
-                    </IconButton>
-                </Badge>
-                <Typography variant="body1">Egyéb Értesítések</Typography>
-            </Box>
+            <NotificationIconItem
+                count={exams.length}
+                onClick={clickHandler}
+                dataValue={"exams"}
+                Icon={AssignmentIcon}
+                label="Vizsgák"
+            />
+            <NotificationIconItem
+                count={missingEquipments.length}
+                onClick={clickHandler}
+                dataValue={"missingEquipments"}
+                Icon={BackpackIcon}
+                label="Hiányzó Eszközök"
+            />
+            <NotificationIconItem
+                count={homeworks.length}
+                onClick={clickHandler}
+                dataValue={"homeworks"}
+                Icon={HomeWorkIcon}
+                label="Házi Feladatok"
+            />
+            <NotificationIconItem
+                count={others.length}
+                onClick={clickHandler}
+                dataValue={"others"}
+                Icon={InfoOutlinedIcon}
+                label="Egyéb Értesítések"
+            />
         </Box>
     );
 }

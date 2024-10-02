@@ -1,18 +1,20 @@
 import {
     Box,
-    Button,
     Paper,
     Table,
     TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
     TableRow,
-    Typography
+    TableCell,
+    Typography,
+    TableContainer,
+    useTheme
 } from "@mui/material";
-import React from "react";
+import { StyledTableHead, StyledTableCell, StyledButton, StyledSecondaryButton } from '../../../StyledComponents';
 
 function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) {
+    const theme = useTheme();
+    
+  
 
     const deleteHandler = (e) => {
         const id = e.target.id;
@@ -47,10 +49,11 @@ function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) 
             .catch(error => console.error('Error setting notification to read:', error));
     };
 
-    const goBackHandler=()=>{
+    const goBackHandler = () => {
         onButtonClick();
     }
-    
+
+
     return (
         <Box sx={{ padding: 2 }}>
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
@@ -58,16 +61,16 @@ function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) 
             </Typography>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="notification table">
-                    <TableHead>
+                    <StyledTableHead>
                         <TableRow>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Dátum</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Határidő</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Tantárgy</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Tanár</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Leírás</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>További leírás</TableCell>
+                            <StyledTableCell>Dátum</StyledTableCell>
+                            <StyledTableCell>Határidő</StyledTableCell>
+                            <StyledTableCell>Tantárgy</StyledTableCell>
+                            <StyledTableCell>Tanár</StyledTableCell>
+                            <StyledTableCell>Leírás</StyledTableCell>
+                            <StyledTableCell>További leírás</StyledTableCell>
                         </TableRow>
-                    </TableHead>
+                    </StyledTableHead>
                     <TableBody>
                         <TableRow key={notification.id}>
                             <TableCell>{new Date(notification.date).toLocaleDateString()}</TableCell>
@@ -82,45 +85,39 @@ function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) 
             </TableContainer>
             <Box display="flex" justifyContent="space-between" sx={{ marginTop: 2 }}>
                 {notification.read === false && (
-                    <Button
+                    <StyledButton
                         onClick={setToReadHandler}
                         id={notification.id}
                         variant="contained"
                         sx={{
-                            backgroundColor: '#82b2b8',
-                            color: '#fff',
                             flex: 1,
                             marginRight: 1
                         }}>
                         Ok, elolvastam
-                    </Button>
+                    </StyledButton>
                 )}
-                <Button
+                <StyledSecondaryButton
                     onClick={goBackHandler}
                     id={notification.id}
                     variant="contained"
                     sx={{
-                        backgroundColor: '#a2c4c6',
-                        color: '#fff',
                         flex: 1,
                         marginRight: 1
                     }}>
-                    "Erre még visszatérek"
-                </Button>
+                    Erre még visszatérek
+                </StyledSecondaryButton>
 
                 {notification.read && (
-                    <Button
+                    <StyledButton
                         id={notification.id}
                         onClick={deleteHandler}
                         variant="contained"
                         sx={{
-                            backgroundColor: '#d9c2bd',
-                            color: '#fff',
                             flex: 1,
                             marginLeft: 1
                         }}>
                         Értesítés törlése
-                    </Button>
+                    </StyledButton>
                 )}
             </Box>
         </Box>

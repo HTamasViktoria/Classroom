@@ -1,4 +1,6 @@
-import { FormControl, InputLabel, Select, MenuItem, Box } from "@mui/material";
+import React from 'react';
+import { FormControl, MenuItem } from "@mui/material";
+import { CustomBox, StyledInputLabel, StyledSelect } from '../../../StyledComponents';
 
 function SubjectSelector(props) {
     const handleSubjectChange = (event) => {
@@ -11,10 +13,10 @@ function SubjectSelector(props) {
     };
 
     return (
-        <Box sx={{ width: '48%' }}>
+        <CustomBox sx={{ width: '48%' }}>
             <FormControl fullWidth variant="outlined">
-                <InputLabel id="subject-select-label">Tantárgy:</InputLabel>
-                <Select
+                <StyledInputLabel id="subject-select-label">Tantárgy:</StyledInputLabel>
+                <StyledSelect
                     labelId="subject-select-label"
                     value={props.selectedSubjectId || ""}
                     onChange={handleSubjectChange}
@@ -25,9 +27,9 @@ function SubjectSelector(props) {
                             {teacherSubject.subject}
                         </MenuItem>
                     ))}
-                </Select>
+                </StyledSelect>
             </FormControl>
-        </Box>
+        </CustomBox>
     );
 }
 

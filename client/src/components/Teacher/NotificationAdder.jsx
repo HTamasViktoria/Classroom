@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Stack, Alert, Box } from "@mui/material";
+import { Button, Stack, Alert, Typography } from "@mui/material";
 import SubjectSelector from "./SubjectSelector.jsx";
 import DateSelector from "./DateSelector.jsx";
 import ChooseFromStudentsSelector from "./ChooseFromStudentsSelector.jsx";
@@ -7,6 +7,7 @@ import DescriptionSelector from "./DescriptionSelector.jsx";
 import OptionalDescriptionSelector from "./OptionalDescriptionSelector.jsx";
 import ButtonText from "./buttonText.js";
 import validateForm from "./validateForm.js";
+import { CustomBox, CustomFlexBox } from '../../../StyledComponents';
 
 function NotificationAdder(props) {
     const [state, setState] = useState({
@@ -71,16 +72,19 @@ function NotificationAdder(props) {
                 return response.json();
             })
             .then(data => {
-                console.log('Grade added:', data);
+                console.log('Notification added:', data);
                 props.onSuccessfulAdding();
             })
-            .catch(error => console.error('Error adding grade:', error));
+            .catch(error => console.error('Error adding notification:', error));
     };
 
     return (
-        <Box sx={{ padding: 2, width: '100%', maxWidth: '900px', margin: '0 auto' }}>
+        <CustomBox>
+            <Typography variant="h4" gutterBottom color="primary">
+                Értesítés hozzáadása
+            </Typography>
             <Stack spacing={2} direction="column">
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <CustomFlexBox>
                     <DateSelector
                         selectedDate={state.selectedDate}
                         onDateChange={dateChangeHandler}
@@ -90,7 +94,7 @@ function NotificationAdder(props) {
                         selectedSubjectId={state.selectedSubjectId}
                         onSubjectChange={subjectChangeHandler}
                     />
-                </Box>
+                </CustomFlexBox>
 
                 <DescriptionSelector
                     type={props.type}
@@ -110,13 +114,6 @@ function NotificationAdder(props) {
 
                 <Button
                     variant="contained"
-                    sx={{
-                        backgroundColor: '#82b2b8',
-                        color: '#fff',
-                        '&:hover': {
-                            backgroundColor: '#6e9ea4',
-                        },
-                    }}
                     onClick={addingHandler}
                 >
                     <ButtonText type={props.type} />
@@ -128,7 +125,7 @@ function NotificationAdder(props) {
                     </Alert>
                 )}
             </Stack>
-        </Box>
+        </CustomBox>
     );
 }
 

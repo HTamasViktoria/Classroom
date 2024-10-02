@@ -1,49 +1,52 @@
-import { Box, Card, CardContent, Grid, Typography } from "@mui/material";
+import { Box, Card, CardContent, Grid } from "@mui/material";
 import React from "react";
+import { StyledTypography } from '../../../StyledComponents';
 
 function LastNotifications({ lastNotifications, onClick }) {
-
     const clickHandler = (e) => {
         onClick(e);
     };
 
     return (
         <Box sx={{ mt: 4 }}>
-            <Typography variant="h4" gutterBottom>
-                {lastNotifications.length <=0 ? "Nincs új értesítés" : "Legújabb értesítések" }
-            </Typography>
-            <Grid container spacing={10}>
+            <StyledTypography variant="h4" gutterBottom>
+                {lastNotifications.length <= 0 ? "Nincs új értesítés" : "Legújabb értesítések"}
+            </StyledTypography>
+            <Grid container spacing={3}>
                 {lastNotifications.map((notification) => (
                     <Grid item xs={12} sm={6} md={4} key={notification.id}>
                         <Card
                             sx={{
-                                backgroundColor: '#a2c4c6',
+                                backgroundColor: 'secondary.main',
                                 boxShadow: 3,
                                 transition: '0.3s',
                                 minWidth: '175px',
                                 '&:hover': {
                                     transform: 'scale(1.05)',
-                                    boxShadow: 6
-                                }
+                                    boxShadow: 6,
+                                },
                             }}
                             onClick={() => clickHandler(notification)}
                         >
                             <CardContent>
-                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                    {notification.type}
-                                </Typography>
-                                <Typography color="text.secondary">
+                                <StyledTypography variant="h6" sx={{ fontWeight: 'bold', color: 'text.secondary' }}>
+                                    {notification.type === "Homework" ? "Házi feladat" : 
+                                    notification.type === "Other" ? "Egyéb értesítés" :
+                                    notification.type === "Exam" ? "Dolgozat":
+                                    notification.type === "MissingEquipment" ? "Hiányzó felszerelés" : ""}
+                                </StyledTypography>
+                                <StyledTypography color="text.secondary">
                                     Dátum: {new Date(notification.date).toLocaleDateString()}
-                                </Typography>
-                                <Typography color="text.secondary">
+                                </StyledTypography>
+                                <StyledTypography color="text.secondary">
                                     Határidő: {new Date(notification.dueDate).toLocaleDateString()}
-                                </Typography>
-                                <Typography variant="body2" sx={{ mt: 1 }}>
+                                </StyledTypography>
+                                <StyledTypography variant="body2" sx={{ mt: 1 }}>
                                     Tantárgy: {notification.subjectName}
-                                </Typography>
-                                <Typography variant="body2" sx={{ mt: 1 }}>
-                                    Leírás: {notification.description.length > 10 ? `${notification.description.substring(0, 10)}...` : notification.description}
-                                </Typography>
+                                </StyledTypography>
+                                <StyledTypography variant="body2" sx={{ mt: 1 }}>
+                                    Leírás: {notification.description.length > 3 ? `${notification.description.substring(0, 3)}...` : notification.description}
+                                </StyledTypography>
                             </CardContent>
                         </Card>
                     </Grid>
