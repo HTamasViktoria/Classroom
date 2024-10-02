@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Stack } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
+import { StyledButton, StyledFormControl, StyledSelect, StyledTextField } from "../../../StyledComponents";
 import SubjectSelector from "./SubjectSelector.jsx";
 import StudentSelector from "./StudentSelector.jsx";
 import DateSelector from "./DateSelector.jsx";
@@ -72,14 +73,12 @@ function GradeAddingForm({ teacherId, onGoBack }) {
             })
             .catch(error => console.error('Error adding grade:', error));
     };
-    
-    const goBackHandler=()=>{
-       onGoBack();
-    }
 
     return (
         <>
-            <h1>Jegy hozzáadása</h1>
+            <Typography variant="h4" gutterBottom>
+                Jegy hozzáadása
+            </Typography>
             <form noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} width={400}>
                     <SubjectSelector
@@ -100,21 +99,16 @@ function GradeAddingForm({ teacherId, onGoBack }) {
                         selectedDate={selectedDate}
                         onDateChange={dateChangeHandler}
                     />
-                    <Button
-                        type='submit'
-                        variant='contained'
-                        sx={{ backgroundColor: '#82b2b8', '&:hover': { backgroundColor: '#6e9ea4' } }}
-                    >
+                    <StyledButton type='submit'>
                         Jegy hozzáadása
-                    </Button> 
-                    <Button
-                    type='submit'
-                    variant='contained'
-                    sx={{ backgroundColor: '#a2c4c6', '&:hover': { backgroundColor: '#8ab2b5' } }}
-                    onClick={goBackHandler}
-                >
-                    Mégse
-                </Button>
+                    </StyledButton>
+                    <StyledButton
+                        type='button'
+                        onClick={onGoBack}
+                        sx={{ backgroundColor: 'secondary.main' }}
+                    >
+                        Mégse
+                    </StyledButton>
                 </Stack>
             </form>
         </>
