@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { TextField, Button, Stack } from "@mui/material";
+import { TextField, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { StyledButton } from '../../../StyledComponents';
 
 function TeacherAddingForm({ onSave, onCancel }) {
-
     const navigate = useNavigate();
-    
+
     const [familyName, setFamilyName] = useState("");
     const [firstName, setFirstName] = useState("");
 
@@ -21,14 +21,13 @@ function TeacherAddingForm({ onSave, onCancel }) {
     const handleFirstNameChange = (e) => {
         setFirstName(e.target.value);
     };
-    
-    const goBackHandler=()=>{
+
+    const goBackHandler = () => {
         navigate("/admin/teachers");
-    }
+    };
 
     return (
         <>
-            
             <h1>Tanár hozzáadása</h1>
             <form noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} width={400}>
@@ -44,21 +43,18 @@ function TeacherAddingForm({ onSave, onCancel }) {
                         value={firstName}
                         onChange={handleFirstNameChange}
                     />
-                    <Button
+                    <StyledButton
                         type='submit'
-                        variant='contained'
-                        sx={{ backgroundColor: '#82b2b8', '&:hover': { backgroundColor: '#6e9ea4' } }}
                     >
                         Hozzáad
-                    </Button>
-                    <Button
-                        type='submit'
-                        variant='contained'
-                        sx={{ backgroundColor: '#d9c2bd', '&:hover': { backgroundColor: '#c2a6a0' } }}
+                    </StyledButton>
+                    <StyledButton
+                        type='button'
                         onClick={goBackHandler}
+                        variant='outlined'
                     >
                         Vissza
-                    </Button>
+                    </StyledButton>
                 </Stack>
             </form>
         </>

@@ -1,15 +1,16 @@
 import { useParams } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Button, Stack } from '@mui/material';
+import { Card, Typography, Stack } from '@mui/material';
 import AddingTeacherSubject from "../components/Admin/AddingTeacherSubject.jsx";
 import TeacherDetailed from "../components/Admin/TeacherDetailed.jsx";
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
+import { StyledButton } from "../../StyledComponents";
 
 function TeacherMain() {
-    const navigate = useNavigate();    
+    const navigate = useNavigate();
     const { id } = useParams();
-    
+
     const [teacher, setTeacher] = useState(null);
     const [subjects, setSubjects] = useState([]);
     const [error, setError] = useState(null);
@@ -47,63 +48,53 @@ function TeacherMain() {
     };
 
     if (error) {
-        return <Typography variant="body1" color="error" align="center">
-            Hiba történt az adatok betöltése közben.
-        </Typography>;
+        return (
+            <Typography variant="body1" color="error" align="center">
+                Hiba történt az adatok betöltése közben.
+            </Typography>
+        );
     }
 
     if (!teacher) {
-        return <Typography variant="body1" align="center">
-            Nincs elérhető adat.
-        </Typography>;
+        return (
+            <Typography variant="body1" align="center">
+                Nincs elérhető adat.
+            </Typography>
+        );
     }
 
     const handleSuccessfulAdding = () => {
         fetchTeacherSubjects(id);
         setAddingSubject(false);
     };
-    
-   const goBackHandler=()=>{
-    navigate("/admin/teachers")   
-   }
+
+    const goBackHandler = () => {
+        navigate("/admin/teachers");
+    }
 
     return (
-        <><AdminNavbar/>
+        <>
+            <AdminNavbar />
             <div>
                 {!addingSubject ? (
                     <Card sx={{ maxWidth: 600, margin: '3em auto 2em auto', padding: 2 }}>
                         <TeacherDetailed teacher={teacher} subjects={subjects} />
-                        <Button
-                            variant="contained"
-                            sx={{
-                                backgroundColor: '#82b2b8',
-                                color: '#fff',
-                                '&:hover': {
-                                    backgroundColor: '#6e9ea4',
-                                },
-                            }}
+                        <StyledButton
                             onClick={() => setAddingSubject(true)}
                         >
                             Tantárgy hozzáadása
-                        </Button>
+                        </StyledButton>
                     </Card>
                 ) : (
                     <AddingTeacherSubject teacher={teacher} onSuccessfulAdding={handleSuccessfulAdding} />
                 )}
             </div>
             <Stack spacing={2} sx={{ marginTop: 2, alignItems: 'center' }}>
-                <Button onClick={goBackHandler}
-                    variant="contained"
-                    sx={{
-                        backgroundColor: '#b0cfc5',
-                        color: '#fff',
-                        '&:hover': {
-                            backgroundColor: '#b29f8f',
-                        },
-                    }}
+                <StyledButton
+                    onClick={goBackHandler}
                 >
                     Vissza
-                </Button>
+                </StyledButton>
             </Stack>
         </>
     );
