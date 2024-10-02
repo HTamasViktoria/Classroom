@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import ParentNotificationsMain from "./ParentNotificationsMain.jsx";
-import ExamNotifications from "./ExamNotifications.jsx";
-import HomeworkNotifications from "./HomeworkNotifications.jsx";
-import MissingEquipNotifications from "./MissingEquipNotifications.jsx";
-import OtherNotifications from "./OtherNotifications.jsx";
+import GeneralNotifications from "./GeneralNotifications.jsx";
 
 
 function ParentNotifications(props) {  

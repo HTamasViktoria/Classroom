@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ParentNavbar from "./ParentNavbar.jsx";
 import NotificationIcons from "./NotificationIcons.jsx";
-import HomeworkNotifications from "./HomeworkNotifications.jsx";
+import GeneralNotifications from "./GeneralNotifications.jsx";
 
 function ParentNotificationsMain() {
     const { id } = useParams();
@@ -49,6 +49,10 @@ function ParentNotificationsMain() {
     const refreshHandler = () => {
         setRefreshNeeded(prevState => !prevState);
     };
+    
+    const goBackHandler=()=>{
+        setChosen("");
+    }
 
     return (
         <>
@@ -63,7 +67,16 @@ function ParentNotificationsMain() {
                 />
             )}
             {chosen === "homeworks" && (
-                <HomeworkNotifications homeworks={homeworks} onRefreshing={refreshHandler} />
+                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
+            )}
+            {chosen === "exams" && (
+                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
+            )}
+            {chosen === "others" && (
+                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
+            )}
+            {chosen === "missingEquipments" && (
+                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
             )}
         </>
     );
