@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box} from '@mui/material';
-import Button from "@mui/material/Button";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box } from '@mui/material';
+import { StyledButton, StyledTableHead, StyledTableCell } from '../../../StyledComponents';
+import { useNavigate } from 'react-router-dom';
 
 function StudentsOfClass(props) {
     const [students, setStudents] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetch(`/api/classes/getStudents/${props.classId}`)
@@ -26,57 +28,45 @@ function StudentsOfClass(props) {
             });
     }, [props.classId]);
 
-
-    const goBackHandler = () => {
-        navigate("/admin")
-    }
-    
-    
     return (
         <>
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                Diákok
-            </Typography>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="students table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>ID</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Családnév</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Keresztnév</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Születési hely</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>Születési idő</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#d9c2bd', fontSize: '1.1rem' }}>OM azonosító</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {students.map((student) => (
-                            <TableRow key={student.id}>
-                                <TableCell>{student.id}</TableCell>
-                                <TableCell>{student.familyName}</TableCell>
-                                <TableCell>{student.firstName}</TableCell>
-                                <TableCell>{student.birthPlace}</TableCell>
-                                <TableCell>{student.birthDate.substring(0, 10)}</TableCell>
-                                <TableCell>{student.studentNo}</TableCell>
+            <Box sx={{ padding: 2 }}>
+                <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                    Diákok
+                </Typography>
+                <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 650 }} aria-label="students table">
+                        <StyledTableHead>
+                            <TableRow>
+                                {['ID', 'Családnév', 'Keresztnév', 'Születési hely', 'Születési idő', 'OM azonosító'].map((header) => (
+                                    <StyledTableCell key={header}>
+                                        {header}
+                                    </StyledTableCell>
+                                ))}
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Box>
-    <Button variant="contained"
-            sx={{
-                backgroundColor: '#bacfb0',
-                color: '#fff',
-                '&:hover': {
-                    backgroundColor: '#a8bfa1',
-                },
-            }}
-            onClick={props.onGoBack}>
-        Vissza
-    </Button>
-    </>
+                        </StyledTableHead>
+                        <TableBody>
+                            {students.map((student) => (
+                                <TableRow key={student.id}>
+                                    <TableCell>{student.id}</TableCell>
+                                    <TableCell>{student.familyName}</TableCell>
+                                    <TableCell>{student.firstName}</TableCell>
+                                    <TableCell>{student.birthPlace}</TableCell>
+                                    <TableCell>{student.birthDate.substring(0, 10)}</TableCell>
+                                    <TableCell>{student.studentNo}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Box>
+            <StyledButton
+                variant="contained"
+                onClick={props.onGoBack}
+            >
+                Vissza
+            </StyledButton>
+        </>
     );
 }
 
