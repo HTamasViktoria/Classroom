@@ -15,10 +15,10 @@ function TaskSelector(props) {
             </StyledButton>
 
             <StyledSecondaryButton
-                onClick={() => props.onChosenTask("addGrade")}
+                onClick={() => props.onChosenTask("grades")}
                 startIcon={<AppRegistrationIcon />}
             >
-                <StyledTypography>Osztályzatot adok</StyledTypography>
+                <StyledTypography>Osztályzat</StyledTypography>
             </StyledSecondaryButton>
 
             <StyledButton

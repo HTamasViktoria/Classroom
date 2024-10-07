@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import TeacherNavbar from "./TeacherNavbar.jsx";
+import TeacherGrades from "./TeacherGrades.jsx";
 import GradeAddingForm from "./GradeAddingForm.jsx";
 import TaskSelector from "./TaskSelector.jsx";
 import NotificationMain from "./NotificationMain.jsx";
+import BulkGradeAdding from "./BulkGradeAdding.jsx";
 
 function Tasks(props) {
     const [chosenTask, setChosenTask] = useState("");
@@ -27,14 +29,13 @@ function Tasks(props) {
     return (
         <>
             <TeacherNavbar />
-            { chosenTask == "" &&(  <TaskSelector onChosenTask={taskHandler}/>)}
-            {chosenTask == "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName} onGoBack={goBackHandler}/>}
-            {chosenTask == "addGrade" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler} />}
-            {chosenTask == "addMessage" && <div>Adding messages</div>}
-                
-           
+            { chosenTask === "" &&(  <TaskSelector onChosenTask={taskHandler}/>)}
+            {chosenTask === "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName} onGoBack={goBackHandler}/>}
+            {chosenTask === "grades" && <TeacherGrades teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler} onChosenTask={taskHandler} />}
+            {chosenTask === "addMessage" && <div>Adding messages</div>}
+            {chosenTask === "addGrades" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler}/>}
+            {chosenTask === "addingBulkGrades" && <BulkGradeAdding teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler}/>}   
             
-            {chosenTask === "grade" && <GradeAddingForm />}
          
         </>
     );
