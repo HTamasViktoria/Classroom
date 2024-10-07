@@ -94,6 +94,21 @@ public class GradeController : ControllerBase
         }
     }
 
+    
+    
+    [HttpGet("class-averages/{studentId}")]
+    public async Task<ActionResult<Dictionary<string, double>>> GetClassAverageGradesBySubject(int studentId)
+    {
+        try
+        {
+            var averages = await _gradeRepository.GetClassAverageGradesBySubjectAsync(studentId);
+            return Ok(averages);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
 
     
     

@@ -2,6 +2,7 @@ using Classroom.Data;
 using Classroom.Model.DataModels;
 using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Classroom.Service.Repositories;
@@ -53,6 +54,7 @@ public class GradeRepository : IGradeRepository
             TeacherId = teacherId,
             StudentId = studentId,
             Subject = request.Subject,
+            ForWhat = request.ForWhat,
             Value = gradeValue,
             Date = date
         };
@@ -66,6 +68,43 @@ public class GradeRepository : IGradeRepository
         return _dbContext.Grades.Where(grade => grade.StudentId == id).ToList();
     }
     
+    
+    public async Task<Dictionary<string, double>> GetClassAverageGradesBySubjectAsync(int studentId)
+    {
+        var student = await _dbContext.Students.FirstOrDefaultAsync(s => s.Id == studentId);
+
+        if (student == null)
+        {
+            throw new Exception("Student not found");
+        }
+
+        var classOfStudent = await _dbContext.ClassesOfStudents
+            .Include(c => c.Students)
+            .FirstOrDefaultAsync(c => c.Students.Any(s => s.Id == studentId));
+
+        if (classOfStudent == null)
+        {
+            throw new Exception("Class not found for the given student");
+        }
+
+       
+        var grades = await _dbContext.Grades
+            .Where(g => g.StudentId == studentId)
+            .ToListAsync();
+
+        
+        var subjectAverages = grades
+            .GroupBy(g => g.Subject)
+            .Select(g => new 
+            {
+                Subject = g.Key,
+                Average = g.Average(x => (int)x.Value)
+            })
+            .ToDictionary(g => g.Subject, g => g.Average);
+
+        return subjectAverages;
+    }
+
 
     
     private string ExtractGradeValue(string valueWithLabel)
@@ -74,6 +113,9 @@ public class GradeRepository : IGradeRepository
         var parts = valueWithLabel.Split('=');
         return parts.Length > 1 ? parts[0].Trim() : valueWithLabel.Trim();
     }
+    
+    
+    
     
     
     
