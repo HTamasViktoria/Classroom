@@ -5,6 +5,7 @@ import SubjectSelector from "./SubjectSelector.jsx";
 import StudentSelector from "./StudentSelector.jsx";
 import DateSelector from "./DateSelector.jsx";
 import GradeValueSelector from "./GradeValueSelector.jsx";
+import ForWhatSelector from "./ForWhatSelector.jsx";
 import { useNavigate } from 'react-router-dom';
 
 function GradeAddingForm({ teacherId, onGoBack }) {
@@ -15,6 +16,7 @@ function GradeAddingForm({ teacherId, onGoBack }) {
     const [selectedSubjectName, setSelectedSubjectName] = useState("");
     const [selectedGrade, setSelectedGrade] = useState("");
     const [selectedDate, setSelectedDate] = useState("");
+    const [selectedForWhat, setSelectedForWhat] = useState("")
 
     const navigate = useNavigate();
 
@@ -42,6 +44,10 @@ function GradeAddingForm({ teacherId, onGoBack }) {
 
     const gradeChangeHandler = (e) => setSelectedGrade(e.target.value);
     const dateChangeHandler = (e) => setSelectedDate(e);
+    const forWhatChangeHandler =(e)=>{
+        setSelectedForWhat(e.target.value)
+    }
+    
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -52,6 +58,7 @@ function GradeAddingForm({ teacherId, onGoBack }) {
             teacherId: teacherId.toString(),
             studentId: selectedStudentId.toString(),
             subject: selectedSubjectName,
+            forWhat: selectedForWhat,
             value: selectedGrade,
             date: formattedDate
         };
@@ -90,6 +97,10 @@ function GradeAddingForm({ teacherId, onGoBack }) {
                         selectedStudentId={selectedStudentId}
                         students={students}
                         handleStudentChange={studentChangeHandler}
+                    />
+                    <ForWhatSelector
+                    selectedForWhat={selectedForWhat}
+                    handleForWhatChange={forWhatChangeHandler}
                     />
                     <GradeValueSelector
                         selectedGrade={selectedGrade}
