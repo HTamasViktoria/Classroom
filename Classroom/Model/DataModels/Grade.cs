@@ -15,6 +15,7 @@ public class Grade
     [ForeignKey("StudentId")]
     public int StudentId { get; set; }
     public string Subject { get; set; }
+    public string ForWhat { get; set; }
     public GradeValues Value { get; set; }
     public DateTime Date { get; set; }
 
