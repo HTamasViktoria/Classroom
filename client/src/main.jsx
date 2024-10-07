@@ -15,7 +15,7 @@ import Classes from "./admin/Classes.jsx";
 import ClassAdding from "./admin/ClassAdding.jsx";
 import TeacherMain from "./admin/TeacherMain.jsx";
 import ParentNotificationsMain from "./components/Parent/ParentNotificationsMain.jsx";
-import ParentGrades from "./components/Parent/ParentGrades.jsx";
+import ParentGrades from "./parent/ParentGrades.jsx";
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from "../theme.js";
