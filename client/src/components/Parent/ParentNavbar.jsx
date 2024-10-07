@@ -4,14 +4,26 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import { StyledTypography } from '../../../StyledComponents';
 
-function ParentNavbar({ notifications, studentId }) {
+function ParentNavbar({studentId, refreshNeeded }) {
     const theme = useTheme();
     const navigate = useNavigate();
     const [newNotificationsLength, setNewNotificationsLength] = useState(0);
+    const [notifications, setNotifications] = useState([])
 
     useEffect(() => {
-        const newNotifications = notifications.filter(n => !n.read);
-        setNewNotificationsLength(newNotifications.length);
+        fetch(`/api/notifications/byStudentId/${studentId}`)
+            .then(response => response.json())
+            .then(data => {
+                setNotifications(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }, [studentId, refreshNeeded]);
+
+    useEffect(() => {
+        if (notifications.length > 0) {
+            const newNotifications = notifications.filter(n => !n.read);
+            setNewNotificationsLength(newNotifications.length);
+        }
     }, [notifications]);
 
     const clickHandler = (value) => {
