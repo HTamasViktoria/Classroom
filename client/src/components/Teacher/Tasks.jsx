@@ -5,7 +5,10 @@ import GradeAddingForm from "./GradeAddingForm.jsx";
 import TaskSelector from "./TaskSelector.jsx";
 import NotificationMain from "./NotificationMain.jsx";
 import BulkGradeAdding from "./BulkGradeAdding.jsx";
-
+import TeacherViewingGrades from "./TeacherViewingGrades.jsx";
+import {
+    StyledButton 
+} from "../../../StyledComponents.js";
 function Tasks(props) {
     const [chosenTask, setChosenTask] = useState("");
     const [teacherSubjects, setTeacherSubjects] = useState([])
@@ -22,21 +25,24 @@ function Tasks(props) {
      setChosenTask(chosenTask)
     }
  
-    const goBackHandler=()=>{
-      setChosenTask("");
-    }
+  
+    
+const chosenNullHandler =()=>{
+      setChosenTask("")
+}
+ 
 
     return (
         <>
             <TeacherNavbar />
             { chosenTask === "" &&(  <TaskSelector onChosenTask={taskHandler}/>)}
-            {chosenTask === "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName} onGoBack={goBackHandler}/>}
-            {chosenTask === "grades" && <TeacherGrades teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler} onChosenTask={taskHandler} />}
+            {chosenTask === "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName} />}
+            {chosenTask === "grades" && <TeacherGrades teacherSubjects={teacherSubjects} onGoBack={chosenNullHandler} teacherId={props.teacherId}  onChosenTask={taskHandler} />}
             {chosenTask === "addMessage" && <div>Adding messages</div>}
-            {chosenTask === "addGrades" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler}/>}
-            {chosenTask === "addingBulkGrades" && <BulkGradeAdding teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={goBackHandler}/>}   
-            
-         
+            {chosenTask === "addGrades" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} />}
+            {chosenTask === "addingBulkGrades" && <BulkGradeAdding teacherSubjects={teacherSubjects} teacherId={props.teacherId}/>}
+            {chosenTask === "viewingGrades" && <TeacherViewingGrades  onGoBack={chosenNullHandler} teacherSubjects={teacherSubjects}/>}
+       
         </>
     );
 }
