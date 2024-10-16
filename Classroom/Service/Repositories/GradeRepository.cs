@@ -67,9 +67,98 @@ public class GradeRepository : IGradeRepository
     {
         return _dbContext.Grades.Where(grade => grade.StudentId == id).ToList();
     }
+
+    
+    public void Delete(int id)
+    {
+        var gradeToDelete = _dbContext.Grades.FirstOrDefault(g => g.Id == id);
+    
+        if (gradeToDelete == null)
+        {
+            throw new ArgumentException($"Grade with Id {id} not found.");
+        }
+    
+        _dbContext.Grades.Remove(gradeToDelete);
+        _dbContext.SaveChanges();
+    }
+
+
+    public async Task<Dictionary<string, double>> GetClassAveragesBySubject(string subject)
+    {
+        var classAverages = new Dictionary<string, double>();
+        
+        var teacherSubjects = await _dbContext.TeacherSubjects
+            .Include(ts => ts.ClassOfStudents)
+            .Where(ts => ts.Subject == subject)
+            .ToListAsync();
+        
+        var classGroups = teacherSubjects
+            .GroupBy(ts => ts.ClassOfStudentsId)
+            .ToList();
+
+    
+        foreach (var classGroup in classGroups)
+        {
+            var classId = classGroup.Key;
+            var studentIds = await _dbContext.ClassesOfStudents
+                .Where(c => c.Id == classId)
+                .SelectMany(c => c.Students.Select(s => s.Id))
+                .ToListAsync();
+            
+            var grades = await _dbContext.Grades
+                .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
+                .ToListAsync();
+            
+            if (grades.Count == 0)
+            {
+                classAverages[classGroup.First().ClassOfStudents.Name] = 0;
+                continue;
+            }
+            
+            var average = grades.Average(g => (double)g.Value);
+            var roundedAverage = Math.Round(average, 2);
+
+            classAverages[classGroup.First().ClassOfStudents.Name] = roundedAverage;
+        }
+
+        return classAverages;
+    }
+
+
+    public async Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject)
+    {
+        var studentIds = await _dbContext.ClassesOfStudents
+            .Where(c => c.Id == classId)
+            .SelectMany(c => c.Students.Select(s => s.Id))
+            .ToListAsync();
+
+        var grades = await _dbContext.Grades
+            .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
+            .ToListAsync();
+
+        return grades;
+    }
+
     
     
-    public async Task<Dictionary<string, double>> GetClassAverageGradesBySubjectAsync(int studentId)
+    public async Task<IEnumerable<Grade>> GetGradesByClass(int classId)
+    {
+        var studentIds = await _dbContext.ClassesOfStudents
+            .Where(c => c.Id == classId)
+            .SelectMany(c => c.Students.Select(s => s.Id))
+            .ToListAsync();
+
+        var grades = await _dbContext.Grades
+            .Where(g => studentIds.Contains(g.StudentId))
+            .ToListAsync();
+
+        return grades;
+    }
+
+
+
+    
+    public async Task<Dictionary<string, double>> GetClassAveragesByStudentId(int studentId)
     {
         var student = await _dbContext.Students.FirstOrDefaultAsync(s => s.Id == studentId);
 
@@ -86,25 +175,67 @@ public class GradeRepository : IGradeRepository
         {
             throw new Exception("Class not found for the given student");
         }
-
-       
+        
+        var studentIds = classOfStudent.Students.Select(s => s.Id).ToList();
+        
         var grades = await _dbContext.Grades
-            .Where(g => g.StudentId == studentId)
+            .Where(g => studentIds.Contains(g.StudentId))
             .ToListAsync();
-
         
         var subjectAverages = grades
             .GroupBy(g => g.Subject)
             .Select(g => new 
             {
                 Subject = g.Key,
-                Average = g.Average(x => (int)x.Value)
+                Average = Math.Round(g.Average(x => (double)x.Value), 2)
             })
             .ToDictionary(g => g.Subject, g => g.Average);
 
         return subjectAverages;
     }
+    
+    
 
+    public void Edit(GradeRequest request, int id)
+    {
+        var gradeToUpdate = _dbContext.Grades.FirstOrDefault(g => g.Id == id);
+
+        if (gradeToUpdate != null)
+        {
+            if (!int.TryParse(request.TeacherId, out var teacherId))
+            {
+                throw new ArgumentException("Invalid teacher ID format");
+            }
+
+            if (!int.TryParse(request.StudentId, out var studentId))
+            {
+                throw new ArgumentException("Invalid student ID format");
+            }
+
+        
+            if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
+            {
+                throw new ArgumentException($"Invalid grade value: {request.Value}");
+            }
+
+        
+            if (!DateTime.TryParse(request.Date, out var date))
+            {
+                throw new ArgumentException($"Invalid date format: {request.Date}");
+            }
+
+            gradeToUpdate.TeacherId = teacherId;
+            gradeToUpdate.StudentId = studentId;
+            gradeToUpdate.Date = date;
+            gradeToUpdate.ForWhat = request.ForWhat;
+            gradeToUpdate.Value = gradeValue;
+            _dbContext.SaveChanges();
+        }
+        else
+        {
+            throw new Exception($"Grade with Id {id} not found.");
+        }
+    }
 
     
     private string ExtractGradeValue(string valueWithLabel)

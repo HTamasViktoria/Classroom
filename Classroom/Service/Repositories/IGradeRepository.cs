@@ -10,7 +10,13 @@ public interface  IGradeRepository
     IEnumerable<Grade> GetAll();
 
     IEnumerable<Grade> GetByStudentId(int id); 
-    Task<Dictionary<string, double>> GetClassAverageGradesBySubjectAsync(int studentId);
+    Task<Dictionary<string, double>> GetClassAveragesByStudentId(int studentId);
+    Task<Dictionary<string, double>> GetClassAveragesBySubject(string subject);
+    Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject);
+    Task<IEnumerable<Grade>> GetGradesByClass(int classId);
+    void Edit(GradeRequest request, int id);
+    void Delete(int id);
+
 
 
 }
