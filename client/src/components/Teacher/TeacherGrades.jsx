@@ -1,7 +1,7 @@
-import { StyledSecondaryButton, CustomFlexBox, FlexColumnBox, StyledHeading } from '../../../StyledComponents';
+import { StyledSecondaryButton, CustomFlexBox, StyledButton, FlexColumnBox, StyledHeading } from '../../../StyledComponents';
 import { Box } from "@mui/material";
 
-function TeacherGrades({onChosenTask}) {
+function TeacherGrades({onChosenTask, onGoBack}) {
     
     const oneGradeHandler=()=>{
         onChosenTask("addGrades")
@@ -11,11 +11,19 @@ function TeacherGrades({onChosenTask}) {
         onChosenTask("addingBulkGrades")
     }
     
+    const onGradeViewHandler=()=>{
+        onChosenTask("viewingGrades")
+    }
+    
+    const goBackHandler=()=>{
+        onGoBack()
+    }
+    
     return (
         <CustomFlexBox sx={{ gap: 4 }}>
             <FlexColumnBox>
                 <h2>Jegy megtekintése</h2>
-                <StyledSecondaryButton>Jegyek megtekintése</StyledSecondaryButton>
+                <StyledSecondaryButton onClick={onGradeViewHandler}>Jegyek megtekintése</StyledSecondaryButton>
             </FlexColumnBox>
             <FlexColumnBox>
                 <h2 variant="h3">Jegy beírása</h2>
@@ -23,6 +31,7 @@ function TeacherGrades({onChosenTask}) {
                     <StyledSecondaryButton onClick={oneGradeHandler}>Egyéni</StyledSecondaryButton>
                     <StyledSecondaryButton onClick={manyGradeHandler}>Tömeges</StyledSecondaryButton>
                 </Box>
+                <StyledButton onClick={goBackHandler}>Vissza</StyledButton>
             </FlexColumnBox>
         </CustomFlexBox>
     );
