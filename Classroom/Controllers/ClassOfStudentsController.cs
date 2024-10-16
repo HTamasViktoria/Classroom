@@ -2,6 +2,7 @@ using Classroom.Model.DataModels;
 using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Classroom.Model.RequestModels;
+using Classroom.Model.ResponseModels;
 
 namespace Classroom.Controllers;
 
@@ -36,6 +37,23 @@ public class ClassOfStudentsController : ControllerBase
     }
     
     
+    [HttpGet("allStudentsWithClasses")]
+    public ActionResult<IEnumerable<StudentWithClassResponse>> GetAllStudentsWithClasses()
+    {
+        try
+        {
+            var studentsWithClasses = _classOfStudentsRepository.GetAllStudentsWithClasses();
+            return Ok(studentsWithClasses);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+    
+    
+    
     [HttpGet("getStudents/{classId}")]
     public ActionResult<IEnumerable<Student>> GetStudents(int classId)
     {
@@ -56,6 +74,32 @@ public class ClassOfStudentsController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+    
+    
+    
+       
+    [HttpGet("getClassesBySubject/{subject}")]
+    public ActionResult<IEnumerable<ClassOfStudents>> GetClassesBySubject(string subject)
+    {
+        try
+        {
+            var classes = _classOfStudentsRepository.GetClassesBySubject(subject);
+            
+            if (!classes.Any())
+            {
+                return Ok(Enumerable.Empty<ClassOfStudents>());
+            }
+            
+            return Ok(classes);
+        }
+        catch (Exception e)
+        {
+           
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
 
     
     
