@@ -47,7 +47,7 @@ function ParentGrades() {
 
     return (<>
         <ParentNavbar studentId={id}/>
-       <ParentGradeTable id={id} grades={grades} subjects={subjects}/>
+       <ParentGradeTable id={id} isEditable={false} grades={grades} subjects={subjects}/>
         </>
     );
 }
