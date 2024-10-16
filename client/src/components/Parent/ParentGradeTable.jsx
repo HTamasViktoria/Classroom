@@ -1,75 +1,57 @@
-import {Paper, Table, TableBody, TableCell, TableContainer, Typography} from "@mui/material";
-import {PopupContainer, StatisticsContainer, StyledTableCell, StyledTableHead} from "../../../StyledComponents.js";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos.js";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos.js";
+import {
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    Typography,
+} from "@mui/material";
+import {
+    PopupContainer,
+    StyledButton,
+    StyledTableCell,
+    StyledTableHead,
+} from "../../../StyledComponents.js";
 import React, {useEffect, useState} from "react";
-import {getAverageBySubjectFullYear, getDifference} from "../../../GradeCalculations.js";
 import ParentStatistics from "./ParentStatistics.jsx";
+import MonthSelector from "./MonthSelector.jsx";
+import EditGrades from "../Teacher/EditGrades.jsx";
+import GradeTable from "./GradeTable.jsx";
 
-function ParentGradeTable({grades, subjects, id}){
-
-    const [chosenMonth, setChosenMonth] = useState("");
-    const [chosenMonthIndex, setChosenMonthIndex] = useState(0);
+function ParentGradeTable({ grades, subjects, id, isEditable, teacherId, teacherSubjects, nameOfClass, studentName, onGoBack, onRefresh }) {
     const [hoverDate, setHoverDate] = useState("");
     const [hoverForWhat, setHoverForWhat] = useState("");
     const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
+    const [chosenMonthIndex, setChosenMonthIndex] = useState(new Date().getMonth());
+    const [isEditing, setIsEditing] = useState(false);
+    const [gradesToEdit, setGradesToEdit] = useState([]);
+    const [classAverages, setClassAverages] = useState([]);
+    
+    console.log("ParentGradeTable renderelődik")
 
     useEffect(() => {
-        const currentMonthIndex = new Date().getMonth();
-        setChosenMonth(monthNames[currentMonthIndex]);
-        setChosenMonthIndex(currentMonthIndex);
-    }, []);
-
-
-    const monthNames = [
-        "Január", "Február", "Március", "Április", "Május", "Június",
-        "Július", "Augusztus", "Szeptember", "Október", "November", "December"
-    ];
-
-    const schoolMonths = [
-        "Szeptember", "Október", "November", "December", "Január",
-        "Február", "Március", "Április", "Május", "Június"
-    ];
+        fetch(`/api/grades/class-averages/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                setClassAverages(data);
+            })
+            .catch(error => console.error(`Error fetching data:`, error));
+    }, [id]);
 
     const startHover = (grade, element) => {
-        const date = new Date(grade.date).toLocaleDateString()
+        const date = new Date(grade.date).toLocaleDateString();
         setHoverDate(date);
         setHoverForWhat(grade.forWhat);
         const rect = element.getBoundingClientRect();
         setPopupPosition({
             top: rect.top + window.scrollY - 40,
-            left: rect.left + window.scrollX + rect.width + 10
+            left: rect.left + window.scrollX + rect.width + 10,
         });
     };
 
     const finishHover = () => {
         setHoverDate("");
         setHoverForWhat("");
-    };
-
-
-    const monthBackHandler = () => {
-        const actualsIndexInSchoolMonth = schoolMonths.indexOf(chosenMonth);
-
-        if (actualsIndexInSchoolMonth - 1 < 0) {
-            console.log("Nem lehet visszafelé lapozni")
-        } else {
-            const nextMonthIndex = (chosenMonthIndex - 1) % monthNames.length;
-            setChosenMonth(monthNames[nextMonthIndex]);
-            setChosenMonthIndex(nextMonthIndex);
-        }
-    }
-
-    const monthForwardHandler = () => {
-        const actualsIndexInSchoolMonth = schoolMonths.indexOf(chosenMonth);
-
-        if (actualsIndexInSchoolMonth + 1 > 9) {
-            console.log("Nem lehet előre lapozni");
-        } else {
-            const nextMonthIndex = (chosenMonthIndex + 1) % monthNames.length;
-            setChosenMonth(monthNames[nextMonthIndex]);
-            setChosenMonthIndex(nextMonthIndex);
-        }
     };
 
     const filterGradesByMonth = (subject) => {
@@ -80,66 +62,62 @@ function ParentGradeTable({grades, subjects, id}){
         });
     };
 
+    const editHandler = (e) => {
+        let chosenSubject = e.target.id;
+        let gradesEditing = grades.filter((grade) => grade.subject === chosenSubject);
 
+        gradesEditing.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const renderGrades = (subject, index) => {
-        const filteredGrades = filterGradesByMonth(subject);
-        return (
-            <tr key={`${subject.subject}-${index}`}>
-                <TableCell>{subject}</TableCell>
-                <TableCell>
-                    {filteredGrades.map((grade) => (
-                        <span
-                            onMouseEnter={(e) => startHover(grade, e.currentTarget)}
-                            onMouseLeave={finishHover}
-                            key={grade.id}
-                            className="grade"
-                            style={{ margin: '0 10px' }}
-                        >
-                            {grade.value}
-                        </span>
-                    ))}
-                </TableCell>
-           <ParentStatistics id={id} grades={grades} subject={subject} chosenMonthIndex={chosenMonthIndex}/>
-            </tr>
-        );
+        setGradesToEdit(gradesEditing);
+        setIsEditing(true);
     };
 
+    const notEditingHandler = () => {
+        setIsEditing(false);
+    };
 
- 
+    const goBackHandler = () => {
+        onGoBack();
+    };
     
-    return(<>
+    const refreshHandler=()=>{
+    onRefresh()
+    }
 
-        <TableContainer component={Paper}>
-            <Typography variant="h6" component="div" sx={{ margin: 2 }}>
-                Osztályzatok
-            </Typography>
-            <PopupContainer
-                id="popUp"
-                top={popupPosition.top}
-                left={popupPosition.left}
-                visible={!!hoverDate && !!hoverForWhat}
-            >
-                <span>{hoverForWhat}</span>
-                <span>{hoverDate}</span>
-            </PopupContainer>
-            <Table>
-                <StyledTableHead>
-                    <tr>
-                        <StyledTableCell>Tantárgy</StyledTableCell>
-                        <StyledTableCell>
-                            <ArrowBackIosIcon onClick={monthBackHandler} sx={{ margin: '0 10px' }} />
-                            <span>{chosenMonth}</span>
-                            <ArrowForwardIosIcon onClick={monthForwardHandler} sx={{ margin: '0 10px' }} />
-                        </StyledTableCell>
-                        <StyledTableCell>Statisztika</StyledTableCell>
-                    </tr>
-                </StyledTableHead>
-                <TableBody>
-                    {subjects.map((subject, index) => renderGrades(subject, index))}
-                </TableBody>
-            </Table>
-        </TableContainer></>)
+    return (
+        <>
+            {isEditing ? (
+                <EditGrades onGoBack={notEditingHandler} 
+                            teacherId={teacherId} 
+                            grades={gradesToEdit} 
+                            studentId={id} 
+                            studentName={studentName}
+                            onRefresh={refreshHandler}/>
+            ) : (
+                <>
+                    <GradeTable
+                        subjects={subjects}
+                        filterGradesByMonth={filterGradesByMonth}
+                        startHover={startHover}
+                        finishHover={finishHover}
+                        popupPosition={popupPosition}
+                        hoverDate={hoverDate}
+                        hoverForWhat={hoverForWhat}
+                        id={id}
+                        grades={grades}
+                        chosenMonthIndex={chosenMonthIndex}
+                        classAverages={classAverages}
+                        isEditable={isEditable}
+                        teacherSubjects={teacherSubjects}
+                        nameOfClass={nameOfClass}
+                        editHandler={editHandler}
+                        setChosenMonthIndex={setChosenMonthIndex}
+                    />
+                    <StyledButton onClick={goBackHandler}>Vissza</StyledButton>
+                </>
+            )}
+        </>
+    );
 }
 
-export default ParentGradeTable
+export default ParentGradeTable;
