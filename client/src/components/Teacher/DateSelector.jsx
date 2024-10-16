@@ -1,15 +1,14 @@
 import { TextField } from "@mui/material";
 import { useState } from "react";
 
-function DateSelector(props) {
-    const [selectedDate, setSelectedDate] = useState("");
+function DateSelector({selectedDate, onDateChange}) {
 
     const handleDateChange = (event) => {
         const newDate = event.target.value;
-        setSelectedDate(newDate);
-        props.onDateChange(newDate);
+        onDateChange(newDate);
     };
 
+   
     return (
         <TextField
             label="Dátum"
