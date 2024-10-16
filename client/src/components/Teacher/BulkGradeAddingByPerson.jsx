@@ -5,6 +5,7 @@ import {StyledButton} from "../../../StyledComponents.js";
 function BulkGradeAddingByPerson({selectedDate, selectedSubjectName, teacherId, selectedForWhat, student}) {
     const [grades, setGrades] = useState([]);
     const [selectedGrade, setSelectedGrade] = useState("");
+    const [successfullyAdded, setSuccessfullyAdded] = useState(false);
     
     useEffect(() => {
         fetch('/api/grades/gradeValues')
@@ -55,57 +56,72 @@ function BulkGradeAddingByPerson({selectedDate, selectedSubjectName, teacherId, 
             })
             .then(data => {
                 console.log('Grade added:', data);
+                setSuccessfullyAdded(true);
             })
             .catch(error => console.error('Error adding grade:', error));
     };
 
 
+    const formatGrade = (grade) => {
+        const [stringGrade, numberGrade] = grade.split(' = ');
+        return `${stringGrade}(${numberGrade})`;
+    };
+
+
     return (
-        <Container>
-            <Box my={4}>
-                <Typography variant="h6" gutterBottom>
-                    Jegy kiválasztása
-                </Typography>
-                <form onSubmit={handleSubmit}>
-                    <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
-                        <InputLabel id="grade-select-label">Jegy kiválasztása</InputLabel>
-                        <Select
-                            labelId="grade-select-label"
-                            value={selectedGrade}
-                            onChange={handleGradeChange}
-                            label="Jegy kiválasztása"
-                            sx={{
-                                backgroundColor: 'background.default',
-                                color: 'text.primary',
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'primary.main',
-                                },
-                                '&:hover .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'primary.dark',
-                                },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'primary.dark',
-                                },
-                            }}
-                        >
-                            {grades.length > 0 ? (
-                                grades.map((grade) => (
-                                    <MenuItem key={grade.id || grade} value={grade}>
-                                        {grade}
-                                    </MenuItem>
-                                ))
-                            ) : (
-                                <MenuItem disabled>No grades available</MenuItem>
-                            )}
-                        </Select>
-                        <StyledButton type='submit'>
-                            Jegy hozzáadása
-                        </StyledButton>
-                    </FormControl>
-                </form>
-            </Box>
-        </Container>
+        <>
+            {successfullyAdded ? (
+                <div>{`Jegy sikeresen hozzáadva: ${formatGrade(selectedGrade)}`}</div>
+
+            ) : (
+                <Container>
+                    <Box my={4}>
+                    <Typography variant="h6" gutterBottom>
+                            Jegy kiválasztása
+                        </Typography>
+                        <form onSubmit={handleSubmit}>
+                            <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+                                <InputLabel id="grade-select-label">Jegy kiválasztása</InputLabel>
+                                <Select
+                                    labelId="grade-select-label"
+                                    value={selectedGrade}
+                                    onChange={handleGradeChange}
+                                    label="Jegy kiválasztása"
+                                    sx={{
+                                        backgroundColor: 'background.default',
+                                        color: 'text.primary',
+                                        '& .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'primary.main',
+                                        },
+                                        '&:hover .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'primary.dark',
+                                        },
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                            borderColor: 'primary.dark',
+                                        },
+                                    }}
+                                >
+                                    {grades.length > 0 ? (
+                                        grades.map((grade) => (
+                                            <MenuItem key={grade.id || grade} value={grade}>
+                                                {grade}
+                                            </MenuItem>
+                                        ))
+                                    ) : (
+                                        <MenuItem disabled>No grades available</MenuItem>
+                                    )}
+                                </Select>
+                                <StyledButton type='submit'>
+                                    Jegy hozzáadása
+                                </StyledButton>
+                            </FormControl>
+                        </form>
+                    </Box>
+                </Container>
+            )}
+        </>
     );
+
 
 }
 
