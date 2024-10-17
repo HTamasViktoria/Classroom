@@ -1,8 +1,9 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace Classroom.Contracts;
-
-public record RegistrationRequest(
-    [Required] string Email,
-    [Required] string Username,
-    [Required] string Password);
+namespace Classroom.Contracts
+{
+    public class RegistrationRequest
+    {
+        public string Email { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+    }
+}
