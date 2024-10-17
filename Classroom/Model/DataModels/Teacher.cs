@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace Classroom.Model.DataModels;
 
-public class Teacher
+public class Teacher : User
 {
     [Key]
     public int Id { get; init; }
