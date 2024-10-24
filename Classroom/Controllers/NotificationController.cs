@@ -39,7 +39,7 @@ public class NotificationController : ControllerBase
     
     
     [HttpGet("byStudentId/{id}", Name = "GetByStudentId")]
-    public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(int id)
+    public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(string id)
     {
         try
         {
@@ -61,7 +61,7 @@ public class NotificationController : ControllerBase
     
     
     [HttpGet("lastsByStudentId/{id}", Name = "GetLastsByStudentId")]
-    public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(int id)
+    public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(string id)
     {
         try
         {

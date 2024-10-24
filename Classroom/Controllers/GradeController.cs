@@ -113,17 +113,17 @@ public class GradeController : ControllerBase
     
     
     [HttpGet("{id}", Name = "GetGradesByStudentId")]
-    public ActionResult<IEnumerable<Grade>> GetGradesByStudentId(int id)
+    public ActionResult<IEnumerable<Grade>> GetGradesByStudentId(string id)
     {
         try
         {
             var grades = _gradeRepository.GetByStudentId(id);
-        
+    
             if (grades == null)
             {
                 return NotFound($"Grades with student ID {id} not found.");
             }
-        
+    
             return Ok(grades);
         }
         catch (Exception e)
@@ -132,7 +132,7 @@ public class GradeController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
-    
+
     
     
     
@@ -158,19 +158,18 @@ public class GradeController : ControllerBase
     }
     
     
-    
     [HttpGet("getGradesByClass/{classId}", Name = "GetGradesByClass")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesByClass(int classId)
     {
         try
         {
             var grades = await _gradeRepository.GetGradesByClass(classId);
-        
+
             if (grades == null || !grades.Any())
             {
                 return NotFound($"No grades found for class ID {classId}.");
             }
-        
+
             return Ok(grades);
         }
         catch (Exception e)
@@ -184,7 +183,7 @@ public class GradeController : ControllerBase
     
     
     [HttpGet("class-averages/{studentId}")]
-    public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesByStudentId(int studentId)
+    public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesByStudentId(string studentId)
     {
         try
         {

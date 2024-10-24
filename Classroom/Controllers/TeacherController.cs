@@ -23,7 +23,7 @@ namespace Classroom.Controllers
 
         
         [HttpGet("{id}", Name = "GetByTeacherId")]
-        public ActionResult<Teacher> GetByTeacherId(int id)
+        public ActionResult<Teacher> GetByTeacherId(string id)
         {
             try
             {

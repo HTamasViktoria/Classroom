@@ -22,13 +22,18 @@ public class TeacherSubjectController : ControllerBase
     
     
     [HttpGet("getByTeacherId/{teacherId}")]
-    public ActionResult<IEnumerable<TeacherSubject>> GetSubjectsByTeacherId(int teacherId)
+    public ActionResult<IEnumerable<TeacherSubject>> GetSubjectsByTeacherId(string teacherId)
     {
         try
         {
             var subjects = _teacherSubjectRepository.GetSubjectsByTeacherId(teacherId);
 
-         
+            if (subjects == null || !subjects.Any())
+            {
+      
+                return Ok(new List<TeacherSubject>());
+            }
+
             return Ok(subjects);
         }
         catch (Exception e)
@@ -37,6 +42,7 @@ public class TeacherSubjectController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+
 
     [HttpPost("add")]
     public ActionResult<object> Post([FromBody] TeacherSubjectRequest request)
@@ -73,28 +79,5 @@ public class TeacherSubjectController : ControllerBase
     }
 
 
-    
-    
-    /*[HttpGet("getSubjectsAndStudentsByTeacherId/{teacherId}")]
-    public async Task<IActionResult> GetSubjectsAndStudentsByTeacherId(int teacherId)
-    {
-        var teacherSubjects = await _teacherSubjectRepository.GetSubjectsAndStudentsByTeacherIdAsync(teacherId);
-
-        if (teacherSubjects == null || !teacherSubjects.Any())
-        {
-            return NotFound();
-        }
-
-        var response = teacherSubjects.Select(ts => new TeacherSubjectResponse
-        {
-            Id = ts.Id,
-            Subject = ts.Subject,
-            TeacherId = ts.TeacherId,
-            ClassOfStudents = ts.ClassOfStudents
-        }).ToList();
-
-        return Ok(response);
-    }*/
-
-
+  
 }
