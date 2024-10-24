@@ -8,10 +8,13 @@ function TeacherAddingForm({ onSave, onCancel }) {
 
     const [familyName, setFamilyName] = useState("");
     const [firstName, setFirstName] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave({ familyName, firstName });
+        onSave({ familyName, firstName, username, email, password });
     };
 
     const handleFamilyNameChange = (e) => {
@@ -20,6 +23,18 @@ function TeacherAddingForm({ onSave, onCancel }) {
 
     const handleFirstNameChange = (e) => {
         setFirstName(e.target.value);
+    };
+
+    const handleUsernameChange = (e) => {
+        setUsername(e.target.value);
+    };
+
+    const handleEmailChange = (e) => {
+        setEmail(e.target.value);
+    };
+
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
     };
 
     const goBackHandler = () => {
@@ -42,6 +57,24 @@ function TeacherAddingForm({ onSave, onCancel }) {
                         type='text'
                         value={firstName}
                         onChange={handleFirstNameChange}
+                    />
+                    <TextField
+                        label='Felhasználónév'
+                        type='text'
+                        value={username}
+                        onChange={handleUsernameChange}
+                    />
+                    <TextField
+                        label='Email'
+                        type='email'
+                        value={email}
+                        onChange={handleEmailChange}
+                    />
+                    <TextField
+                        label='Jelszó'
+                        type='password'
+                        value={password}
+                        onChange={handlePasswordChange}
                     />
                     <StyledButton
                         type='submit'
