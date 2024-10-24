@@ -37,7 +37,7 @@ public class StudentController : ControllerBase
     }
 
     [HttpGet("{id}", Name = "GetStudentById")]
-    public ActionResult<Student> GetStudentById(int id)
+    public ActionResult<Student> GetStudentById(string id)
     {
         try
         {

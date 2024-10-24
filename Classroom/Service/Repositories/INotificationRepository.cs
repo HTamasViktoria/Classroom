@@ -7,7 +7,7 @@ public interface INotificationRepository
 {
     IEnumerable<NotificationBase> GetAll();
     void Add(NotificationRequest request);
-    IEnumerable<NotificationBase> GetByStudentId(int id);
+    IEnumerable<NotificationBase> GetByStudentId(string id);
     void SetToRead(int id);
     IEnumerable<NotificationBase> GetHomeworks();
     IEnumerable<NotificationBase> GetOthers();
@@ -15,6 +15,6 @@ public interface INotificationRepository
     IEnumerable<NotificationBase> GetExams();
     
     void Delete(int id);
-    IEnumerable<NotificationBase> GetLastsByStudentId(int id);
+    IEnumerable<NotificationBase> GetLastsByStudentId(string id);
     
 }

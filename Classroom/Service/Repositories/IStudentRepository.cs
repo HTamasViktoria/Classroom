@@ -7,5 +7,5 @@ public interface IStudentRepository
 {
         void Add(StudentRequest request);
         IEnumerable<Student> GetAll();
-        Student GetStudentById(int id);
+        Student GetStudentById(string id);
 }

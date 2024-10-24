@@ -20,14 +20,14 @@ public class NotificationRepository : INotificationRepository
     }
 
 
-    public IEnumerable<NotificationBase> GetByStudentId(int id)
+    public IEnumerable<NotificationBase> GetByStudentId(string id)
     {
         return _dbContext.Notifications
             .Where(notification => notification.Students.Any(student => student.Id == id));
     }
 
 
-    public IEnumerable<NotificationBase> GetLastsByStudentId(int id)
+    public IEnumerable<NotificationBase> GetLastsByStudentId(string id)
     {
         return _dbContext.Notifications
             .Where(not => not.Students.Any(student => student.Id == id) && not.Read == false)
@@ -40,8 +40,11 @@ public class NotificationRepository : INotificationRepository
 
     public void Add(NotificationRequest request)
     {
-        var students = _dbContext.Students
-            .Where(s => request.StudentIds.Contains(s.Id))
+        var allStudents = _dbContext.Students.ToList();
+
+        
+        var students = allStudents
+            .Where(s => request.StudentIds.Contains(s.Id.ToString()))
             .ToList();
 
         if (request.Type != "OtherNotification")
@@ -75,7 +78,8 @@ public class NotificationRepository : INotificationRepository
             _dbContext.SaveChanges();
         }
     }
-    
+
+
     
     public void SetToRead(int id)
     {

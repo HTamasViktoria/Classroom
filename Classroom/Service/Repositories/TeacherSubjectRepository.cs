@@ -1,8 +1,5 @@
 using Classroom.Data;
 using Classroom.Model.DataModels;
-using System.Collections.Generic;
-using System.Linq;
-using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,29 +20,54 @@ namespace Classroom.Service.Repositories
         }
 
         
-        public IEnumerable<TeacherSubject> GetSubjectsByTeacherId(int teacherId)
+        public IEnumerable<TeacherSubject> GetSubjectsByTeacherId(string teacherId)
         {
-            return _dbContext.TeacherSubjects.Where(ts => ts.TeacherId == teacherId).ToList();
+         
+            if (string.IsNullOrWhiteSpace(teacherId))
+            {
+                throw new ArgumentException("Teacher ID cannot be null or empty.", nameof(teacherId));
+            }
+
+           
+            var subjects = _dbContext.TeacherSubjects
+                .Where(ts => ts.TeacherId == teacherId)
+                .ToList();
+
+     
+            return subjects;
         }
+
+
         
         
         public void Add(TeacherSubjectRequest request)
         {
-        
-            var teacher = _dbContext.Teachers.FirstOrDefault(t => t.Id == request.TeacherId);
-            var classOfStudents = _dbContext.ClassesOfStudents.FirstOrDefault(c => c.Id == request.ClassOfStudentsId);
+      
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+            }
 
+            if (string.IsNullOrWhiteSpace(request.Subject))
+            {
+                throw new ArgumentException("Subject cannot be null or empty.", nameof(request.Subject));
+            }
+
+     
+            var teacher = _dbContext.Teachers.FirstOrDefault(t => t.Id == request.TeacherId);
             if (teacher == null)
             {
                 throw new ArgumentException($"Teacher with ID {request.TeacherId} not found.");
             }
 
+   
+            var classOfStudents = _dbContext.ClassesOfStudents.FirstOrDefault(c => c.Id == request.ClassOfStudentsId);
             if (classOfStudents == null)
             {
                 throw new ArgumentException($"ClassOfStudents with ID {request.ClassOfStudentsId} not found.");
             }
-            
 
+  
             var teacherSubject = new TeacherSubject()
             {
                 Subject = request.Subject,
@@ -55,11 +77,12 @@ namespace Classroom.Service.Repositories
                 ClassOfStudents = classOfStudents,
                 ClassName = request.ClassName
             };
-            
+
+     
             _dbContext.TeacherSubjects.Add(teacherSubject);
             _dbContext.SaveChanges();
         }
-        
+
         
         public async Task<ClassOfStudents> GetStudentsByTeacherSubjectIdAsync(int teacherSubjectId)
         {

@@ -19,7 +19,7 @@ public class StudentRepository : IStudentRepository
     }
 
 
-    public Student GetStudentById(int id)
+    public Student GetStudentById(string id)
     {
         return _dbContext.Students.FirstOrDefault(student=> student.Id == id);
     }

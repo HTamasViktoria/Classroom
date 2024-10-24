@@ -6,10 +6,10 @@ namespace Classroom.Service.Repositories;
 public interface ITeacherSubjectRepository
 {
     IEnumerable<TeacherSubject> GetAll();
-    IEnumerable<TeacherSubject> GetSubjectsByTeacherId(int teacherId);
+    IEnumerable<TeacherSubject> GetSubjectsByTeacherId(string teacherId);
     void Add(TeacherSubjectRequest request);
     Task<ClassOfStudents> GetStudentsByTeacherSubjectIdAsync(int teacherSubjectId);
 
-    /*Task<IEnumerable<TeacherSubject>> GetSubjectsAndStudentsByTeacherIdAsync(int teacherId);*/
+
 
 }
