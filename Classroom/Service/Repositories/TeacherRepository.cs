@@ -13,7 +13,7 @@ public class TeacherRepository : ITeacherRepository
         _dbContext = context;
     }
 
-    public Teacher GetTeacherById(int id)
+    public Teacher GetTeacherById(string id)
     {
         return _dbContext.Teachers.FirstOrDefault(teacher=> teacher.Id == id);
     }
