@@ -11,7 +11,7 @@ using Classroom.Service.Repositories;
 
 public partial class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
         
@@ -23,8 +23,11 @@ public partial class Program
 
         var app = builder.Build();
 
-        ConfigureMiddleware(app);
+     
+        await SeedRolesAndAdminAsync(app.Services);
 
+        ConfigureMiddleware(app);
+        
         app.Run();
     }
 
@@ -55,11 +58,11 @@ public partial class Program
                     {
                         Reference = new OpenApiReference
                         {
-                            Type=ReferenceType.SecurityScheme,
-                            Id="Bearer"
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
                         }
                     },
-                    new string[]{}
+                    new string[] { }
                 }
             });
         });
@@ -77,17 +80,22 @@ public partial class Program
 
     private static void ConfigureCustomServices(IServiceCollection services)
     {
+ 
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IStudentRepository, StudentRepository>();
         services.AddScoped<INotificationRepository, NotificationRepository>();
-        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IClassOfStudentsRepository, ClassOfStudentsRepository>();
         services.AddScoped<ITeacherSubjectRepository, TeacherSubjectRepository>();
 
-        
-        services.AddScoped<ITokenService, TokenService>();
+  
+        services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IUserRepository, UserRepository>();
+
+    
+        services.AddTransient<ITokenService, TokenService>();
     }
 
     private static void ConfigureAuthentication(IServiceCollection services, IConfiguration configuration)
@@ -133,6 +141,19 @@ public partial class Program
                     },
                 };
             });
+    }
+
+    private static async Task SeedRolesAndAdminAsync(IServiceProvider services)
+    {
+        using (var scope = services.CreateScope())
+        {
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+            var seeder = new AuthenticationSeeder(roleManager, userManager, configuration);
+            await seeder.SeedAsync();
+        }
     }
 
     private static void ConfigureMiddleware(WebApplication app)
