@@ -53,7 +53,7 @@ namespace Classroom.Controllers
 
         
         [HttpGet("teachers/{teacherId}")]
-        public ActionResult<Teacher> GetTeacherById(int teacherId)
+        public ActionResult<Teacher> GetTeacherById(string teacherId)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace Classroom.Controllers
 
      
         [HttpGet("parents/{parentId}")]
-        public ActionResult<Parent> GetParentById(int parentId)
+        public ActionResult<Parent> GetParentById(string parentId)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace Classroom.Controllers
             try
             {
                 _userRepository.AddParent(parent);
-                return CreatedAtAction(nameof(GetParentById), new { parentId = parent.ParentId }, parent);
+                return CreatedAtAction(nameof(GetParentById), new { parentId = parent.Id }, parent);
             }
             catch (Exception e)
             {
