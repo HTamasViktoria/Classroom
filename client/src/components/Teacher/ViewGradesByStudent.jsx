@@ -4,6 +4,7 @@ import {ListItem} from "@mui/material";
 import GradesByStudentMain from "./GradesByStudentMain.jsx";
 
 
+
 function ViewGradesByStudent({teacherId, teacherSubjects, onGoBack}){
     
     
@@ -24,7 +25,7 @@ function ViewGradesByStudent({teacherId, teacherSubjects, onGoBack}){
     
     
     const studentClickHandler=(e)=>{
-        let chosenId = e.target.id *1
+        let chosenId = e.target.id
         let chosenStudent = students.find((student)=>student.id === chosenId)
         setChosenStudentsClassName(chosenStudent.nameOfClass)
         setChosenStudentName(`${chosenStudent.familyName} ${chosenStudent.firstName}`)
