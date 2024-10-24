@@ -33,15 +33,15 @@ namespace Classroom.Service.Repositories
         }
 
       
-        public Teacher GetTeacherById(int teacherId)
+        public Teacher GetTeacherById(string teacherId)
         {
             return _dbContext.Teachers.FirstOrDefault(t => t.Id == teacherId);
         }
 
      
-        public Parent GetParentById(int parentId)
+        public Parent GetParentById(string parentId)
         {
-            return _dbContext.Parents.FirstOrDefault(p => p.ParentId == parentId);
+            return _dbContext.Parents.FirstOrDefault(p => p.Id == parentId);
         }
 
    
