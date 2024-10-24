@@ -7,7 +7,7 @@ function TeacherAdding() {
     const navigate = useNavigate();
 
     const postTeacher = (teacher) => {
-        return fetch(`/api/teachers/add`, {
+        return fetch(`/api/auth/sign-up/teacher`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
