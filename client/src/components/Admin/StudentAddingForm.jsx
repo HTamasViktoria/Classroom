@@ -2,25 +2,28 @@ import { TextField, Stack, Typography } from "@mui/material";
 import { CustomBox } from '../../../StyledComponents';
 import React, { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
-import {StyledButton, StyledTextField} from '../../../StyledComponents';
+import { StyledButton, StyledTextField } from '../../../StyledComponents';
 
 function StudentAddingForm({ onSave, onCancel }) {
-    
+
     const theme = useTheme();
     const [familyName, setFamilyName] = useState("");
     const [firstName, setFirstName] = useState("");
     const [birthDate, setBirthDate] = useState("");
     const [birthPlace, setBirthPlace] = useState("");
     const [studentNo, setStudentNo] = useState("");
+    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
-      
-        if (!familyName || !firstName || !birthDate || !birthPlace || !studentNo) {
+
+        if (!familyName || !firstName || !birthDate || !birthPlace || !studentNo || !email || !username || !password) {
             alert("Kérjük, töltse ki az összes mezőt.");
             return;
         }
-        onSave({ familyName, firstName, birthDate, birthPlace, studentNo });
+        onSave({ familyName, firstName, birthDate, birthPlace, studentNo, email, username, password });
     };
 
     return (
@@ -64,6 +67,27 @@ function StudentAddingForm({ onSave, onCancel }) {
                         type='text'
                         value={studentNo}
                         onChange={(e) => setStudentNo(e.target.value)}
+                        required
+                    />
+                    <StyledTextField
+                        label='Email'
+                        type='email'
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    <StyledTextField
+                        label='Felhasználónév'
+                        type='text'
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
+                    <StyledTextField
+                        label='Jelszó'
+                        type='password'
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
                     />
                     <StyledButton
