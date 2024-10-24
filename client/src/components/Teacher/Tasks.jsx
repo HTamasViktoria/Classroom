@@ -36,10 +36,10 @@ const chosenNullHandler =()=>{
         <>
             <TeacherNavbar />
             { chosenTask === "" &&(  <TaskSelector onChosenTask={taskHandler}/>)}
-            {chosenTask === "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName} />}
+            {chosenTask === "addNotification" && <NotificationMain teacherSubjects={teacherSubjects} teacherId={props.teacherId} teacherName={props.teacherName} onGoBack={chosenNullHandler}/>}
             {chosenTask === "grades" && <TeacherGrades teacherSubjects={teacherSubjects} onGoBack={chosenNullHandler} teacherId={props.teacherId}  onChosenTask={taskHandler} />}
             {chosenTask === "addMessage" && <div>Adding messages</div>}
-            {chosenTask === "addGrades" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} />}
+            {chosenTask === "addGrades" && <GradeAddingForm teacherSubjects={teacherSubjects} teacherId={props.teacherId} onGoBack={chosenNullHandler} />}
             {chosenTask === "addingBulkGrades" && <BulkGradeAdding teacherSubjects={teacherSubjects} teacherId={props.teacherId}/>}
             {chosenTask === "viewingGrades" && <TeacherViewingGrades  onGoBack={chosenNullHandler} teacherSubjects={teacherSubjects}/>}
        
