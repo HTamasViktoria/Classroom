@@ -13,7 +13,7 @@ namespace Classroom.Model.DataModels
         public string Subject { get; set; }
         
         [ForeignKey(nameof(TeacherId))]
-        public int TeacherId { get; set; }
+        public string TeacherId { get; set; }
         public Teacher Teacher { get; set; }
         
         [ForeignKey(nameof(ClassOfStudentsId))]
