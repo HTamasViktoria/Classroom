@@ -28,6 +28,11 @@ function Students() {
             >
                 Diák hozzáadása
             </StyledButton>
+            <StyledButton
+                onClick={() => navigate("/add-parent")}
+            >
+                Szülő hozzáadása
+            </StyledButton>
 
             <AdminStudentList students={allStudents} />
             <StyledButton
