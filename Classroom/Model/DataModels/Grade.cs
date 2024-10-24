@@ -10,10 +10,10 @@ public class Grade
     [Key]
     public int Id { get; init; }
     [ForeignKey("TeacherId")]
-    public int TeacherId { get; set; }
+    public string TeacherId { get; set; }
     
     [ForeignKey("StudentId")]
-    public int StudentId { get; set; }
+    public string StudentId { get; set; }
     public string Subject { get; set; }
     public string ForWhat { get; set; }
     public GradeValues Value { get; set; }
