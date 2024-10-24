@@ -1,9 +1,10 @@
-namespace Classroom.Model.ResponseModels;
-
-public class StudentWithClassResponse
+namespace Classroom.Model.ResponseModels
 {
-    public int Id { get; init; }
-    public string FirstName { get; set; }
-    public string FamilyName { get; set; }
-    public string NameOfClass { get; set; }
+    public class StudentWithClassResponse
+    {
+        public string Id { get; init; }
+        public string FirstName { get; set; }
+        public string FamilyName { get; set; }
+        public string NameOfClass { get; set; }
+    }
 }
