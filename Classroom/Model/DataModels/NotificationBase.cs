@@ -10,7 +10,7 @@ namespace Classroom.Model.DataModels
         public int Id { get; init; }
 
         [ForeignKey("TeacherId")]
-        public int TeacherId { get; set; }
+        public string TeacherId { get; set; }
         public string TeacherName { get; set; }
         public string Type { get; set; }
         public DateTime Date { get; set; }
