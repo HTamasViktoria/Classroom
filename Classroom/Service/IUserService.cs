@@ -7,10 +7,11 @@ namespace Classroom.Service
     {
         IEnumerable<Teacher> GetAllTeachers();
         IEnumerable<Parent> GetAllParents();
-        Teacher GetTeacherById(int teacherId);
-        Parent GetParentById(int parentId);
+        Teacher GetTeacherById(string teacherId);
+        Parent GetParentById(string parentId);
         void AddTeacher(Teacher teacher);
         void AddParent(Parent parent);
         User GetByEmail(string email);
+        string GetIdByName(string name);
     }
 }
