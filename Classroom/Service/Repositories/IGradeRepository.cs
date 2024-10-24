@@ -9,8 +9,8 @@ public interface  IGradeRepository
     void Add(GradeRequest request);
     IEnumerable<Grade> GetAll();
 
-    IEnumerable<Grade> GetByStudentId(int id); 
-    Task<Dictionary<string, double>> GetClassAveragesByStudentId(int studentId);
+    IEnumerable<Grade> GetByStudentId(string id); 
+    Task<Dictionary<string, double>> GetClassAveragesByStudentId(string studentId);
     Task<Dictionary<string, double>> GetClassAveragesBySubject(string subject);
     Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject);
     Task<IEnumerable<Grade>> GetGradesByClass(int classId);

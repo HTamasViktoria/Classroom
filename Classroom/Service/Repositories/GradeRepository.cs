@@ -26,33 +26,33 @@ public class GradeRepository : IGradeRepository
     public void Add(GradeRequest request)
     {
         
-        if (!int.TryParse(request.TeacherId, out var teacherId))
+        if (string.IsNullOrWhiteSpace(request.TeacherId))
         {
-            throw new ArgumentException("Invalid teacher ID format");
+            throw new ArgumentException("Teacher ID cannot be null or empty.");
         }
 
-        if (!int.TryParse(request.StudentId, out var studentId))
+        if (string.IsNullOrWhiteSpace(request.StudentId))
         {
-            throw new ArgumentException("Invalid student ID format");
+            throw new ArgumentException("Student ID cannot be null or empty.");
         }
 
-        
+       
         if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
         {
             throw new ArgumentException($"Invalid grade value: {request.Value}");
         }
 
-        
+      
         if (!DateTime.TryParse(request.Date, out var date))
         {
             throw new ArgumentException($"Invalid date format: {request.Date}");
         }
 
-       
+      
         var grade = new Grade
         {
-            TeacherId = teacherId,
-            StudentId = studentId,
+            TeacherId = request.TeacherId,
+            StudentId = request.StudentId,
             Subject = request.Subject,
             ForWhat = request.ForWhat,
             Value = gradeValue,
@@ -63,11 +63,10 @@ public class GradeRepository : IGradeRepository
         _dbContext.SaveChanges();
     }
 
-    public IEnumerable<Grade> GetByStudentId(int id)
+    public IEnumerable<Grade> GetByStudentId(string studentId)
     {
-        return _dbContext.Grades.Where(grade => grade.StudentId == id).ToList();
+        return _dbContext.Grades.Where(grade => grade.StudentId == studentId).ToList();
     }
-
     
     public void Delete(int id)
     {
@@ -106,7 +105,7 @@ public class GradeRepository : IGradeRepository
                 .ToListAsync();
             
             var grades = await _dbContext.Grades
-                .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
+                .Where(g => studentIds.Contains(g.Id.ToString()) && g.Subject == subject)
                 .ToListAsync();
             
             if (grades.Count == 0)
@@ -127,11 +126,13 @@ public class GradeRepository : IGradeRepository
 
     public async Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject)
     {
+       
         var studentIds = await _dbContext.ClassesOfStudents
             .Where(c => c.Id == classId)
             .SelectMany(c => c.Students.Select(s => s.Id))
             .ToListAsync();
 
+       
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
             .ToListAsync();
@@ -148,6 +149,7 @@ public class GradeRepository : IGradeRepository
             .SelectMany(c => c.Students.Select(s => s.Id))
             .ToListAsync();
 
+        // A Grade StudentId mezőjét kell ellenőrizni, nem az Id-t
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId))
             .ToListAsync();
@@ -158,7 +160,7 @@ public class GradeRepository : IGradeRepository
 
 
     
-    public async Task<Dictionary<string, double>> GetClassAveragesByStudentId(int studentId)
+    public async Task<Dictionary<string, double>> GetClassAveragesByStudentId(string studentId)
     {
         var student = await _dbContext.Students.FirstOrDefaultAsync(s => s.Id == studentId);
 
@@ -175,13 +177,13 @@ public class GradeRepository : IGradeRepository
         {
             throw new Exception("Class not found for the given student");
         }
-        
+    
         var studentIds = classOfStudent.Students.Select(s => s.Id).ToList();
-        
+    
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId))
             .ToListAsync();
-        
+    
         var subjectAverages = grades
             .GroupBy(g => g.Subject)
             .Select(g => new 
@@ -193,6 +195,7 @@ public class GradeRepository : IGradeRepository
 
         return subjectAverages;
     }
+
     
     
 
@@ -224,8 +227,8 @@ public class GradeRepository : IGradeRepository
                 throw new ArgumentException($"Invalid date format: {request.Date}");
             }
 
-            gradeToUpdate.TeacherId = teacherId;
-            gradeToUpdate.StudentId = studentId;
+            gradeToUpdate.TeacherId = teacherId.ToString();
+            gradeToUpdate.StudentId = studentId.ToString();
             gradeToUpdate.Date = date;
             gradeToUpdate.ForWhat = request.ForWhat;
             gradeToUpdate.Value = gradeValue;
