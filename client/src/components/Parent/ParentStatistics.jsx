@@ -1,11 +1,14 @@
 import {StatisticsContainer} from "../../../StyledComponents.js";
 import {getAverageBySubjectFullYear, getDifference} from "../../../GradeCalculations.js";
 import ClassAverageCalculator from "./ClassAverageCalculator.jsx";
+import {useEffect} from "react";
 
 function ParentStatistics({grades, subject, chosenMonthIndex, id, averages}){
 
-    
-    
+
+    useEffect(() => {
+        console.log(`grades a ParentStatistics-ben:${grades}`)
+    }, []);
     
     return (
         <>
