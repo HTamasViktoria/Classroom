@@ -73,7 +73,26 @@ public class GradeController : ControllerBase
         }
     }
     
-    
+    [HttpGet("getGradesBySubjectByStudent/{subject}/{studentId}")]
+    public async Task<ActionResult<IEnumerable<Grade>>> GetGradesBySubjectByStudent(string subject, string studentId)
+    {
+        try
+        {
+            var grades = await _gradeRepository.GetGradesBySubjectByStudent(subject, studentId);
+
+            if (grades == null || !grades.Any())
+            {
+                return NotFound($"No grades found for student ID {studentId} and subject {subject}.");
+            }
+
+            return Ok(grades);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
     
 
     [HttpPut("edit/{id}")] 

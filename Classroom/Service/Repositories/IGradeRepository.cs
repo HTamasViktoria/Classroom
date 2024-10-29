@@ -16,6 +16,7 @@ public interface  IGradeRepository
     Task<IEnumerable<Grade>> GetGradesByClass(int classId);
     void Edit(GradeRequest request, int id);
     void Delete(int id);
+    Task<IEnumerable<Grade>> GetGradesBySubjectByStudent(string subject, string studentId);
 
 
 

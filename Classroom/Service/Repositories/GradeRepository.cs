@@ -149,13 +149,44 @@ public class GradeRepository : IGradeRepository
             .SelectMany(c => c.Students.Select(s => s.Id))
             .ToListAsync();
 
-        // A Grade StudentId mezőjét kell ellenőrizni, nem az Id-t
+       
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId))
             .ToListAsync();
 
         return grades;
     }
+    
+    
+    
+    public async Task<IEnumerable<Grade>> GetGradesBySubjectByStudent(string subject, string studentId)
+    {
+       
+        if (string.IsNullOrWhiteSpace(subject))
+        {
+            throw new ArgumentException("Subject cannot be null or empty.");
+        }
+        if (string.IsNullOrWhiteSpace(studentId))
+        {
+            throw new ArgumentException("Student ID cannot be null or empty.");
+        }
+
+        try
+        {
+           
+            var grades = await _dbContext.Grades
+                .Where(g => g.Subject == subject && g.StudentId == studentId)
+                .ToListAsync();
+        
+            return grades;
+        }
+        catch (Exception ex)
+        {
+           
+            throw new Exception("An error occurred while retrieving the grades.", ex);
+        }
+    }
+
 
 
 
@@ -195,7 +226,6 @@ public class GradeRepository : IGradeRepository
 
         return subjectAverages;
     }
-
     
     
 
@@ -205,18 +235,7 @@ public class GradeRepository : IGradeRepository
 
         if (gradeToUpdate != null)
         {
-            if (!int.TryParse(request.TeacherId, out var teacherId))
-            {
-                throw new ArgumentException("Invalid teacher ID format");
-            }
-
-            if (!int.TryParse(request.StudentId, out var studentId))
-            {
-                throw new ArgumentException("Invalid student ID format");
-            }
-
-        
-            if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
+          if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
             {
                 throw new ArgumentException($"Invalid grade value: {request.Value}");
             }
@@ -227,8 +246,8 @@ public class GradeRepository : IGradeRepository
                 throw new ArgumentException($"Invalid date format: {request.Date}");
             }
 
-            gradeToUpdate.TeacherId = teacherId.ToString();
-            gradeToUpdate.StudentId = studentId.ToString();
+            gradeToUpdate.TeacherId = request.TeacherId;
+            gradeToUpdate.StudentId = request.StudentId;
             gradeToUpdate.Date = date;
             gradeToUpdate.ForWhat = request.ForWhat;
             gradeToUpdate.Value = gradeValue;
