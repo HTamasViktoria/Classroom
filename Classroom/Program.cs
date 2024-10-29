@@ -87,6 +87,7 @@ public partial class Program
         services.AddScoped<INotificationRepository, NotificationRepository>();
         services.AddScoped<IClassOfStudentsRepository, ClassOfStudentsRepository>();
         services.AddScoped<ITeacherSubjectRepository, TeacherSubjectRepository>();
+        services.AddScoped<IParentRepository, ParentRepository>();
 
   
         services.AddScoped<INotificationService, NotificationService>();
