@@ -1,7 +1,7 @@
 import {Table, TableBody, TableCell, TableContainer, TableRow} from "@mui/material";
 import {StyledButton, StyledTableCell, StyledTableHead} from "../../../StyledComponents.js";
 
-function EditingMain({onEditChosen, onGoingBack, teacherId, grades, studentName, studentId, onRefreshing}) {
+function EditingMain({onEditChosen, onGoingBack, teacherId, grades, studentName, studentId, onRefreshing, subject}) {
 
 
    const editHandler=(id)=>{
@@ -38,7 +38,7 @@ function EditingMain({onEditChosen, onGoingBack, teacherId, grades, studentName,
  }
     
     
-    return (<><h1>{studentName} tanuló jegyei {grades[0].subject} tantárgyból </h1>
+    return (<><h1>{studentName} tanuló jegyei {subject} tantárgyból </h1>
             <TableContainer>
                 <Table>
                     <StyledTableHead>

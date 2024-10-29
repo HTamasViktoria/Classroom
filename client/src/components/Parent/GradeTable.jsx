@@ -22,6 +22,10 @@ function GradeTable({
                         editHandler,
                         setChosenMonthIndex
                     }) {
+    
+    
+ 
+    
     return (
         <TableContainer component={Paper}>
             <Typography variant="h6" component="div" sx={{ margin: 2 }}>

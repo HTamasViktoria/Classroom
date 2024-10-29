@@ -17,15 +17,16 @@ function GradesByStudentMain({studentId, teacherId, teacherSubjects, nameOfClass
     },[studentId])
 
 
-    useEffect(()=>{
+    useEffect(() => {
+       
         fetch(`/api/grades/${studentId}`)
-            .then(response=>response.json())
-            .then(data=> {
-      
-                setGrades(data)
+            .then(response => response.json())
+            .then(data => {
+              console.log(grades)
+                setGrades(data);
             })
-            .catch(error=>console.error(`Error:`,error))
-    },[studentId, refreshNeeded])
+            .catch(error => console.error(`Error:`, error));
+    }, [refreshNeeded,studentId]);
     
     
     const goBackHandler=()=>{
@@ -33,9 +34,10 @@ function GradesByStudentMain({studentId, teacherId, teacherSubjects, nameOfClass
     }
     
     const refreshHandler=()=>{
-
+setGrades([])
         setRefreshNeeded((prevState)=> !prevState)
     }
+       
     
     return(<>
     <ParentGradeTable onGoBack={goBackHandler} 
@@ -47,7 +49,7 @@ function GradesByStudentMain({studentId, teacherId, teacherSubjects, nameOfClass
                       grades={grades} 
                       nameOfClass={nameOfClass} 
                       teacherSubjects={teacherSubjects}
-                        onRefresh={refreshHandler}/>
+                      onRefresh={refreshHandler}/>
     </>)
 }
 

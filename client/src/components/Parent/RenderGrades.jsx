@@ -20,6 +20,8 @@ function RenderGrades({
                       }) {
     const filteredGrades = filterGradesByMonth(subject);
 
+   
+    
     return (
         <tr key={`${subject}-${index}`}>
             <TableCell>{subject}</TableCell>

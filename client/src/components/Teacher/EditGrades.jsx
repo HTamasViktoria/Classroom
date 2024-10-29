@@ -5,20 +5,32 @@ import EditingMain from "./EditingMain.jsx";
 import GradeEditForm from "./GradeEditForm.jsx";
 
 
-function EditGrades({teacherId, grades, studentId, studentName, onGoBack, onRefresh}){
+function EditGrades({teacherId, subject, studentId, studentName, onGoBack, onRefresh}) {
 
     const [isEditing, setIsEditing] = useState(false)
     const [editingGrade, setEditingGrade] = useState("")
+    const [gradesOfThisSubject, setGradesOfThisSubject] = useState([])
 
-
-    const editHandler=(id)=>{
-        const gradeToEdit = grades.find((grade)=>grade.id == id)
+    
+    
+    useEffect(()=>{
+        fetch(`/api/grades/getGradesBySubjectByStudent/${subject}/${studentId}`)
+            .then(response=>response.json())
+            .then(data=>{
+                console.log(data)
+                setGradesOfThisSubject(data)
+            })
+            .catch(error=>console.error(error))
+    })
+    
+    const editHandler = (id) => {
+        const gradeToEdit = gradesOfThisSubject.find((grade) => grade.id === id)
         setEditingGrade(gradeToEdit)
         setIsEditing(true)
     }
 
 
-    const goBackHandler=()=>{
+    const goBackHandler = () => {
         onGoBack()
     }
     
@@ -27,16 +39,18 @@ function EditGrades({teacherId, grades, studentId, studentName, onGoBack, onRefr
     }
     
     const refreshHandler=()=>{
+     
         onRefresh()
     }
     
     return(<>
         {isEditing ? 
-            (<GradeEditForm grade={editingGrade} onGoBack={backFromEditFormHandler}/>) : 
+            (<GradeEditForm grade={editingGrade} onGoBack={backFromEditFormHandler} onRefreshing={refreshHandler}/>) : 
             (<EditingMain teacherId={teacherId} 
-                          grades={grades} 
+                          grades={gradesOfThisSubject} 
                           studentId={studentId} 
                           studentName={studentName} 
+                          subject={subject}
                           onEditChosen={editHandler} 
                           onGoingBack={goBackHandler}  
                           onRefreshing={refreshHandler}/>) }

@@ -24,13 +24,12 @@ function ParentGradeTable({ grades, subjects, id, isEditable, teacherId, teacher
     const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
     const [chosenMonthIndex, setChosenMonthIndex] = useState(new Date().getMonth());
     const [isEditing, setIsEditing] = useState(false);
-    const [gradesToEdit, setGradesToEdit] = useState([]);
+    const [chosenSubject, setChosenSubject] = useState("")
+    //const [gradesToEdit, setGradesToEdit] = useState([]);
     const [classAverages, setClassAverages] = useState([]);
     
-    console.log("ParentGradeTable renderelődik")
 
-    useEffect(() => {
-        fetch(`/api/grades/class-averages/${id}`)
+    useEffect(() => {fetch(`/api/grades/class-averages/${id}`)
             .then(response => response.json())
             .then(data => {
                 setClassAverages(data);
@@ -53,6 +52,8 @@ function ParentGradeTable({ grades, subjects, id, isEditable, teacherId, teacher
         setHoverDate("");
         setHoverForWhat("");
     };
+    
+    
 
     const filterGradesByMonth = (subject) => {
         return grades.filter((grade) => {
@@ -63,12 +64,13 @@ function ParentGradeTable({ grades, subjects, id, isEditable, teacherId, teacher
     };
 
     const editHandler = (e) => {
-        let chosenSubject = e.target.id;
-        let gradesEditing = grades.filter((grade) => grade.subject === chosenSubject);
+        let chosenEditSubject = e.target.id;
+        setChosenSubject(chosenEditSubject);
+      /*  let gradesEditing = grades.filter((grade) => grade.subject === chosenSubject);
 
         gradesEditing.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        setGradesToEdit(gradesEditing);
+        setGradesToEdit(gradesEditing);*/
         setIsEditing(true);
     };
 
@@ -89,7 +91,8 @@ function ParentGradeTable({ grades, subjects, id, isEditable, teacherId, teacher
             {isEditing ? (
                 <EditGrades onGoBack={notEditingHandler} 
                             teacherId={teacherId} 
-                            grades={gradesToEdit} 
+                            //grades={gradesToEdit} 
+                    subject={chosenSubject}
                             studentId={id} 
                             studentName={studentName}
                             onRefresh={refreshHandler}/>
