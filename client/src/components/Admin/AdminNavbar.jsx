@@ -7,10 +7,8 @@ import { useProfile } from "../../contexts/ProfileContext.jsx";
 
 function AdminNavbar() {
     const navigate = useNavigate();
-
-
     const { profile, logout } = useProfile();
-
+    
     const logoutHandler = async () => {
         await logout();
         navigate("/signin");
@@ -36,11 +34,21 @@ function AdminNavbar() {
                 </Typography>
                 <Typography
                     component='div'
+                    onClick={() => navigate("/admin/parents")}
+                    style={{ cursor: 'pointer' }}
+                >
+                    Szülők
+                </Typography>
+                <Typography
+                    component='div'
                     onClick={() => navigate("/admin/classes")}
                     style={{ cursor: 'pointer' }}
                 >
                     Osztályok
                 </Typography>
+                <StyledTypography sx={{ marginRight: 2 }}>
+                    {profile.role}
+                </StyledTypography>
                 <StyledTypography sx={{ marginRight: 2 }}>
                     <button onClick={logoutHandler}>Kilépés</button>
                 </StyledTypography>
