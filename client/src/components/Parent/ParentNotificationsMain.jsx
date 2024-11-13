@@ -1,82 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, {useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import ParentNavbar from "./ParentNavbar.jsx";
 import NotificationIcons from "./NotificationIcons.jsx";
 import GeneralNotifications from "./GeneralNotifications.jsx";
+import AllNotificationFetcher from "./AllNotificationFetcher.jsx";
 
 function ParentNotificationsMain() {
+    
     const { id } = useParams();
-    const [allNotifications, setAllNotifications] = useState([]);
-    const [homeworks, setHomeWorks] = useState([]);
-    const [exams, setExams] = useState([]);
-    const [missingEquipments, setMissingEquipmentes] = useState([]);
-    const [others, setOthers] = useState([]);
+    const navigate = useNavigate();
+    
+  
     const [chosen, setChosen] = useState("");
     const [refreshNeeded, setRefreshNeeded] = useState(false);
-
-    useEffect(() => {
-        fetchNotifications();
-    }, [id, refreshNeeded]);
-
-    const fetchNotifications = () => {
-        fetch(`/api/notifications/byStudentId/${id}`)
-            .then(response => response.json())
-            .then(data => {
-                setAllNotifications(data);
-                categorizeNotifications(data);
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    };
-
-    const categorizeNotifications = (notifications) => {
-        const examsArray = notifications.filter(n => n.type === "Exam" && n.read === false);
-        setExams(examsArray);
-
-        const homeworksArray = notifications.filter(n => n.type === "Homework" && n.read === false);
-        setHomeWorks(homeworksArray);
-
-        const missingEquipmentsArray = notifications.filter(n => n.type === "MissingEquipment" && n.read === false);
-        setMissingEquipmentes(missingEquipmentsArray);
-
-        const othersArray = notifications.filter(n => n.type === "OtherNotifications" && n.read === false);
-        setOthers(othersArray);
-    };
-
-    const clickHandler = (chosenName) => {
-        setChosen(chosenName);
-    };
+    const [notifications, setNotifications] = useState({
+        exams: [],
+        homeworks: [],
+        missingEquipments: [],
+        others: []
+    });
 
     const refreshHandler = () => {
         setRefreshNeeded(prevState => !prevState);
     };
-    
-    const goBackHandler=()=>{
-        setChosen("");
-    }
+
+  
 
     return (
         <>
-            <ParentNavbar studentId={id} notifications={allNotifications} />
-            {chosen === "" && (
-                <NotificationIcons
-                    exams={exams}
-                    homeworks={homeworks}
-                    missingEquipments={missingEquipments}
-                    others={others}
-                    onClick={clickHandler}
+            <ParentNavbar studentId={id} refreshNeeded={refreshNeeded} />
+            <AllNotificationFetcher id={id} onData={(data)=>setNotifications(data)} refreshNeeded={refreshNeeded}/>
+            
+            {chosen === "" ? (
+                <>
+                    <NotificationIcons
+                        notifications={notifications}
+                        onClick={(chosenName)=>(setChosen(chosenName))}
+                    />
+                    <button onClick={() => navigate(`/parent/${id}`)}>Vissza a főoldalra</button>
+                </>
+            ) : (
+                <GeneralNotifications
+                    id={id}
+                    chosen={chosen}
+                    onRefreshing={refreshHandler}
+                    refreshNeeded={refreshNeeded}
+                    onGoBack={()=>setChosen("")}
                 />
-            )}
-            {chosen === "homeworks" && (
-                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
-            )}
-            {chosen === "exams" && (
-                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
-            )}
-            {chosen === "others" && (
-                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
-            )}
-            {chosen === "missingEquipments" && (
-                <GeneralNotifications chosen={chosen} onRefreshing={refreshHandler} onGoBack={goBackHandler} />
             )}
         </>
     );
