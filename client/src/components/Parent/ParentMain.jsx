@@ -1,43 +1,54 @@
-import { Box } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LastNotifications from "./LastNotifications.jsx";
 import NotificationDetailed from "./NotificationDetailed.jsx";
-import { StyledButton } from '../../../StyledComponents';
+import { AButton } from '../../../StyledComponents';
 import { useNavigate } from "react-router-dom";
+import LastGrades from "./LastGrades.jsx";
+import NewNotificationFetcher from "./NewNotificationFetcher.jsx";
+import NewGradeFetcher from "./NewGradeFetcher.jsx";
 
-function ParentMain({ lastNotifications, studentId, onRefreshNeeded }) {
+function ParentMain({ studentId, onRefreshNeeded }) {
     const navigate = useNavigate();
     const [chosenNotification, setChosenNotification] = useState("");
-
-    const clickHandler = (notification) => {
-        setChosenNotification(notification);
-    };
-
-    const resetHandler = () => {
-        setChosenNotification("");
-    };
-
-    const viewAllNotifsHandler = () => {
-        navigate(`/parent/notifications/${studentId}`);
-    };
+    const [newNotifications, setNewNotifications] = useState([]);
+    const [newGrades, setNewGrades] = useState([]);
 
     return (
         <>
+            <NewNotificationFetcher
+                studentId={studentId}
+                onData={(data) => setNewNotifications(data)}
+                refreshNeeded={onRefreshNeeded}
+            />
+
+            <NewGradeFetcher
+                studentId={studentId}
+                onData={(data) => setNewGrades(data)}
+                refreshNeeded={onRefreshNeeded}
+            />
+
             {chosenNotification === "" ? (
                 <>
-                    <LastNotifications lastNotifications={lastNotifications} onClick={clickHandler} />
-                    <Box sx={{ marginTop: lastNotifications.length ? 2 : 12 }}>
-                        {lastNotifications.length > 0 && (
-                            <StyledButton onClick={viewAllNotifsHandler}>
-                                Összes értesítés megtekintése
-                            </StyledButton>
-                        )}
-                    </Box>
+                    <LastNotifications
+                        newNotifications={newNotifications}
+                        onClick={(notification) => setChosenNotification(notification)}
+                    />
+
+                    {newNotifications.length > 0 && (
+                        <AButton onClick={() => navigate(`/parent/notifications/${studentId}`)}>
+                            Összes értesítés megtekintése
+                        </AButton>
+                    )}
+
+                    <LastGrades newGrades={newGrades} />
+                    <AButton onClick={() => navigate(`/parent/grades/${studentId}`)}>
+                        Összes osztályzat megtekintése
+                    </AButton>
                 </>
             ) : (
                 <NotificationDetailed
                     notification={chosenNotification}
-                    onButtonClick={resetHandler}
+                    onButtonClick={() => setChosenNotification("")}
                     onRefreshNeeded={onRefreshNeeded}
                 />
             )}
