@@ -2,6 +2,8 @@ using Classroom.Data;
 using Classroom.Model.DataModels;
 using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
+using Classroom.Model.ResponseModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Classroom.Service.Repositories;
 
@@ -23,42 +25,95 @@ public class NotificationRepository : INotificationRepository
     public IEnumerable<NotificationBase> GetByStudentId(string id)
     {
         return _dbContext.Notifications
-            .Where(notification => notification.Students.Any(student => student.Id == id));
+            .Where(n => n.StudentId == id)
+            .ToList();
+    }
+    public int GetNewNotifsNumber(string id)
+    {
+        return _dbContext.Notifications.Where(n => (n.StudentId == id) && n.Read == false).Count();
+    }
+   
+
+    
+    public IEnumerable<NotificationBase> GetByTeacherId(string id)
+    {
+        return _dbContext.Notifications
+            .Where(n => n.TeacherId == id).ToList();
     }
 
+    
+    
+   
+
+    
+    
+    public IEnumerable<NotificationBase> GetNewNotifsByStudentId(string id)
+    {
+        return _dbContext.Notifications
+            .Where(n => (n.StudentId == id) && n.Read == false)
+            .OrderByDescending(not => not.Date)
+            .ToList();
+    }
 
     public IEnumerable<NotificationBase> GetLastsByStudentId(string id)
     {
         return _dbContext.Notifications
-            .Where(not => not.Students.Any(student => student.Id == id) && not.Read == false)
+            .Where(n => (n.StudentId == id) && n.Read == false)
             .OrderByDescending(not => not.Date)
             .Take(3)
             .ToList();
     }
-
-
-
-    public void Add(NotificationRequest request)
+    
+    
+    public IEnumerable<NotificationResponse> GetLastsByTeacherId(string id)
     {
-        var allStudents = _dbContext.Students.ToList();
-
-        
-        var students = allStudents
-            .Where(s => request.StudentIds.Contains(s.Id.ToString()))
+        var notifications = _dbContext.Notifications
+            .Where(not => not.TeacherId == id)
+            .Include(not => not.Student)
+            .OrderByDescending(not => not.Date)
             .ToList();
 
-        if (request.Type != "OtherNotification")
+        return notifications.Select(not => new NotificationResponse
         {
-            if (string.IsNullOrEmpty(request.Subject))
-            {
-                throw new ArgumentException("Subject is required when type is not 'OtherNotification'.");
-            }
+            Id = not.Id,
+            TeacherId = not.TeacherId,
+            TeacherName = not.TeacherName,
+            Type = not.Type,
+            Date = not.Date,
+            DueDate = not.DueDate,
+            StudentId = not.StudentId,
+            Student = not.Student,
+            Description = not.Description,
+            SubjectName = not.SubjectName,
+            Read = not.Read,
+            OfficiallyRead = not.OfficiallyRead,
+            OptionalDescription = not.OptionalDescription
+        });
+    }
 
-            if (!Enum.TryParse<Subjects>(request.Subject, out var subjectEnum))
-            {
-                throw new ArgumentException($"Invalid subject value: {request.Subject}");
-            }
 
+   public void Add(NotificationRequest request)
+{
+    var allStudents = _dbContext.Students.ToList();
+    
+    var students = allStudents
+        .Where(s => request.StudentIds.Contains(s.Id.ToString()))
+        .ToList();
+
+    if (request.Type != "OtherNotification")
+    {
+        if (string.IsNullOrEmpty(request.Subject))
+        {
+            throw new ArgumentException("Subject is required when type is not 'OtherNotification'.");
+        }
+
+        if (!Enum.TryParse<Subjects>(request.Subject, out var subjectEnum))
+        {
+            throw new ArgumentException($"Invalid subject value: {request.Subject}");
+        }
+        
+        foreach (var student in students)
+        {
             var notification = new NotificationBase
             {
                 TeacherId = request.TeacherId,
@@ -66,8 +121,10 @@ public class NotificationRepository : INotificationRepository
                 Type = request.Type,
                 Date = request.Date,
                 DueDate = request.DueDate,
-                Students = students,
+                StudentId = student.Id,
+                Student = student,
                 Read = request.Read,
+                OfficiallyRead = request.OfficiallyRead,
                 Description = request.Description,
                 SubjectName = request.Subject,
                 Subject = subjectEnum,
@@ -75,9 +132,37 @@ public class NotificationRepository : INotificationRepository
             };
 
             _dbContext.Notifications.Add(notification);
-            _dbContext.SaveChanges();
         }
+        
+        _dbContext.SaveChanges();
     }
+    else
+    {
+        foreach (var student in students)
+        {
+            var notification = new NotificationBase
+            {
+                TeacherId = request.TeacherId,
+                TeacherName = request.TeacherName,
+                Type = request.Type,
+                Date = request.Date,
+                DueDate = request.DueDate,
+                StudentId = student.Id,
+                Student = student,
+                Read = request.Read,
+                OfficiallyRead = request.OfficiallyRead,
+                Description = request.Description,
+                SubjectName = request.Subject,
+                OptionalDescription = request.OptionalDescription
+            };
+
+            _dbContext.Notifications.Add(notification);
+        }
+        
+        _dbContext.SaveChanges();
+    }
+}
+
 
 
     
@@ -92,6 +177,21 @@ public class NotificationRepository : INotificationRepository
         notification.Read = !notification.Read;
         _dbContext.SaveChanges();
     }
+
+
+    public void SetToOfficiallyRead(int id)
+    {
+
+        var notification = _dbContext.Notifications
+            .FirstOrDefault(n => n.Id == id);
+
+            notification.OfficiallyRead = true;
+        
+        _dbContext.SaveChanges();
+    }
+
+    
+
     
     
     public IEnumerable<NotificationBase> GetHomeworks()
