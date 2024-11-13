@@ -1,76 +1,50 @@
 import {
-    Box,
     Paper,
-    Table,
     TableBody,
     TableRow,
     TableCell,
-    Typography,
     TableContainer,
-    useTheme
 } from "@mui/material";
-import { StyledTableHead, StyledTableCell, StyledButton, StyledSecondaryButton } from '../../../StyledComponents';
+import {
+    TableHeading,
+    Cell,
+    NotifContainer, NotifHead, NotifTable,
+} from '../../../StyledComponents';
+import NotifButtonContainer from "./NotifButtonContainer.jsx";
+import {useEffect} from "react";
 
 function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) {
-    const theme = useTheme();
-    
-  
 
-    const deleteHandler = (e) => {
-        const id = e.target.id;
-        onButtonClick();
 
-        fetch(`/api/notifications/delete/${id}`, { method: 'DELETE' })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to delete notification');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log(data.message);
-            })
-            .catch(error => console.error('Error deleting notification:', error));
-    };
 
-    const setToReadHandler = (e) => {
-        const id = e.target.id;
-        fetch(`/api/notifications/setToRead/${id}`, { method: 'POST' })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to set notification to read');
-                }
-                return response.json();
-            })
-            .then(() => {
-                onRefreshNeeded();
-                onButtonClick();
-            })
-            .catch(error => console.error('Error setting notification to read:', error));
-    };
+    useEffect(() => {
+        fetch(`/api/notifications/setToOfficiallyRead/${notification.id}`, {
+            method: 'POST',
+        })
+            .then(response => response.json())
+            .catch(error => console.error(error));
+    }, [notification]);
 
-    const goBackHandler = () => {
-        onButtonClick();
-    }
+
 
 
     return (
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>
+        <NotifContainer>
+            <NotifHead>
                 {notification.type}
-            </Typography>
+            </NotifHead>
             <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="notification table">
-                    <StyledTableHead>
+                <NotifTable>
+                    <TableHeading>
                         <TableRow>
-                            <StyledTableCell>Dátum</StyledTableCell>
-                            <StyledTableCell>Határidő</StyledTableCell>
-                            <StyledTableCell>Tantárgy</StyledTableCell>
-                            <StyledTableCell>Tanár</StyledTableCell>
-                            <StyledTableCell>Leírás</StyledTableCell>
-                            <StyledTableCell>További leírás</StyledTableCell>
+                            <Cell>Dátum</Cell>
+                            <Cell>Határidő</Cell>
+                            <Cell>Tantárgy</Cell>
+                            <Cell>Tanár</Cell>
+                            <Cell>Leírás</Cell>
+                            <Cell>További leírás</Cell>
                         </TableRow>
-                    </StyledTableHead>
+                    </TableHeading>
                     <TableBody>
                         <TableRow key={notification.id}>
                             <TableCell>{new Date(notification.date).toLocaleDateString()}</TableCell>
@@ -81,46 +55,12 @@ function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) 
                             <TableCell>{notification.optionalDescription}</TableCell>
                         </TableRow>
                     </TableBody>
-                </Table>
+                </NotifTable>
             </TableContainer>
-            <Box display="flex" justifyContent="space-between" sx={{ marginTop: 2 }}>
-                {notification.read === false && (
-                    <StyledButton
-                        onClick={setToReadHandler}
-                        id={notification.id}
-                        variant="contained"
-                        sx={{
-                            flex: 1,
-                            marginRight: 1
-                        }}>
-                        Ok, elolvastam
-                    </StyledButton>
-                )}
-                <StyledSecondaryButton
-                    onClick={goBackHandler}
-                    id={notification.id}
-                    variant="contained"
-                    sx={{
-                        flex: 1,
-                        marginRight: 1
-                    }}>
-                    Erre még visszatérek
-                </StyledSecondaryButton>
-
-                {notification.read && (
-                    <StyledButton
-                        id={notification.id}
-                        onClick={deleteHandler}
-                        variant="contained"
-                        sx={{
-                            flex: 1,
-                            marginLeft: 1
-                        }}>
-                        Értesítés törlése
-                    </StyledButton>
-                )}
-            </Box>
-        </Box>
+            
+<NotifButtonContainer notification={notification} onGoBack={()=>onButtonClick()} onRefresh={onRefreshNeeded}/>
+            
+        </NotifContainer>
     );
 }
 
