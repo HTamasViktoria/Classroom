@@ -60,6 +60,28 @@ public class NotificationController : ControllerBase
     }
     
     
+    [HttpGet("ofTeacher/{id}", Name = "GetTeachersNotifications")]
+    public ActionResult<IEnumerable<NotificationBase>> GetByTeacherId(string id)
+    {
+        try
+        {
+            var notifications = _notificationRepository.GetByTeacherId(id);
+        
+            if (!notifications.Any())
+            {
+                return Ok(new List<NotificationBase>());
+            }
+        
+            return Ok(notifications);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+    
+    
     [HttpGet("lastsByStudentId/{id}", Name = "GetLastsByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(string id)
     {
@@ -81,28 +103,90 @@ public class NotificationController : ControllerBase
         }
     }
 
+
+    [HttpGet("getNewNotifsNumber/{id}", Name = "GetNewNotifsNumber")]
+    public ActionResult<int> GetNewNotifsNumber(string id)
+    {
+        try
+        {
+            var newNotifsNumber = _notificationRepository.GetNewNotifsNumber(id);
+            return Ok(newNotifsNumber);
+        }
+        catch (Exception ex)
+        {
+          
+            return StatusCode(500, "Hiba történt a kérés feldolgozása során.");
+        }
+    }
+
+    
+    [HttpGet("newNotifsByStudentId/{id}", Name = "GetNewNotifsByStudentId")]
+    public ActionResult<IEnumerable<NotificationBase>> GetNewNotifsByStudentId(string id)
+    {
+        try
+        {
+            var notifications = _notificationRepository.GetNewNotifsByStudentId(id);
+        
+            if (!notifications.Any())
+            {
+                return Ok(new List<NotificationBase>());
+            }
+        
+            return Ok(notifications);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
     
     
-    
+    [HttpGet("lastsByTeacherId/{id}", Name = "GetLastsByTeacherId")]
+    public ActionResult<IEnumerable<NotificationBase>> GetLastsByTeacherId(string id)
+    {
+        try
+        {
+            var notifications = _notificationRepository.GetLastsByTeacherId(id);
+        
+            if (!notifications.Any())
+            {
+                return Ok(new List<NotificationBase>());
+            }
+        
+            return Ok(notifications);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
+
     [HttpPost("add")]
     public IActionResult Post([FromBody] NotificationRequest request)
     {
         try
         {
             _notificationService.PostToDb(request);
+
+
             return Ok(new { message = "Értesítés sikeresen elmentve az adatbázisba." });
         }
         catch (ArgumentException ex)
         {
-            _logger.LogError(ex, "Hibás értesítési adat.");
+            _logger.LogError(ex, "Hibás értesítési adat történt a 'Post' metódusban.");
             return BadRequest(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Hiba történt az értesítés mentése során.");
+            _logger.LogError(ex, "Hiba történt az értesítés mentése során a 'Post' metódusban.");
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
     }
+
     
     
     [HttpPost("setToRead/{id}")]
@@ -124,7 +208,31 @@ public class NotificationController : ControllerBase
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
     }
-
+    
+    
+    
+    [HttpPost("setToOfficiallyRead/{id}")]
+         public IActionResult SetToOfficiallyRead(int id)
+         {
+             try
+             {
+                 _notificationRepository.SetToOfficiallyRead(id);
+                 return Ok(new { message = "Értesítési visszaigazolás elmentve" });
+             }
+             catch (ArgumentException ex)
+             {
+                 _logger.LogError(ex, "Hibás értesítési adat. A diák nem található vagy az értesítés nem létezik.");
+                 return BadRequest(new { message = "Hibás paraméterek. Kérem, ellenőrizze a megadott adatokat." });
+             }
+             catch (Exception ex)
+             {
+                 _logger.LogError(ex, "Hiba történt az értesítés mentése során.");
+                 return StatusCode(500, new { message = "Belső rendszerhiba történt. Kérem próbálja újra később." });
+             }
+         }
+         
+         
+   
     
     
     [HttpGet("homeworks", Name = "GetHomeworks")]
@@ -209,8 +317,4 @@ public class NotificationController : ControllerBase
             return StatusCode(500, new { error = "An error occurred while processing your request." });
         }
     }
-
-
-
-    
 }
