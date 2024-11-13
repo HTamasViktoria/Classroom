@@ -13,6 +13,7 @@ public class NotificationRequest
         public DateTime DueDate { get; set; }
         public string? Subject { get; set; }
         public bool Read { get; set; }
+        public bool OfficiallyRead { get; set; }
         public string Description { get; set; }
         public List<string> StudentIds { get; set; }
         public string? OptionalDescription { get; set; }

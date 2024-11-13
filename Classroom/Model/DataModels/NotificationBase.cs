@@ -16,12 +16,15 @@ namespace Classroom.Model.DataModels
         public DateTime Date { get; set; }
         public DateTime DueDate { get; set; }
         
-        public List<Student> Students { get; set; } = new List<Student>();
+        [ForeignKey("Student")]
+        public string StudentId { get; set; }
+        public Student Student { get; set; }
     
         public string Description { get; set; }
         public Subjects? Subject { get; set; }
         public string? SubjectName { get; set; }
         public bool Read { get; set; }
+        public bool OfficiallyRead { get; set; }
         public string? OptionalDescription { get; set; }
     }
 }
