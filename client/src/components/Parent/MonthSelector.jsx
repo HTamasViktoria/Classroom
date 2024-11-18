@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos.js";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos.js";
+import {StyledArrowBackIcon, StyledArrowForwardIcon} from "../../../StyledComponents.js"
 
 function MonthSelector({ onMonthChange }) {
     const [chosenMonth, setChosenMonth] = useState("");
@@ -27,7 +26,7 @@ function MonthSelector({ onMonthChange }) {
         const actualsIndexInSchoolMonth = schoolMonths.indexOf(chosenMonth);
 
         if (actualsIndexInSchoolMonth - 1 < 0) {
-            console.log("Nem lehet visszafelé lapozni");
+            alert("Nem lehet visszafelé lapozni");
         } else {
             const nextMonthIndex = (chosenMonthIndex - 1 + monthNames.length) % monthNames.length;
             setChosenMonth(monthNames[nextMonthIndex]);
@@ -40,7 +39,7 @@ function MonthSelector({ onMonthChange }) {
         const actualsIndexInSchoolMonth = schoolMonths.indexOf(chosenMonth);
 
         if (actualsIndexInSchoolMonth + 1 > 9) {
-            console.log("Nem lehet előre lapozni");
+            alert("Nem lehet előre lapozni");
         } else {
             const nextMonthIndex = (chosenMonthIndex + 1) % monthNames.length;
             setChosenMonth(monthNames[nextMonthIndex]);
@@ -51,9 +50,9 @@ function MonthSelector({ onMonthChange }) {
 
     return (<>
 
-            <ArrowBackIosIcon onClick={monthBackHandler} sx={{ margin: '0 10px' }} />
+            <StyledArrowBackIcon onClick={monthBackHandler}/>
             <span>{chosenMonth}</span>
-            <ArrowForwardIosIcon onClick={monthForwardHandler} sx={{ margin: '0 10px' }} />
+            <StyledArrowForwardIcon onClick={monthForwardHandler}/>
         </>
     );
 }
