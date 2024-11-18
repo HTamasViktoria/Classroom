@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import AdminClassList from "../components/Admin/AdminClassList.jsx";
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
-import { StyledButton } from "../../StyledComponents";
+import { AButton } from "../../StyledComponents";
 import StudentAddingToClass from "../components/Admin/StudentAddingToClass.jsx";
 import { useNavigate } from "react-router-dom";
 import StudentsOfClass from "../components/Admin/StudentsOfClass.jsx";
@@ -33,21 +33,8 @@ function Classes() {
         setAddingOrViewing("adding");
     };
 
-    const goBackFromAddingHandler = () => {
-        setAddingOrViewing("");
-    };
+  
 
-    const goBackFromViewingHandler = () => {
-        setAddingOrViewing("");
-    };
-
-    const goBackHandler = () => {
-        navigate("/admin");
-    };
-
-    const successfulAddingHandler = () => {
-        setAddingOrViewing("");
-    };
 
     return (
         <>
@@ -58,19 +45,19 @@ function Classes() {
                     <StudentAddingToClass
                         classId={classId}
                         className={className}
-                        onSuccessfulAdding={successfulAddingHandler}
+                        onSuccessfulAdding={()=>setAddingOrViewing("")}
                     />
-                    <StyledButton
-                        onClick={goBackFromAddingHandler}
+                    <AButton
+                        onClick={()=> setAddingOrViewing("")}
                     >
                         Vissza
-                    </StyledButton>
+                    </AButton>
                 </>
             ) : addingOrViewing === "viewing" ? (
                 <StudentsOfClass
                     classId={classId}
                     className={className}
-                    onGoBack={goBackFromViewingHandler}
+                    onGoBack={()=> setAddingOrViewing("")}
                 />
             ) : (
                 <>
@@ -79,11 +66,11 @@ function Classes() {
                         onViewStudents={handleViewStudents}
                         onAddStudent={handleAddStudent}
                     />
-                    <StyledButton
-                        onClick={goBackHandler}
+                    <AButton
+                        onClick={()=> navigate("/admin")}
                     >
                         Vissza
-                    </StyledButton>
+                    </AButton>
                 </>
             )}
         </>

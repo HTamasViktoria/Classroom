@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Stack, TextField, Typography } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
-import { StyledButton } from "../../StyledComponents";
+import { AButton, StyledHeading } from "../../StyledComponents";
 
 function ClassAdding() {
     const navigate = useNavigate();
@@ -35,47 +35,37 @@ function ClassAdding() {
             .catch(error => console.error('Error adding class:', error));
     };
 
-    const handleSectionChange = (e) => {
-        setSection(e.target.value);
-    };
 
-    const handleGradeChange = (e) => {
-        setGrade(e.target.value);
-    };
-
-    const goBackHandler = () => {
-        navigate("/admin/classes");
-    };
 
     return (
         <>
-            <Typography variant="h4" gutterBottom>
+            <StyledHeading>
                 Osztály létrehozása
-            </Typography>
+            </StyledHeading>
             <form noValidate onSubmit={handleSubmit}>
                 <Stack spacing={2} width={400}>
                     <TextField
                         label='Évfolyam'
                         type='text'
                         value={grade}
-                        onChange={handleGradeChange}
+                        onChange={(e)=> setGrade(e.target.value)}
                         sx={{ marginBottom: 2 }}
                     />
                     <TextField
                         label='Osztály'
                         type='text'
                         value={section}
-                        onChange={handleSectionChange}
+                        onChange={(e)=> setSection(e.target.value)}
                         sx={{ marginBottom: 2 }}
                     />
-                    <StyledButton type='submit'>
+                    <AButton type='submit'>
                         Hozzáad
-                    </StyledButton>
+                    </AButton>
                 </Stack>
             </form>
-            <StyledButton onClick={goBackHandler}>
+            <AButton onClick={()=>navigate("/admin/classes")}>
                 Vissza
-            </StyledButton>
+            </AButton>
         </>
     );
 }
