@@ -1,11 +1,11 @@
-import react, {useState, useEffect} from "react";
-import {CustomBox, StyledButton} from "../../../StyledComponents.js";
+import {useState, useEffect} from "react";
+import {AButton} from "../../../StyledComponents.js";
 import {ListItem} from "@mui/material";
 import GradesByStudentMain from "./GradesByStudentMain.jsx";
 
 
 
-function ViewGradesByStudent({teacherId, teacherSubjects, onGoBack}){
+function ViewGradesByStudent({teacherId, onGoBack}){
     
     
     const [students, setStudents] = useState([])
@@ -32,29 +32,24 @@ function ViewGradesByStudent({teacherId, teacherSubjects, onGoBack}){
         setChosenStudentId(chosenId)
         
     }
-    
-    
-    const goBackHandler=()=>{
-        setChosenStudentId("")
-    }
-    
-    
-    const goBackFromListHandler=()=>{
-        onGoBack()
-    }
+     
     
 
     return (<>
         {chosenStudentId === "" ? (<>
             <ul>
                 {students.map((student, index) => (
-                    <ListItem onClick={studentClickHandler} id={student.id}
-                              key={index}>{student.familyName} {student.firstName} - {student.nameOfClass}</ListItem>
+                    <ListItem onClick={studentClickHandler} 
+                              id={student.id}
+                              key={index}>{student.familyName} {student.firstName} - {student.nameOfClass}
+                    </ListItem>
                 ))}
             </ul>
-            <StyledButton onClick={goBackFromListHandler}>Vissza</StyledButton>
-        </>) : (<GradesByStudentMain onGoBack={goBackHandler} teacherSubjects={teacherSubjects} teacherId={teacherId}
-                                     studentName={chosenStudentName} studentId={chosenStudentId}
+            <AButton onClick={()=> onGoBack()}>Vissza</AButton>
+        </>) : (<GradesByStudentMain onGoBack={()=> setChosenStudentId("")} 
+                                     teacherId={teacherId}
+                                     studentName={chosenStudentName} 
+                                     studentId={chosenStudentId}
                                      nameOfClass={chosenStudentsClassName}/>)}
 
     </>)

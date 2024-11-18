@@ -1,24 +1,11 @@
-import react, {useState, useEffect} from "react";
-import {
-    ListItem,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableRow,
-    Typography
-} from "@mui/material";
-import {
-    PopupContainer, StyledButton,
-    StyledTableCell,
-    StyledTableHead,
-} from "../../../StyledComponents.js";
+import {useState, useEffect} from "react";
+import {ListItem} from "@mui/material";
+import {AButton} from '../../../StyledComponents.js'
+
 import GradesByClass from "./GradesByClass.jsx";
 function ViewGradesByClass({teacherId, onGoBack}){
     
-    const [chosenClassId, setChosenClassId] = useState("")
-    
+    const [chosenClassId, setChosenClassId] = useState("")    
     const [classes, setClasses] = useState([])
     
     useEffect(()=>{
@@ -30,35 +17,30 @@ function ViewGradesByClass({teacherId, onGoBack}){
             .catch(error=>console.error(`Error:`,error))
     },[])
 
-    const classClickHandler=(e)=>{
-        setChosenClassId(e.target.id)        
-    }
-    
-    const noneClassIdHandler=()=>{
-        setChosenClassId("")
-    }
-
- const goBackHandler=()=>{
-        setChosenClassId("")
- }
- 
- const backFromListHandler=()=>{
-        onGoBack()
- }
 
     return (
         <>
-            {chosenClassId !== "" ? (<GradesByClass onGoBack={goBackHandler} classId={chosenClassId}/>) :
-                (<><ul>
-                    {classes.map((classItem, index) => (
-                        <ListItem onClick={classClickHandler} id={classItem.id} key={index}>{classItem.name}</ListItem>
-                    ))}
-                </ul>
-                <StyledButton onClick={backFromListHandler}>Vissza</StyledButton>
-                </>)}
-          
+            {chosenClassId === "" ? (
+                <>
+                    <ul>
+                        {classes.map((classItem, index) => (
+                            <ListItem
+                                onClick={(e) => setChosenClassId(e.target.id)}
+                                id={classItem.id}
+                                key={index}
+                            >
+                                {classItem.name}
+                            </ListItem>
+                        ))}
+                    </ul>
+                    <AButton onClick={() => onGoBack()}>Vissza</AButton>
+                </>
+            ) : (
+                <GradesByClass onGoBack={() => setChosenClassId("")} classId={chosenClassId} />
+            )}
         </>
     );
+
 
 }
 

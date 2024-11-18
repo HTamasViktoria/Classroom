@@ -1,48 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { CustomBox, StyledButton } from "../../../StyledComponents.js";
-import GradeBySubject from "./GradeBySubject.jsx";
+import React, { useState} from "react";
+import {AButton, SubjectChooseContainer } from "../../../StyledComponents.js";
+import ClassOfStudentsSelector from "./ClassOfStudentsSelector.jsx";
+import SubjectFetcher from "../Parent/SubjectFetcher.jsx";
 function ViewGradesBySubjects({onGoBack}) {
+    
     const [subjects, setSubjects] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState("")
 
-    useEffect(() => {
-        fetch(`/api/subjects`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                
-                const sortedData = data.sort((a,b)=>a.localeCompare(b));
-                setSubjects(sortedData);
-            })
-            .catch(error => console.error(`Error:`, error));
-    }, []);
-
-    
-    const subjectChooseHandler=(e)=>{
-        setSelectedSubject(e.target.id)
-    }
-    
   
-    const goBackHandler=()=>{
-        onGoBack()
-    }
-    
-    const selectedNoneHandler=()=>{
-        setSelectedSubject("")
-    }
     
     return (<>
+            <SubjectFetcher onData={(data)=>setSubjects(data)}/>
 
-        {selectedSubject === "" ? (  <>   <CustomBox sx={{ padding: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {selectedSubject === "" ? 
+            (<>
+                <SubjectChooseContainer>
             {subjects.map((subject, index) => (
-                <StyledButton key={index} id={subject} onClick={subjectChooseHandler}>{subject}</StyledButton>
-            ))}
-        </CustomBox><StyledButton onClick={goBackHandler}>Vissza</StyledButton> </>) : 
-            (<GradeBySubject onGoBack={selectedNoneHandler} subject={selectedSubject}/>)}      
+                <AButton key={index} id={subject} 
+                         onClick={(e)=>setSelectedSubject(e.target.id)}>{subject}</AButton>
+            ))}               
+            </SubjectChooseContainer>
+                
+                <AButton onClick={()=>    onGoBack()}>Vissza</AButton> </>) : 
+            
+            
+            (<ClassOfStudentsSelector onGoBack={()=> setSelectedSubject("")} subject={selectedSubject}/>)}      
         </>
     );
 }
