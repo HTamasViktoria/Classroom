@@ -95,13 +95,20 @@ namespace Classroom.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+                
             }
 
-            var studentIdToBe = _userService.GetIdByName(request.ChildName);
-            if (studentIdToBe == null)
+            var studentIdToBe = _userService.CheckStudentId(request.StudentId, request.ChildName);
+           
+            if (studentIdToBe == false)
             {
-         
-              
+                return BadRequest(ModelState);
+            }
+
+            var parentsNumberOk = _userService.CheckParentsNumber(request.StudentId);
+            if (!parentsNumberOk)
+            {
+                ModelState.AddModelError("ParentsNumber", "The student already has the maximum number of registered parents.");
                 return BadRequest(ModelState);
             }
 
@@ -116,7 +123,7 @@ namespace Classroom.Controllers
                 birthPlace: null,
                 studentNo: null,
                 childName: request.ChildName,
-                studentId: studentIdToBe
+                studentId: request.StudentId
             );
 
             if (!result.Success)
