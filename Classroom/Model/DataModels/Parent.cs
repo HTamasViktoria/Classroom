@@ -6,11 +6,11 @@ namespace Classroom.Model.DataModels
 {
     public class Parent : User
     {
-     
-       
         public string ChildName { get; set; }
 
-        [ForeignKey(nameof(StudentId))]
+        [ForeignKey("Student")]
         public string StudentId { get; set; }
+
+        public Student Student { get; set; }
     }
 }
