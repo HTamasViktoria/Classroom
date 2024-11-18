@@ -1,20 +1,17 @@
-import React, { useState } from 'react';
-import {useNavigate} from "react-router-dom";
+import React from 'react';
+import { useNavigate } from "react-router-dom";
+import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
+import ParentAddingForm from "../components/Admin/ParentAddingForm.jsx";
+import { AButton } from "../../StyledComponents";
+import { useParams } from 'react-router-dom';
 
 function ParentAdding() {
-
     const navigate = useNavigate();
-    
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [firstName, setFirstName] = useState('');
-    const [familyName, setFamilyName] = useState('');
-    const [childName, setChildName] = useState('');
+    const { id } = useParams();
 
-    const postParent = async (parent) => {
-        console.log('Posting parent data:', JSON.stringify(parent, null, 2));
-        return fetch('/api/auth/sign-up/parent', {
+    const postParent = (parent) => {
+        console.log('Posting parent data:', parent, JSON.stringify(parent, null, 2));
+        return fetch(`/api/auth/sign-up/parent`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -25,11 +22,11 @@ function ParentAdding() {
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
-                return res.json();
+                return res.text();
             })
-            .then((data) => {
-                console.log('Server response:', data);
-                return data;
+            .then((text) => {
+                console.log('Server response:', text);
+                return text;
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -37,85 +34,29 @@ function ParentAdding() {
             });
     };
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const parentRequest = {
-            email,
-            username,
-            password,
-            firstName,
-            familyName,
-            childName,
-        };
+    const handleCreateParent = (parent) => {
+        postParent(parent)
+            .then(() => navigate("/admin/parents"))
+            .catch(error => console.error('Error:', error));
+    };
 
-        try {
-            const response = await postParent(parentRequest);
-            console.log('Registration successful:', response);
-            navigate("/admin/students")
-        } catch (error) {
-            console.error('There was an error registering the parent!', error);
-        }
+  
+
+    const goBackHandler = () => {
+        navigate("/admin/parents");
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <div>
-                <label>Email:</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-            </div>
-            <div>
-                <label>Felhasználónév:</label>
-                <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-            </div>
-            <div>
-                <label>Jelszó:</label>
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-            </div>
-            <div>
-                <label>Keresztnév:</label>
-                <input
-                    type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
-                />
-            </div>
-            <div>
-                <label>Vezetéknév:</label>
-                <input
-                    type="text"
-                    value={familyName}
-                    onChange={(e) => setFamilyName(e.target.value)}
-                    required
-                />
-            </div>
-            <div>
-                <label>Gyermek neve:</label>
-                <input
-                    type="text"
-                    value={childName}
-                    onChange={(e) => setChildName(e.target.value)}
-                    required
-                />
-            </div>
-            <button type="submit">Szülő hozzáadása</button>
-        </form>
+        <>
+            <AdminNavbar />
+            <ParentAddingForm onSave={handleCreateParent} onCancel={()=>navigate("/admin")} studentId={id}/>
+            <AButton onClick={goBackHandler}>
+                Vissza
+            </AButton>
+        </>
     );
 }
+    
+  
 
 export default ParentAdding;
