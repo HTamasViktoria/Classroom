@@ -6,4 +6,6 @@ public interface IParentRepository
 {
     IEnumerable<Parent> GetAllParents();
     Parent GetParentById(string parentId);
+    IEnumerable<Parent> GetParentsByStudentId(string id);
+
 }

@@ -21,4 +21,10 @@ public class ParentRepository : IParentRepository
     {
         return _dbContext.Parents.ToList();
     }
+    
+    
+    public IEnumerable<Parent> GetParentsByStudentId( string id)
+    {
+        return _dbContext.Parents.Where(parent => parent.StudentId == id).ToList();
+    }
 }

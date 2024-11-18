@@ -20,7 +20,7 @@ public class ParentController : ControllerBase
     
     
     [HttpGet("{id}", Name = "GetByParentId")]
-    public ActionResult<Parent> GetByTeacherId(string id)
+    public ActionResult<Parent> GetByParentId(string id)
     {
         try
         {
@@ -28,7 +28,7 @@ public class ParentController : ControllerBase
                 
             if (parent == null)
             {
-                return NotFound($"Teacher with ID {id} not found.");
+                return NotFound(new { Message = "No parent found with the given id." });
             }
             return Ok(parent);
         }
@@ -39,6 +39,25 @@ public class ParentController : ControllerBase
         }
     }
         
+    
+    [HttpGet("/api/getbyStudentId/{id}", Name = "GetByParentByStudentId")]
+    public ActionResult<IEnumerable<Parent>> GetParentsByStudentId(string id)
+    {
+        try
+        {
+            var parents = _parentRepository.GetParentsByStudentId(id);
+
+         
+            return Ok(parents);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+       
+            return StatusCode(500, new { Message = $"Internal server error: {e.Message}" });
+        }
+    }
+
         
     [HttpGet(Name = "parents")]
     public ActionResult<IEnumerable<Parent>> GetAllParents()
