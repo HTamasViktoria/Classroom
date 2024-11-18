@@ -18,8 +18,12 @@ namespace Classroom.Model.DataModels
         
         [ForeignKey("Student")]
         public string StudentId { get; set; }
-        public Student Student { get; set; }
-    
+
+     
+        public string StudentName { get; set; }
+        public string ParentId { get; set; }
+        public string ParentName { get; set; }
+
         public string Description { get; set; }
         public Subjects? Subject { get; set; }
         public string? SubjectName { get; set; }
