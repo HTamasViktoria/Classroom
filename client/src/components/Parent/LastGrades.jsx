@@ -1,20 +1,8 @@
 import React from "react";
-import { Paper, TableBody, TableRow, TableCell, CardContent } from "@mui/material";
-import {
-    StyledTableContainer,
-    StyledTable,
-    TableHeading,
-    Cell,
-    LastNotificationsBox,
-    StyledHeading,
-    LastNotificationsGrid,
-    LastNotificationsCard,
-        LastNotifLabel,
-    LastNotifInfo
-} from '../../../StyledComponents';
+import { CardContent } from "@mui/material";
+import { LastNotificationsBox, StyledHeading, LastNotificationsGrid, LastNotificationsCard, LastNotifLabel, LastNotifInfo } from '../../../StyledComponents';
 
-function LastGrades({ newGrades }) {
-    
+function LastGrades({ newGrades, onClick }) {
     return (
         <LastNotificationsBox>
             <StyledHeading>
@@ -23,7 +11,7 @@ function LastGrades({ newGrades }) {
             <LastNotificationsGrid container spacing={3}>
                 {newGrades.map((grade) => (
                     <LastNotificationsGrid item key={grade.id} xs={12} sm={6} md={4}>
-                        <LastNotificationsCard>
+                        <LastNotificationsCard onClick={() => onClick(grade)}>
                             <CardContent>
                                 <LastNotifLabel>
                                     Dátum: {new Date(grade.date).toLocaleDateString()}

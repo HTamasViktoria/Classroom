@@ -1,23 +1,27 @@
-import {StatisticsContainer} from "../../../StyledComponents.js";
+import {StatisticsContainer, StatisticsSpan} from "../../../StyledComponents.js";
 import {getAverageBySubjectFullYear, getDifference} from "../../../GradeCalculations.js";
 import ClassAverageCalculator from "./ClassAverageCalculator.jsx";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
+import AllGradesFetcher from "./AllGradesFetcher.jsx";
 
-function ParentStatistics({grades, subject, chosenMonthIndex, id, averages}){
+function ParentStatistics({subject, chosenMonthIndex, studentId}){
 
 
-    useEffect(() => {
-        console.log(`grades a ParentStatistics-ben:${grades}`)
-    }, []);
+   const [grades, setGrades] = useState([])
+    const [averages, setAverages] = useState([])
+
+
     
     return (
         <>
-        <span style={{ display: 'block' }}>
+            <AllGradesFetcher studentId={studentId} onData={(data)=>setGrades(data)}/>
+            <ClassAverageCalculator studentId={studentId} subject={subject} onData={(data)=>setAverages(data)} />
+        <StatisticsSpan>
             {`éves átlag: ${getAverageBySubjectFullYear(grades, subject)}`}
-        </span>
-            <span style={{ display: 'block' }}>
+        </StatisticsSpan>
+            <StatisticsSpan>
             {`előző hónaphoz képest: ${getDifference(grades, subject, chosenMonthIndex)}`}
-        </span>
+        </StatisticsSpan>
             <ClassAverageCalculator averages={averages} subject={subject} />
         </>
     );
