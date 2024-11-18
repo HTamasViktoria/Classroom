@@ -1,11 +1,19 @@
 import React, { useEffect } from 'react';
+import {useProfile} from "../../contexts/ProfileContext.jsx";
+function AllNotificationFetcher({ studentId, onData, refreshNeeded }) {
 
-function AllNotificationFetcher({ id, onData, refreshNeeded }) {
+    const {profile, logout} = useProfile();
+
+let id;
+    if (!id) {
+        id = localStorage.getItem('id');
+    }
     
     useEffect(() => {
-        fetch(`/api/notifications/byStudentId/${id}`)
+        fetch(`/api/notifications/byStudent/byParent/${studentId}/${id}`)
             .then(response => response.json())
             .then(data => {
+                console.log(data)
                 onData(categorizeNotifications(data));
             })
             .catch(error => console.error('Error fetching data:', error));

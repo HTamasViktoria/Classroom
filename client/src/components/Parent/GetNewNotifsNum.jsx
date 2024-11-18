@@ -1,16 +1,25 @@
 import React, { useEffect } from 'react';
-function GetNewNotifsNum({studentId, onLength, refreshNeeded}){
-    
+import { useProfile } from "../../contexts/ProfileContext.jsx";
+
+function GetNewNotifsNum({ studentId, onLength, refreshNeeded }) {
+    const { profile, logout } = useProfile();
+
   
-    
-    useEffect(()=>{
-        fetch(`/api/notifications/getNewNotifsNumber/${studentId}`)
-            .then(response=>response.json())
-            .then(data=>onLength(data))
-            .catch(error=>console.error(error))
-    },[studentId, refreshNeeded])
-    
+    let id = profile?.id;
+    if (!id) {
+        id = localStorage.getItem('id');
+    }
+
+    useEffect(() => {
+        if (id) {
+            fetch(`/api/notifications/getNewNotifsNumber/${studentId}/${id}`)
+                .then(response => response.json())
+                .then(data => onLength(data))
+                .catch(error => console.error(error));
+        }
+    }, [studentId, id, refreshNeeded]);
+
     return null;
 }
 
-export default GetNewNotifsNum
+export default GetNewNotifsNum;
