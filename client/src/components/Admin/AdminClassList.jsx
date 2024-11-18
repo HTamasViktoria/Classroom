@@ -2,7 +2,7 @@ import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, 
 import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-import { StyledButton, StyledTableHead, StyledTableCell } from "../../../StyledComponents";
+import { AButton, TableHeading, Cell } from "../../../StyledComponents";
 
 function AdminClassList(props) {
     const navigate = useNavigate();
@@ -10,42 +10,42 @@ function AdminClassList(props) {
 
     return (
         <>
-            <StyledButton
+            <AButton
                 sx={{
                     marginBottom: 2
                 }}
                 onClick={() => navigate("/add-class")}
             >
                 Új osztály létrehozása
-            </StyledButton>
+            </AButton>
             <TableContainer component={Paper} sx={{ marginTop: 2 }}>
                 <Table>
-                    <StyledTableHead>
+                    <TableHeading>
                         <TableRow>
-                            <StyledTableCell>Évfolyam</StyledTableCell>
-                            <StyledTableCell>Osztály</StyledTableCell>
-                            <StyledTableCell>Tanulók</StyledTableCell>
-                            <StyledTableCell>Műveletek</StyledTableCell>
+                            <Cell>Évfolyam</Cell>
+                            <Cell>Osztály</Cell>
+                            <Cell>Tanulók</Cell>
+                            <Cell>Műveletek</Cell>
                         </TableRow>
-                    </StyledTableHead>
+                    </TableHeading>
                     <TableBody>
                         {props.classes.map((classItem) => (
                             <TableRow key={classItem.id}>
                                 <TableCell>{classItem.grade}</TableCell>
                                 <TableCell>{classItem.section}</TableCell>
                                 <TableCell>
-                                    <StyledButton
+                                    <AButton
                                         onClick={() => props.onViewStudents(classItem.id, classItem.name)}
                                     >
                                         Diákok megtekintése
-                                    </StyledButton>
+                                    </AButton>
                                 </TableCell>
                                 <TableCell>
-                                    <StyledButton
+                                    <AButton
                                         onClick={() => props.onAddStudent(classItem.id, classItem.name)}
                                     >
                                         Diák hozzáadása az osztályhoz
-                                    </StyledButton>
+                                    </AButton>
                                 </TableCell>
                             </TableRow>
                         ))}

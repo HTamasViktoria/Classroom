@@ -1,5 +1,5 @@
 import React from 'react';
-import { CustomBox, StyledTableCell, StyledTableHead } from '../../../StyledComponents';
+import { CustomBox, Cell, TableHeading } from '../../../StyledComponents';
 import { useNavigate } from "react-router-dom";
 import { Box, Table, TableBody, TableContainer, TableRow, TableCell, Paper, Typography } from "@mui/material";
 
@@ -18,15 +18,15 @@ function AdminTeacherList({ teachers }) {
             </Typography>
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="teachers table">
-                    <StyledTableHead>
+                    <TableHeading>
                         <TableRow>
-                            {['ID', 'Családnév', 'Keresztnév'].map((header) => (
-                                <StyledTableCell key={header}>
+                            {['Családnév', 'Keresztnév'].map((header) => (
+                                <Cell key={header}>
                                     {header}
-                                </StyledTableCell>
+                                </Cell>
                             ))}
                         </TableRow>
-                    </StyledTableHead>
+                    </TableHeading>
                     <TableBody>
                         {teachers.map((teacher) => (
                             <TableRow
@@ -39,7 +39,6 @@ function AdminTeacherList({ teachers }) {
                                     }
                                 }}
                             >
-                                <TableCell>{teacher.id}</TableCell>
                                 <TableCell>{teacher.familyName}</TableCell>
                                 <TableCell>{teacher.firstName}</TableCell>
                             </TableRow>

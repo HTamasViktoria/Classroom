@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
 import AddingTeacherSubjectForm from "./AddingTeacherSubjectForm.jsx";
 
 function AddingTeacherSubject(props) {
-    const navigate = useNavigate();
-
     const [subjects, setSubjects] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState(null);
     const [classes, setClasses] = useState([]);
@@ -15,6 +12,7 @@ function AddingTeacherSubject(props) {
             try {
                 const subjectsData = await fetchSubjects();
                 const classesData = await fetchClasses();
+                console.log(subjectsData);
                 setSubjects(subjectsData);
                 setClasses(classesData);
             } catch (error) {
@@ -50,14 +48,6 @@ function AddingTeacherSubject(props) {
         }
     };
 
-    const handleSubjectClick = (subject) => {
-        setSelectedSubject(subject);
-    };
-
-    const handleClassClick = (cls) => {
-        setSelectedClass(cls);
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -70,7 +60,7 @@ function AddingTeacherSubject(props) {
             subject: selectedSubject,
             teacherId: props.teacher.id,
             classOfStudentsId: selectedClass.id,
-            className: (`${selectedClass.grade} ${selectedClass.section}`)
+            className: `${selectedClass.grade} ${selectedClass.section}`
         };
 
         try {
@@ -88,23 +78,30 @@ function AddingTeacherSubject(props) {
         } catch (error) {
             console.error('Error adding teachersubject:', error);
         } finally {
-            
             props.onSuccessfulAdding();
         }
     };
 
-    return (<>
-        <AddingTeacherSubjectForm
-            teacher={props.teacher}
-            subjects={subjects}
-            classes={classes}
-            selectedSubject={selectedSubject}
-            selectedClass={selectedClass}
-            handleSubjectClick={handleSubjectClick}
-            handleClassClick={handleClassClick}
-            handleSubmit={handleSubmit}
-        />
-       
+    const handleSubjectClick = (subjectName) => {
+        setSelectedSubject(subjectName);
+    };
+
+    const handleClassClick = (cls) => {
+        setSelectedClass(cls);
+    };
+
+    return (
+        <>
+            <AddingTeacherSubjectForm
+                teacher={props.teacher}
+                subjects={subjects}
+                classes={classes}
+                selectedSubject={selectedSubject}
+                selectedClass={selectedClass}
+                handleSubjectClick={handleSubjectClick}
+                handleClassClick={handleClassClick}
+                handleSubmit={handleSubmit}
+            />
         </>
     );
 }
