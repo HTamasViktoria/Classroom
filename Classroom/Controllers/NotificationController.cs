@@ -23,6 +23,8 @@ public class NotificationController : ControllerBase
     }
     
     [HttpGet(Name = "notifications")]
+    
+    //használom a get all-t bárhol?
     public ActionResult<IEnumerable<NotificationBase>> GetAll()
     {
         try
@@ -38,12 +40,12 @@ public class NotificationController : ControllerBase
     
     
     
-    [HttpGet("byStudentId/{id}", Name = "GetByStudentId")]
-    public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(string id)
+    [HttpGet("byStudent/byParent/{studentId}/{parentId}", Name = "GetByStudentId")]
+    public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(string studentId, string parentId)
     {
         try
         {
-            var notifications = _notificationRepository.GetByStudentId(id);
+            var notifications = _notificationRepository.GetByStudentId(studentId, parentId);
         
             if (!notifications.Any())
             {
@@ -82,12 +84,12 @@ public class NotificationController : ControllerBase
     }
     
     
-    [HttpGet("lastsByStudentId/{id}", Name = "GetLastsByStudentId")]
-    public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(string id)
+    [HttpGet("lastsByStudentId/{studentId}/{parentId}", Name = "GetLastsByStudentId")]
+    public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(string studentId, string parentId)
     {
         try
         {
-            var notifications = _notificationRepository.GetLastsByStudentId(id);
+            var notifications = _notificationRepository.GetLastsByStudentId(studentId, parentId);
         
             if (!notifications.Any())
             {
@@ -104,12 +106,12 @@ public class NotificationController : ControllerBase
     }
 
 
-    [HttpGet("getNewNotifsNumber/{id}", Name = "GetNewNotifsNumber")]
-    public ActionResult<int> GetNewNotifsNumber(string id)
+    [HttpGet("getNewNotifsNumber/{studentId}/{parentId}", Name = "GetNewNotifsNumber")]
+    public ActionResult<int> GetNewNotifsNumber(string studentId, string parentId)
     {
         try
         {
-            var newNotifsNumber = _notificationRepository.GetNewNotifsNumber(id);
+            var newNotifsNumber = _notificationRepository.GetNewNotifsNumber(studentId, parentId);
             return Ok(newNotifsNumber);
         }
         catch (Exception ex)
@@ -120,12 +122,12 @@ public class NotificationController : ControllerBase
     }
 
     
-    [HttpGet("newNotifsByStudentId/{id}", Name = "GetNewNotifsByStudentId")]
-    public ActionResult<IEnumerable<NotificationBase>> GetNewNotifsByStudentId(string id)
+    [HttpGet("newNotifsByStudentId/{studentId}/{parentId}", Name = "GetNewNotifsByStudentId")]
+    public ActionResult<IEnumerable<NotificationBase>> GetNewNotifsByStudentId(string studentId, string parentId)
     {
         try
         {
-            var notifications = _notificationRepository.GetNewNotifsByStudentId(id);
+            var notifications = _notificationRepository.GetNewNotifsByStudentId(studentId, parentId);
         
             if (!notifications.Any())
             {
@@ -163,6 +165,30 @@ public class NotificationController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+    
+   
+    [HttpGet("newestByTeacherId/{id}", Name = "GetNewestByTeacherId")]
+    public ActionResult<NotificationBase> GetNewestByTeacherId(string id)
+    {
+        try
+        {
+            var notification = _notificationRepository.GetNewestByTeacherId(id);
+        Console.WriteLine(notification);
+            if (notification == null)
+            {
+             
+                return Ok((NotificationBase?)null);
+            }
+        
+            return Ok(notification);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
 
 
     [HttpPost("add")]

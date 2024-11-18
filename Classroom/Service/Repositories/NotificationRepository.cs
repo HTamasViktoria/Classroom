@@ -22,17 +22,34 @@ public class NotificationRepository : INotificationRepository
     }
 
 
-    public IEnumerable<NotificationBase> GetByStudentId(string id)
+    public IEnumerable<NotificationBase> GetByStudentId(string studentId, string parentId)
     {
-        return _dbContext.Notifications
-            .Where(n => n.StudentId == id)
+       
+        var notifications = _dbContext.Notifications
+            .Where(n => n.StudentId == studentId)
             .ToList();
-    }
-    public int GetNewNotifsNumber(string id)
-    {
-        return _dbContext.Notifications.Where(n => (n.StudentId == id) && n.Read == false).Count();
-    }
+
    
+        if (!string.IsNullOrEmpty(parentId))
+        {
+           
+            notifications = notifications
+                .Where(n => n.ParentId == parentId)
+                .ToList();
+        }
+
+        return notifications;
+    }
+
+    
+    public int GetNewNotifsNumber(string studentId, string parentId) 
+    {
+        
+        return _dbContext.Notifications
+            .Where(n => n.StudentId == studentId && n.ParentId == parentId && !n.Read)
+            .Count();
+    }
+
 
     
     public IEnumerable<NotificationBase> GetByTeacherId(string id)
@@ -47,29 +64,28 @@ public class NotificationRepository : INotificationRepository
 
     
     
-    public IEnumerable<NotificationBase> GetNewNotifsByStudentId(string id)
+    public IEnumerable<NotificationBase> GetNewNotifsByStudentId(string studentId, string parentId)
     {
         return _dbContext.Notifications
-            .Where(n => (n.StudentId == id) && n.Read == false)
-            .OrderByDescending(not => not.Date)
+            .Where(n => n.StudentId == studentId && n.ParentId == parentId && !n.Read)
+            .OrderByDescending(n => n.Date)
             .ToList();
     }
 
-    public IEnumerable<NotificationBase> GetLastsByStudentId(string id)
+
+    public IEnumerable<NotificationBase> GetLastsByStudentId(string studentId, string parentId)
     {
         return _dbContext.Notifications
-            .Where(n => (n.StudentId == id) && n.Read == false)
-            .OrderByDescending(not => not.Date)
+            .Where(n => n.StudentId == studentId && n.ParentId == parentId && !n.Read)
+            .OrderByDescending(n => n.Date)
             .Take(3)
             .ToList();
     }
-    
-    
+
     public IEnumerable<NotificationResponse> GetLastsByTeacherId(string id)
     {
         var notifications = _dbContext.Notifications
             .Where(not => not.TeacherId == id)
-            .Include(not => not.Student)
             .OrderByDescending(not => not.Date)
             .ToList();
 
@@ -81,8 +97,9 @@ public class NotificationRepository : INotificationRepository
             Type = not.Type,
             Date = not.Date,
             DueDate = not.DueDate,
-            StudentId = not.StudentId,
-            Student = not.Student,
+            StudentId = not.StudentId, 
+            ParentName = not.ParentName,
+            StudentName = not.StudentName,
             Description = not.Description,
             SubjectName = not.SubjectName,
             Read = not.Read,
@@ -92,14 +109,28 @@ public class NotificationRepository : INotificationRepository
     }
 
 
-   public void Add(NotificationRequest request)
-{
-    var allStudents = _dbContext.Students.ToList();
     
+    public NotificationBase? GetNewestByTeacherId(string teacherId)
+    {
+        return _dbContext.Notifications
+            .Where(notification => notification.TeacherId == teacherId)
+            .OrderByDescending(notification => notification.Date)
+            .FirstOrDefault();
+    }
+
+
+
+ public void Add(NotificationRequest request)
+{
+  
+    var allStudents = _dbContext.Students.ToList(); 
+    
+  
     var students = allStudents
         .Where(s => request.StudentIds.Contains(s.Id.ToString()))
         .ToList();
 
+    
     if (request.Type != "OtherNotification")
     {
         if (string.IsNullOrEmpty(request.Subject))
@@ -114,24 +145,38 @@ public class NotificationRepository : INotificationRepository
         
         foreach (var student in students)
         {
-            var notification = new NotificationBase
-            {
-                TeacherId = request.TeacherId,
-                TeacherName = request.TeacherName,
-                Type = request.Type,
-                Date = request.Date,
-                DueDate = request.DueDate,
-                StudentId = student.Id,
-                Student = student,
-                Read = request.Read,
-                OfficiallyRead = request.OfficiallyRead,
-                Description = request.Description,
-                SubjectName = request.Subject,
-                Subject = subjectEnum,
-                OptionalDescription = request.OptionalDescription
-            };
+            
+            var studentName = $"{student.FirstName} {student.FamilyName}";
 
-            _dbContext.Notifications.Add(notification);
+    
+            var parents = _dbContext.Parents
+                .Where(p => p.StudentId == student.Id)
+                .ToList();
+
+            foreach (var parent in parents)
+            {
+                
+                var notification = new NotificationBase
+                {
+                    TeacherId = request.TeacherId,
+                    TeacherName = request.TeacherName,
+                    Type = request.Type,
+                    Date = request.Date,
+                    DueDate = request.DueDate,
+                    StudentId = student.Id,
+                    StudentName = studentName,
+                    ParentId = parent.Id, 
+                    ParentName = $"{parent.FamilyName} {parent.FirstName}",
+                    Read = request.Read,
+                    OfficiallyRead = request.OfficiallyRead,
+                    Description = request.Description,
+                    SubjectName = request.Subject,
+                    Subject = subjectEnum,
+                    OptionalDescription = request.OptionalDescription
+                };
+
+                _dbContext.Notifications.Add(notification);
+            }
         }
         
         _dbContext.SaveChanges();
@@ -140,28 +185,43 @@ public class NotificationRepository : INotificationRepository
     {
         foreach (var student in students)
         {
-            var notification = new NotificationBase
-            {
-                TeacherId = request.TeacherId,
-                TeacherName = request.TeacherName,
-                Type = request.Type,
-                Date = request.Date,
-                DueDate = request.DueDate,
-                StudentId = student.Id,
-                Student = student,
-                Read = request.Read,
-                OfficiallyRead = request.OfficiallyRead,
-                Description = request.Description,
-                SubjectName = request.Subject,
-                OptionalDescription = request.OptionalDescription
-            };
+           
+            var studentName = $"{student.FirstName} {student.FamilyName}";
 
-            _dbContext.Notifications.Add(notification);
+            
+            var parents = _dbContext.Parents
+                .Where(p => p.StudentId == student.Id)
+                .ToList();
+
+            foreach (var parent in parents)
+            {
+                
+                var notification = new NotificationBase
+                {
+                    TeacherId = request.TeacherId,
+                    TeacherName = request.TeacherName,
+                    Type = request.Type,
+                    Date = request.Date,
+                    DueDate = request.DueDate,
+                    StudentId = student.Id,
+                    StudentName = studentName,
+                    ParentId = parent.Id,
+                    ParentName = $"{parent.FamilyName} {parent.FirstName}",
+                    Read = request.Read,
+                    OfficiallyRead = request.OfficiallyRead,
+                    Description = request.Description,
+                    SubjectName = request.Subject,
+                    OptionalDescription = request.OptionalDescription
+                };
+
+                _dbContext.Notifications.Add(notification);
+            }
         }
-        
+
         _dbContext.SaveChanges();
     }
 }
+
 
 
 
