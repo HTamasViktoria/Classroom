@@ -8,5 +8,6 @@ public class ParentRequest
     public string FirstName { get; set; }
     public string FamilyName { get; set; }
     public string ChildName { get; set; }
+    public string StudentId { get; set; }
 }
 
