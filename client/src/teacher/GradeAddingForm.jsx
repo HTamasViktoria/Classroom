@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
-import { Stack, Typography } from "@mui/material";
-import { StyledButton, StyledFormControl, StyledSelect, StyledTextField } from "../../../StyledComponents";
-import SubjectSelector from "./SubjectSelector.jsx";
-import StudentSelector from "./StudentSelector.jsx";
-import DateSelector from "./DateSelector.jsx";
-import GradeValueSelector from "./GradeValueSelector.jsx";
-import ForWhatSelector from "./ForWhatSelector.jsx";
+import {useState } from "react";
+import { AButton, BButton, GradeAddingHeading, GradeAddingStack } from "../../StyledComponents";
+import SubjectSelector from "../components/Teacher/SubjectSelector.jsx";
+import StudentSelector from "../components/Teacher/StudentSelector.jsx";
+import DateSelector from "../components/Teacher/DateSelector.jsx";
+import GradeValueSelector from "../components/Teacher/GradeValueSelector.jsx";
+import ForWhatSelector from "../components/Teacher/ForWhatSelector.jsx";
 import { useNavigate } from 'react-router-dom';
+import {useParams} from "react-router-dom";
 
-function GradeAddingForm({ teacherId, onGoBack }) {
-    const [students, setStudents] = useState([]);
-    const [teacherSubjects, setTeacherSubjects] = useState([]);
+function GradeAddingForm() {
+  
+    const {id} = useParams();
+    const navigate = useNavigate();
+    
     const [selectedStudentId, setSelectedStudentId] = useState("");
     const [selectedSubjectId, setSelectedSubjectId] = useState("");
     const [selectedSubjectName, setSelectedSubjectName] = useState("");
@@ -18,28 +20,15 @@ function GradeAddingForm({ teacherId, onGoBack }) {
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedForWhat, setSelectedForWhat] = useState("")
 
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        fetch(`/api/teacherSubjects/getByTeacherId/${teacherId}`)
-            .then(response => response.json())
-            .then(data => {
-                setTeacherSubjects(data);
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    }, [teacherId]);
+   
+    
 
     const studentChangeHandler = (e) => setSelectedStudentId(e.target.value);
 
+  
     const subjectChangeHandler = (subjectId, subjectName) => {
         setSelectedSubjectId(subjectId);
-        setSelectedSubjectName(subjectName);
-        fetch(`/api/teacherSubjects/getStudentsByTeacherSubjectId/${subjectId}`)
-            .then(response => response.json())
-            .then(data => {
-                setStudents(data);
-            })
-            .catch(error => console.error('Error fetching data:', error));
+        setSelectedSubjectName(subjectName);       
     };
 
     const gradeChangeHandler = (e) => setSelectedGrade(e.target.value);
@@ -55,10 +44,11 @@ function GradeAddingForm({ teacherId, onGoBack }) {
         const formattedDate = new Date(selectedDate).toISOString();
 
         const gradeData = {
-            teacherId: teacherId.toString(),
-            studentId: selectedStudentId.toString(),
+            teacherId: id,
+            studentId: selectedStudentId,
             subject: selectedSubjectName,
             forWhat: selectedForWhat,
+            read: false,
             value: selectedGrade,
             date: formattedDate
         };
@@ -76,26 +66,29 @@ function GradeAddingForm({ teacherId, onGoBack }) {
             })
             .then(data => {
                 console.log('Grade added:', data);
-                onGoBack();
+                alert("Jegy sikeresen hozzáadva")
+                navigate(`/teacher/grades/${id}`)
             })
             .catch(error => console.error('Error adding grade:', error));
     };
 
     return (
         <>
-            <Typography variant="h4" gutterBottom>
+            <GradeAddingHeading>
                 Jegy hozzáadása
-            </Typography>
+            </GradeAddingHeading>
+            
             <form noValidate onSubmit={handleSubmit}>
-                <Stack spacing={2} width={400}>
+                <GradeAddingStack>
+                    
                     <SubjectSelector
-                        teacherSubjects={teacherSubjects}
+                        teacherId={id}
                         selectedSubjectId={selectedSubjectId}
                         onSubjectChange={subjectChangeHandler}
                     />
                     <StudentSelector
+                        selectedSubjectId={selectedSubjectId}
                         selectedStudentId={selectedStudentId}
-                        students={students}
                         handleStudentChange={studentChangeHandler}
                     />
                     <ForWhatSelector
@@ -110,17 +103,11 @@ function GradeAddingForm({ teacherId, onGoBack }) {
                         selectedDate={selectedDate}
                         onDateChange={dateChangeHandler}
                     />
-                    <StyledButton type='submit'>
+                    <AButton type='submit'>
                         Jegy hozzáadása
-                    </StyledButton>
-                    <StyledButton
-                        type='button'
-                        onClick={onGoBack}
-                        sx={{ backgroundColor: 'secondary.main' }}
-                    >
-                        Mégse
-                    </StyledButton>
-                </Stack>
+                    </AButton>
+                    <BButton onClick={()=>navigate(`/teacher/grades/${id}`)}> Mégse </BButton>
+                </GradeAddingStack>
             </form>
         </>
     );
