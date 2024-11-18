@@ -7,9 +7,13 @@ import AllNotificationFetcher from "./AllNotificationFetcher.jsx";
 
 function ParentNotificationsMain() {
     
-    const { id } = useParams();
+    let { id } = useParams();
     const navigate = useNavigate();
-    
+
+
+    if (!id) {
+        id = localStorage.getItem('id');
+    }
   
     const [chosen, setChosen] = useState("");
     const [refreshNeeded, setRefreshNeeded] = useState(false);
@@ -29,7 +33,7 @@ function ParentNotificationsMain() {
     return (
         <>
             <ParentNavbar studentId={id} refreshNeeded={refreshNeeded} />
-            <AllNotificationFetcher id={id} onData={(data)=>setNotifications(data)} refreshNeeded={refreshNeeded}/>
+            <AllNotificationFetcher studentId={id} onData={(data)=>setNotifications(data)} refreshNeeded={refreshNeeded}/>
             
             {chosen === "" ? (
                 <>

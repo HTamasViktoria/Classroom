@@ -1,22 +1,9 @@
-import {
-    Paper,
-    TableBody,
-    TableRow,
-    TableCell,
-    TableContainer,
-} from "@mui/material";
-import {
-    TableHeading,
-    Cell,
-    NotifContainer, NotifHead, NotifTable,
-} from '../../../StyledComponents';
+import React, { useEffect } from "react";
+import { Paper, TableBody, TableRow, TableCell, TableContainer } from "@mui/material";
+import { NotifContainer, NotifHead, NotifTable, TableHeading, Cell } from "../../../StyledComponents.js";
 import NotifButtonContainer from "./NotifButtonContainer.jsx";
-import {useEffect} from "react";
 
 function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) {
-
-
-
     useEffect(() => {
         fetch(`/api/notifications/setToOfficiallyRead/${notification.id}`, {
             method: 'POST',
@@ -24,9 +11,6 @@ function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) 
             .then(response => response.json())
             .catch(error => console.error(error));
     }, [notification]);
-
-
-
 
     return (
         <NotifContainer>
@@ -57,9 +41,7 @@ function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) 
                     </TableBody>
                 </NotifTable>
             </TableContainer>
-            
-<NotifButtonContainer notification={notification} onGoBack={()=>onButtonClick()} onRefresh={onRefreshNeeded}/>
-            
+            <NotifButtonContainer notification={notification} onGoBack={onButtonClick} onRefresh={onRefreshNeeded} />
         </NotifContainer>
     );
 }
