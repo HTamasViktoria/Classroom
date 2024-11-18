@@ -1,6 +1,7 @@
 using Classroom.Model.DataModels;
 using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
+using Classroom.Model.ResponseModels;
 
 namespace Classroom.Service.Repositories;
 
@@ -17,6 +18,11 @@ public interface  IGradeRepository
     void Edit(GradeRequest request, int id);
     void Delete(int id);
     Task<IEnumerable<Grade>> GetGradesBySubjectByStudent(string subject, string studentId);
+    IEnumerable<Grade> GetNewGradesByStudentId(string studentId);
+    int GetNewGradesNumber(string id);
+    
+    Task<LatestGradeResponse> GetTeachersLastGradeAsync(string teacherId);
+    void SetToOfficiallyRead(int gradeId);
 
 
 

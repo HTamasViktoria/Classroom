@@ -1,6 +1,7 @@
 using Classroom.Model.DataModels;
 using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
+using Classroom.Model.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Classroom.Service.Repositories;
@@ -151,6 +152,72 @@ public class GradeController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+    
+    [HttpGet("teachersLast/{id}", Name = "GetTeachersLastGrade")]
+    public async Task<ActionResult<LatestGradeResponse>> GetTeachersLastGrade(string id)
+    {
+        try
+        {
+            var grade = await _gradeRepository.GetTeachersLastGradeAsync(id);
+
+            if (grade == null)
+            {
+           
+                return Ok(null);
+            }
+
+     
+            return Ok(grade);
+        }
+        catch (Exception e)
+        {
+           
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
+
+    
+    
+    [HttpGet("getNewGradesNumber/{id}", Name = "GetNewGradesNumber")]
+    public ActionResult<int> GetNewGradesNumber(string id)
+    {
+        try
+        {
+            var newGradesNumber = _gradeRepository.GetNewGradesNumber(id);
+            return Ok(newGradesNumber);
+        }
+        catch (Exception ex)
+        {
+          
+            return StatusCode(500, "Hiba történt a kérés feldolgozása során.");
+        }
+    }
+    
+    
+    [HttpGet("newGrades/{id}", Name = "GetNewGradesByStudentId")]
+    public ActionResult<IEnumerable<Grade>> GetNewGradesByStudentId(string id)
+    {
+        try
+        {
+            var grades = _gradeRepository.GetNewGradesByStudentId(id);
+    
+            if (grades == null)
+            {
+                return NotFound($"Unread grades with student ID {id} not found.");
+            }
+    
+            return Ok(grades);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+    
+    
 
     
     
@@ -201,7 +268,7 @@ public class GradeController : ControllerBase
 
     
     
-    [HttpGet("class-averages/{studentId}")]
+    [HttpGet("class-averages/byStudent/{studentId}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesByStudentId(string studentId)
     {
         try
@@ -216,7 +283,7 @@ public class GradeController : ControllerBase
     }
     
     
-    [HttpGet("class-average/{subject}")]
+    [HttpGet("class-averages/bySubject/{subject}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesBySubject(string subject)
     {
         try
@@ -235,6 +302,20 @@ public class GradeController : ControllerBase
         }
     }
 
+    [HttpPost("setToOfficiallyRead/{id}")]
+    public ActionResult SetToOfficiallyRead(int id)
+    {
+        try
+        {
+            _gradeRepository.SetToOfficiallyRead(id);
+            return Ok(new { message = "Grade marked as officially read." });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, e.Message);
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
 
     
     

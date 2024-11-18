@@ -2,6 +2,7 @@ using Classroom.Data;
 using Classroom.Model.DataModels;
 using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
+using Classroom.Model.ResponseModels;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -11,10 +12,12 @@ namespace Classroom.Service.Repositories;
 public class GradeRepository : IGradeRepository
 {
     private ClassroomContext _dbContext;
+    private IUserRepository _userRepository;
     
-    public GradeRepository(ClassroomContext context)
+    public GradeRepository(ClassroomContext context, IUserRepository userRepository)
     {
         _dbContext = context;
+        _userRepository = userRepository;
     }
 
     public IEnumerable<Grade> GetAll()
@@ -63,10 +66,66 @@ public class GradeRepository : IGradeRepository
         _dbContext.SaveChanges();
     }
 
+    
     public IEnumerable<Grade> GetByStudentId(string studentId)
     {
         return _dbContext.Grades.Where(grade => grade.StudentId == studentId).ToList();
     }
+    
+    
+
+    public async Task<LatestGradeResponse> GetTeachersLastGradeAsync(string teacherId)
+    {
+        
+        var grade = await _dbContext.Grades
+            .Where(g => g.TeacherId == teacherId)
+            .OrderByDescending(g => g.Date)
+            .FirstOrDefaultAsync();
+
+        if (grade == null)
+        {
+            return null;
+        }
+
+        var studentFullName = _userRepository.GetStudentFullNameById(grade.StudentId);
+        
+        if (string.IsNullOrEmpty(studentFullName))
+        {
+            return null;
+        }
+        
+        var gradeResponse = new LatestGradeResponse
+        {
+            Id = grade.Id,
+            TeacherId = grade.TeacherId,
+            StudentId = grade.StudentId,
+            StudentName = studentFullName,
+            Subject = grade.Subject,
+            ForWhat = grade.ForWhat,
+            Read = grade.Read,
+            Value = grade.Value,
+            Date = grade.Date
+        };
+
+        return gradeResponse;
+    }
+
+    
+    
+    public IEnumerable<Grade> GetNewGradesByStudentId(string studentId)
+    {
+        return _dbContext.Grades.Where(grade => grade.StudentId == studentId && grade.Read == false).
+            OrderByDescending(grade=>grade.Date).ToList();
+    }
+    
+    
+    public int GetNewGradesNumber(string id)
+    {
+         return _dbContext.Grades.Where(grade => grade.StudentId == id && grade.Read == false).
+                    Count();
+    }
+
+    
     
     public void Delete(int id)
     {
@@ -85,43 +144,46 @@ public class GradeRepository : IGradeRepository
     public async Task<Dictionary<string, double>> GetClassAveragesBySubject(string subject)
     {
         var classAverages = new Dictionary<string, double>();
-        
+    
+
         var teacherSubjects = await _dbContext.TeacherSubjects
             .Include(ts => ts.ClassOfStudents)
             .Where(ts => ts.Subject == subject)
             .ToListAsync();
-        
+    
         var classGroups = teacherSubjects
             .GroupBy(ts => ts.ClassOfStudentsId)
             .ToList();
 
-    
         foreach (var classGroup in classGroups)
         {
             var classId = classGroup.Key;
+            var className = classGroup.First().ClassOfStudents.Name;
             var studentIds = await _dbContext.ClassesOfStudents
                 .Where(c => c.Id == classId)
                 .SelectMany(c => c.Students.Select(s => s.Id))
                 .ToListAsync();
-            
+        
+  
             var grades = await _dbContext.Grades
-                .Where(g => studentIds.Contains(g.Id.ToString()) && g.Subject == subject)
+                .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
                 .ToListAsync();
-            
+  
             if (grades.Count == 0)
             {
-                classAverages[classGroup.First().ClassOfStudents.Name] = 0;
+                classAverages[className] = 0;
                 continue;
             }
-            
+        
             var average = grades.Average(g => (double)g.Value);
             var roundedAverage = Math.Round(average, 2);
 
-            classAverages[classGroup.First().ClassOfStudents.Name] = roundedAverage;
+            classAverages[className] = roundedAverage;
         }
 
         return classAverages;
     }
+
 
 
     public async Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject)
@@ -268,7 +330,19 @@ public class GradeRepository : IGradeRepository
     }
     
     
-    
+    public void SetToOfficiallyRead(int gradeId)
+    {
+        var grade = _dbContext.Grades.FirstOrDefault(g => g.Id == gradeId);
+
+        if (grade == null)
+        {
+            throw new ArgumentException($"Grade with ID {gradeId} not found.");
+        }
+
+        grade.Read = true;
+        _dbContext.SaveChanges();
+    }
+
     
     
     
