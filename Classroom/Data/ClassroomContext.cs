@@ -24,23 +24,42 @@ namespace Classroom.Data
         {
             base.OnModelCreating(modelBuilder);
 
+    
             modelBuilder.Entity<Student>()
                 .HasMany(s => s.Grades)
                 .WithOne()
                 .HasForeignKey("StudentId")
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Student>()
-                .HasMany(s => s.Notifications)
-                .WithMany(n => n.Students)
-                .UsingEntity(j => j.ToTable("StudentNotifications"));
+       
+            modelBuilder.Entity<NotificationBase>()
+                .HasOne<Student>()
+                .WithMany(s => s.Notifications)
+                .HasForeignKey(n => n.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+        
+            modelBuilder.Entity<Parent>()
+                .HasOne(p => p.Student)
+                .WithMany()
+                .HasForeignKey(p => p.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+     
+            modelBuilder.Entity<NotificationBase>()
+                .HasOne<Parent>()
+                .WithMany()
+                .HasForeignKey(n => n.ParentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+          
             modelBuilder.Entity<ClassOfStudents>()
                 .HasMany(c => c.Students)
                 .WithOne()
                 .HasForeignKey("ClassOfStudentsId")
                 .OnDelete(DeleteBehavior.Restrict);
 
+           
             modelBuilder.Entity<TeacherSubject>()
                 .HasOne(ts => ts.ClassOfStudents)
                 .WithMany()
@@ -52,6 +71,13 @@ namespace Classroom.Data
                 .WithMany()
                 .HasForeignKey(ts => ts.TeacherId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            
+            modelBuilder.Entity<Parent>()
+                .HasOne(p => p.Student)
+                .WithMany()
+                .HasForeignKey(p => p.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
