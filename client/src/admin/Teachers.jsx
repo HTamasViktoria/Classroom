@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import AdminTeacherList from "../components/Admin/AdminTeacherList.jsx";
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
-import { StyledButton } from "../../StyledComponents";
+import { AButton } from "../../StyledComponents";
 
 function Teachers() {
     const navigate = useNavigate();
@@ -16,25 +16,23 @@ function Teachers() {
             .catch(error => console.error('Error fetching data:', error));
     }, []);
 
-    const goBackHandler = () => {
-        navigate("/admin");
-    }
+
 
     return (
         <>
             <AdminNavbar />
-            <StyledButton
+            <AButton
                 onClick={() => navigate("/add-teacher")}
             >
                 Tanár hozzáadása
-            </StyledButton>
+            </AButton>
 
             <AdminTeacherList teachers={allTeachers} />
-            <StyledButton
-                onClick={goBackHandler}
+            <AButton
+                onClick={()=>navigate("/admin")}
             >
                 Vissza
-            </StyledButton>
+            </AButton>
         </>
     );
 }
