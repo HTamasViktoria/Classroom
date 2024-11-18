@@ -9,6 +9,7 @@ public class GradeRequest
     public string StudentId { get; init; }
     public string Subject { get; init; }
     public string ForWhat { get; set; }
+    public bool Read { get; set; }
     public string Value { get; init; }
     public string Date { get; init; }
 }
