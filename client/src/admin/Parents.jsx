@@ -1,52 +1,50 @@
-import React, {useState, useEffect} from "react";
-import { Box, Typography, Table, TableBody, TableContainer, TableHead, TableRow, Paper, TableCell } from "@mui/material";
-import { CustomBox, StyledTableCell, StyledTableHead } from '../../StyledComponents';
+import React, { useState, useEffect } from "react";
+import { Typography, TableBody, TableCell } from "@mui/material";
+import { CustomBox, Cell, TableHeading, StyledHeading, PaperTableContainer, StyledTable, StyledTableRow } from '../../StyledComponents';
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
-function Parents(){
 
-    const [parents, setParents] = useState([])
-    
-    useEffect(()=>{
+function Parents() {
+    const [parents, setParents] = useState([]);
+
+    useEffect(() => {
         fetch(`/api/parents`)
-            .then(response=>response.json())
-            .then(data=> {
-                console.log(data)
-                setParents(data)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setParents(data);
             })
-            .catch(error=>console.error(error))
-    },[])
-    
-    return(<><AdminNavbar/>
-        <CustomBox>
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>
-                Szülők
-            </Typography>
-            <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 650 }} aria-label="students table">
-                    <StyledTableHead>
-                        <TableRow>
-                            {[ 'Családnév', 'Keresztnév', 'Gyermek neve', 'Email-cím' ].map((header) => (
-                                <StyledTableCell key={header}>
-                                    {header}
-                                </StyledTableCell>
+            .catch(error => console.error(error));
+    }, []);
+
+    return (
+        <>
+            <AdminNavbar />
+            <CustomBox>
+                <StyledHeading>Szülők</StyledHeading>
+                <PaperTableContainer>
+                    <StyledTable aria-label="students table">
+                        <TableHeading>
+                            <StyledTableRow>
+                                {['Családnév', 'Keresztnév', 'Gyermek neve', 'Email-cím'].map((header) => (
+                                    <Cell key={header}>{header}</Cell>
+                                ))}
+                            </StyledTableRow>
+                        </TableHeading>
+                        <TableBody>
+                            {parents.map((parent) => (
+                                <StyledTableRow key={parent.id}>
+                                    <TableCell>{parent.familyName}</TableCell>
+                                    <TableCell>{parent.firstName}</TableCell>
+                                    <TableCell>{parent.childName}</TableCell>
+                                    <TableCell>{parent.email}</TableCell>
+                                </StyledTableRow>
                             ))}
-                        </TableRow>
-                    </StyledTableHead>
-                    <TableBody>
-                        {parents.map((parent) => (
-                            <TableRow key={parent.id}>
-                                <TableCell>{parent.familyName}</TableCell>
-                                <TableCell>{parent.firstName}</TableCell>
-                                <TableCell>{parent.childName}</TableCell>
-                                <TableCell>{parent.email}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </CustomBox>
-    
-    </>)
+                        </TableBody>
+                    </StyledTable>
+                </PaperTableContainer>
+            </CustomBox>
+        </>
+    );
 }
 
-export default Parents
+export default Parents;
