@@ -1,15 +1,19 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { useProfile } from '../contexts/ProfileContext.jsx';
+import { useProfile } from './ProfileContext.jsx';
 
 const ProtectedRoute = ({ element, allowedRoles = [] }) => {
-    const { profile, isAuthenticated } = useProfile();
+    const { profile} = useProfile();
 
- 
-    const isAuthorized = isAuthenticated &&
-        profile?.role && 
+  
+  
+  const actualRole = localStorage.getItem('role')
+    const isAuthorized = localStorage.getItem('isLoggedIn') &&
+        actualRole &&
         allowedRoles.length > 0 &&
-        allowedRoles.includes(profile.role);
+        allowedRoles.includes(actualRole);
+    
+
 
     return isAuthorized ? element : <Navigate to="/signin" />;
 };

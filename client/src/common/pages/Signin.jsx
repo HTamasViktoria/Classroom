@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useProfile } from "../../contexts/ProfileContext.jsx";
 import { useNavigate } from 'react-router-dom';
+import { StyledInput, AButton, ErrorMessage, StyledForm } from "../../../StyledComponents";
 
 function Signin() {
     const navigate = useNavigate();
@@ -15,35 +16,15 @@ function Signin() {
         try {
             const response = await fetch('/api/auth/sign-in', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('Login successful:', data);
-
-              
                 setProfile(data);
                 login(data);
-
-              
-                if (data.role === "Admin") {
-                    navigate('/admin');
-                } else {
-                  
-                    if (data.role === "Parent") {
-                        navigate(`/parent/${data.studentId}`);
-                    } else if (data.role === "Student") {
-                        navigate(`/student/${data.studentId}`);
-                    } else if(data.role === "Teacher"){
-                        navigate(`/teacher/${data.id}`);
-                    }else{
-                       console.log("Nincs ilyen role")
-                    }
-                }
+                navigateBasedOnRole(data);
             } else {
                 throw new Error('Sign-in failed');
             }
@@ -53,14 +34,28 @@ function Signin() {
         }
     };
 
+    const navigateBasedOnRole = (data) => {
+        const { role, studentId, id } = data;
+        const roleRoutes = {
+            Admin: '/admin',
+            Parent: `/parent/${studentId}`,
+            Student: `/student/${studentId}`,
+            Teacher: `/teacher/${id}`,
+        };
+
+        const route = roleRoutes[role];
+        if (route) navigate(route);
+        else console.log("Nincs ilyen role");
+    };
+
     return (
         <div>
             <h2>Bejelentkezés</h2>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <form onSubmit={handleSubmit}>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+            <StyledForm onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="email">Email:</label>
-                    <input
+                    <StyledInput
                         type="email"
                         id="email"
                         value={email}
@@ -70,7 +65,7 @@ function Signin() {
                 </div>
                 <div>
                     <label htmlFor="password">Jelszó:</label>
-                    <input
+                    <StyledInput
                         type="password"
                         id="password"
                         value={password}
@@ -78,8 +73,8 @@ function Signin() {
                         required
                     />
                 </div>
-                <button type="submit">Bejelentkezés</button>
-            </form>
+                <AButton type="submit">Bejelentkezés</AButton>
+            </StyledForm>
         </div>
     );
 }
