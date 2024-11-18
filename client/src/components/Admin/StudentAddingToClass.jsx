@@ -1,15 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Stack, Typography, CircularProgress } from "@mui/material";
 import { CustomBox } from '../../../StyledComponents';
-import StudentSelector from "../Teacher/StudentSelector.jsx";
-import {StyledButton} from '../../../StyledComponents';
-import { useTheme } from '@mui/material/styles';
+import SelectFromAllStudents from "./SelectFromAllStudents.jsx";
+import { AButton, TableHeading, CenteredStack } from '../../../StyledComponents';
 
-function StudentAddingToClass(props) {
-    const theme = useTheme();
+function StudentAddingToClass({ classId, className, onSuccessfulAdding }) {
+
     const [students, setStudents] = useState([]);
     const [selectedStudentId, setSelectedStudentId] = useState('');
-    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetch('/api/students')
@@ -21,22 +18,15 @@ function StudentAddingToClass(props) {
             })
             .then(data => {
                 setStudents(data);
-                setLoading(false);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
-                setLoading(false);
             });
     }, []);
-
-    const handleStudentChange = (e) => {
-        setSelectedStudentId(e.target.value);
-    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        
         if (!selectedStudentId) {
             alert("Kérjük, válasszon ki egy diákot.");
             return;
@@ -44,7 +34,7 @@ function StudentAddingToClass(props) {
 
         const addingStudentToClassData = {
             studentId: selectedStudentId,
-            classId: props.classId
+            classId: classId
         };
 
         fetch('/api/classes/addStudent', {
@@ -59,36 +49,30 @@ function StudentAddingToClass(props) {
                 return response.json();
             })
             .then(data => {
-                console.log('Student added:', data);
-                props.onSuccessfulAdding();
+                onSuccessfulAdding();
             })
             .catch(error => console.error('Error adding student:', error));
     };
 
     return (
         <CustomBox>
-            <Typography variant="h6" sx={{ marginBottom: 2, color: theme.palette.tertiary.main }}>
-                Diák hozzáadása az {props.className} osztályhoz
-            </Typography>
-            {loading ? (
-                <CircularProgress />
-            ) : (
-                <form noValidate onSubmit={handleSubmit}>
-                    <Stack spacing={2} width={400}>
-                        <StudentSelector
-                            selectedStudentId={selectedStudentId}
-                            students={students}
-                            handleStudentChange={handleStudentChange}
-                        />
-                        <StyledButton
-                            type='submit'
-                            variant='contained'
-                        >
-                            Hozzáad
-                        </StyledButton>
-                    </Stack>
-                </form>
-            )}
+            <TableHeading>
+                Diák hozzáadása az {className} osztályhoz
+            </TableHeading>
+            <form noValidate onSubmit={handleSubmit}>
+                <CenteredStack>
+                    <SelectFromAllStudents
+                        selectedStudentId={selectedStudentId}
+                        handleStudentChange={(e) => setSelectedStudentId(e.target.value)} // Átadjuk a változó frissítésére szolgáló funkciót
+                    />
+                    <AButton
+                        type='submit'
+                        variant='contained'
+                    >
+                        Hozzáad
+                    </AButton>
+                </CenteredStack>
+            </form>
         </CustomBox>
     );
 }

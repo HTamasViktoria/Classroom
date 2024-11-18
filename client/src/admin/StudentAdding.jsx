@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from "react-router-dom";
 import AdminNavbar from "../components/Admin/AdminNavbar.jsx";
 import StudentAddingForm from "../components/Admin/StudentAddingForm.jsx";
-import { StyledButton } from "../../StyledComponents";
+import { AButton } from "../../StyledComponents";
 
 function StudentAdding() {
     const navigate = useNavigate();
@@ -38,22 +38,16 @@ function StudentAdding() {
             .catch(error => console.error('Error:', error));
     };
 
-    const props = {
-        onSave: handleCreateStudent,
-        onCancel: () => navigate("/admin")
-    };
 
-    const goBackHandler = () => {
-        navigate("/admin/students");
-    };
+  
 
     return (
         <>
             <AdminNavbar />
-            <StudentAddingForm {...props} />
-            <StyledButton onClick={goBackHandler}>
+            <StudentAddingForm onSave={handleCreateStudent} onCancel={()=>navigate("/admin")}/>
+            <AButton onClick={()=> navigate("/admin/students")}>
                 Vissza
-            </StyledButton>
+            </AButton>
         </>
     );
 }
