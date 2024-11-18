@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { InputLabel, Select, MenuItem } from "@mui/material";
-import { StyledButton, StyledSecondaryButton, StyledFormControl, CustomBox } from '../../../StyledComponents';
+import { AButton, BButton, StyledFormControl, CustomBox } from '../../../StyledComponents';
 
 function NotificationSelector(props) {
     const [selectedValue, setSelectedValue] = useState('');
@@ -32,7 +32,7 @@ function NotificationSelector(props) {
                 </Select>
             </StyledFormControl>
 
-            <StyledButton
+            <AButton
                 variant="contained"
                 onClick={() => props.onChosenType(selectedValue)}
                 sx={{
@@ -42,9 +42,9 @@ function NotificationSelector(props) {
                 }}
             >
                 Típus kiválasztása
-            </StyledButton>
+            </AButton>
 
-            <StyledSecondaryButton
+            <BButton
                 variant="contained"
                 onClick={goBackHandler}
                 sx={{
@@ -52,7 +52,7 @@ function NotificationSelector(props) {
                 }}
             >
                 Vissza
-            </StyledSecondaryButton>
+            </BButton>
         </CustomBox>
     );
 }

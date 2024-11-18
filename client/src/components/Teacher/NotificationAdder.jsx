@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import { Button, Stack, Alert, Typography } from "@mui/material";
-import SubjectSelector from "./SubjectSelector.jsx";
-import DateSelector from "./DateSelector.jsx";
-import ChooseFromStudentsSelector from "./ChooseFromStudentsSelector.jsx";
-import DescriptionSelector from "./DescriptionSelector.jsx";
-import OptionalDescriptionSelector from "./OptionalDescriptionSelector.jsx";
-import ButtonText from "./buttonText.js";
+import React, { useState } from "react";
+import { CustomBox, CustomFlexBox, StyledStack, StyledTypography, AButton} from "../../../StyledComponents";
 import validateForm from "./validateForm.js";
-import { CustomBox, CustomFlexBox } from '../../../StyledComponents';
+import { Button, Stack, Alert, Typography } from "@mui/material";
+import ButtonText from "./buttonText.js";
+import DateSelector from "./DateSelector.jsx";
+import SubjectSelector from "./SubjectSelector.jsx";
+import DescriptionSelector from "./DescriptionSelector.jsx";
+import ChooseFromStudentsSelector from "./ChooseFromStudentsSelector.jsx";
+import OptionalDescriptionSelector from "./OptionalDescriptionSelector.jsx";
 
 function NotificationAdder(props) {
+
+    
     const [state, setState] = useState({
         selectedDate: "",
         selectedSubjectId: "",
@@ -59,9 +61,11 @@ function NotificationAdder(props) {
             description: state.description,
             studentIds: state.students,
             read: false,
+            officiallyRead: false,
             optionalDescription: state.optionalDescription,
         };
 
+        console.log(notificationData)
         fetch('/api/notifications/add', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -80,17 +84,17 @@ function NotificationAdder(props) {
 
     return (
         <CustomBox>
-            <Typography variant="h4" gutterBottom color="primary">
+            <StyledTypography variant="h4" gutterBottom color="primary">
                 Értesítés hozzáadása
-            </Typography>
-            <Stack spacing={2} direction="column">
+            </StyledTypography>
+            <StyledStack spacing={2} direction="column">
                 <CustomFlexBox>
                     <DateSelector
                         selectedDate={state.selectedDate}
                         onDateChange={dateChangeHandler}
                     />
                     <SubjectSelector
-                        teacherSubjects={props.teacherSubjects}
+                        teacherId={props.teacherId}
                         selectedSubjectId={state.selectedSubjectId}
                         onSubjectChange={subjectChangeHandler}
                     />
@@ -120,11 +124,11 @@ function NotificationAdder(props) {
                 </Button>
 
                 {state.alertMessage && (
-                    <Alert severity="error" sx={{ marginTop: 2 }}>
+                    <div>
                         {state.alertMessage}
-                    </Alert>
+                    </div>
                 )}
-            </Stack>
+            </StyledStack>
         </CustomBox>
     );
 }
