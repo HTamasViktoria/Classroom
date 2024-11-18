@@ -1,60 +1,44 @@
-import {CustomBox, StyledButton, StyledTableCell, StyledTableHead} from "../../../StyledComponents.js";
-import {ListItem, Table, TableContainer, TableRow, TableBody, TableCell} from "@mui/material";
+
 import {useEffect, useState} from "react";
 import EditingMain from "./EditingMain.jsx";
 import GradeEditForm from "./GradeEditForm.jsx";
 
-
 function EditGrades({teacherId, subject, studentId, studentName, onGoBack, onRefresh}) {
 
-    const [isEditing, setIsEditing] = useState(false)
-    const [editingGrade, setEditingGrade] = useState("")
-    const [gradesOfThisSubject, setGradesOfThisSubject] = useState([])
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingGrade, setEditingGrade] = useState("");
+    const [gradesOfThisSubject, setGradesOfThisSubject] = useState([]);
+    const [refreshNeeded, setRefreshNeeded] = useState(false)
 
-    
-    
-    useEffect(()=>{
+    useEffect(() => {
         fetch(`/api/grades/getGradesBySubjectByStudent/${subject}/${studentId}`)
-            .then(response=>response.json())
-            .then(data=>{
-                console.log(data)
-                setGradesOfThisSubject(data)
+            .then(response => response.json())
+            .then(data => {
+                setGradesOfThisSubject(data);
             })
-            .catch(error=>console.error(error))
-    })
-    
-    const editHandler = (id) => {
-        const gradeToEdit = gradesOfThisSubject.find((grade) => grade.id === id)
-        setEditingGrade(gradeToEdit)
-        setIsEditing(true)
-    }
+            .catch(error => console.error(error));
+    }, [subject, studentId, refreshNeeded]);
 
+   const refreshHandler=()=>{setRefreshNeeded((prevState) => !prevState)}
 
-    const goBackHandler = () => {
-        onGoBack()
-    }
-    
-    const backFromEditFormHandler=()=>{
-        setIsEditing(false)
-    }
-    
-    const refreshHandler=()=>{
-     
-        onRefresh()
-    }
-    
-    return(<>
-        {isEditing ? 
-            (<GradeEditForm grade={editingGrade} onGoBack={backFromEditFormHandler} onRefreshing={refreshHandler}/>) : 
-            (<EditingMain teacherId={teacherId} 
-                          grades={gradesOfThisSubject} 
-                          studentId={studentId} 
-                          studentName={studentName} 
-                          subject={subject}
-                          onEditChosen={editHandler} 
-                          onGoingBack={goBackHandler}  
-                          onRefreshing={refreshHandler}/>) }
-    </>)
+    return (
+        <>
+            {isEditing ?
+                (<GradeEditForm grade={editingGrade} onGoBack={()=>setIsEditing(false)}
+                                onRefreshing={refreshHandler}/>) :
+                (<EditingMain
+                    teacherId={teacherId}
+                    gradesOfThisSubject={gradesOfThisSubject}
+                    studentId={studentId}
+                    studentName={studentName}
+                    subject={subject}
+                    onEditing={()=>setIsEditing(true)}
+                    onEditingGrade={(grade)=>setEditingGrade(grade)}
+                    onGoingBack={()=>onGoBack()}
+                    onRefreshing={refreshHandler}
+                />)}
+        </>
+    );
 }
 
-export default EditGrades
+export default EditGrades;

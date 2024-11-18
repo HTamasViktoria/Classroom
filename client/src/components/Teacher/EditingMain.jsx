@@ -1,20 +1,14 @@
 import {Table, TableBody, TableCell, TableContainer, TableRow} from "@mui/material";
-import {StyledButton, StyledTableCell, StyledTableHead} from "../../../StyledComponents.js";
+import {AButton, Cell, TableHeading} from "../../../StyledComponents.js";
 
-function EditingMain({onEditChosen, onGoingBack, teacherId, grades, studentName, studentId, onRefreshing, subject}) {
-
-
-   const editHandler=(id)=>{
-       onEditChosen(id)
-   }
+function EditingMain({onEditingGrade, onEditing, onGoingBack, teacherId, gradesOfThisSubject, studentName, studentId, onRefreshing, subject}) {
 
     const deleteHandler = (id) => {
         fetch(`/api/grades/delete/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-            },
- 
+            }, 
         })
             .then(response => {
                 if (!response.ok) {
@@ -23,7 +17,6 @@ function EditingMain({onEditChosen, onGoingBack, teacherId, grades, studentName,
                 return response.json();
             })
             .then(data => {
-                console.log(data.message);
                 onRefreshing()
             })
             .catch(error => {
@@ -33,36 +26,73 @@ function EditingMain({onEditChosen, onGoingBack, teacherId, grades, studentName,
 
 
 
-    const goBackHandler=()=>{
-       onGoingBack()
- }
+    const getCurrentTerm = () => {
+        const now = new Date();
+        const year = now.getFullYear();
+
+        const firstTermStart = new Date(year, 8, 1); // September 1
+        const firstTermEnd = new Date(year + 1, 1, 15); // February 15
+        const secondTermStart = new Date(year, 1, 16); // February 16
+        const secondTermEnd = new Date(year, 6, 31); // July 31
+
+        if (now >= firstTermStart && now <= firstTermEnd) {
+            return { startDate: firstTermStart, endDate: firstTermEnd };
+        } else if (now >= secondTermStart && now <= secondTermEnd) {
+            return { startDate: secondTermStart, endDate: secondTermEnd };
+        } else {
+
+            return null;
+        }
+    };
+
+    const editHandler = (id) => {
+        const gradeToEdit = gradesOfThisSubject.find((grade) => grade.id === id);
+        const currentTerm = getCurrentTerm();
+
+        if (currentTerm) {
+
+            const gradeDate = new Date(gradeToEdit.date);
+            const termStartDate = currentTerm.startDate;
+            const termEndDate = currentTerm.endDate;
+
+            if (gradeDate >= termStartDate && gradeDate <= termEndDate) {
+                onEditingGrade(gradeToEdit);
+                onEditing(true);
+            } else {
+                alert("A kiválasztott jegy nem ebbe a félévbe tartozik!");
+            }
+        } else {
+            alert("Nem található aktuális félév!");
+        }
+    };
+ 
     
-    
-    return (<><h1>{studentName} tanuló jegyei {subject} tantárgyból </h1>
+    return (<>
+            <h1>{studentName} tanuló jegyei {subject} tantárgyból </h1>
             <TableContainer>
                 <Table>
-                    <StyledTableHead>
+                    <TableHeading>
                         <TableRow>
-                            <StyledTableCell>Dátum</StyledTableCell>
-                            <StyledTableCell>Jegy értéke</StyledTableCell>
-                            <StyledTableCell>Mire kapta</StyledTableCell>
-                            <StyledTableCell>Műveletek</StyledTableCell>
+                            <Cell>Dátum</Cell>
+                            <Cell>Jegy értéke</Cell>
+                            <Cell>Mire kapta</Cell>
+                            <Cell>Műveletek</Cell>
                         </TableRow>
-                    </StyledTableHead>
+                    </TableHeading>
                     <TableBody>
-                        {grades.map((grade, index) => <TableRow key={index}>
+                        {gradesOfThisSubject.map((grade, index) => <TableRow key={index}>
                             <TableCell>{grade.date.slice(0, -9)}</TableCell>
                             <TableCell>{grade.value}</TableCell>
                             <TableCell>{grade.forWhat}</TableCell>
                             <TableCell>
-                                <StyledButton onClick={() => editHandler(grade.id)}>Szerkesztés</StyledButton>
-                                <StyledButton onClick={() => deleteHandler(grade.id)}>Törlés</StyledButton>
+                                <AButton onClick={() => editHandler(grade.id)}>Szerkesztés</AButton>
+                                <AButton onClick={() => deleteHandler(grade.id)}>Törlés</AButton>
                             </TableCell>
                         </TableRow>)}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <StyledButton onClick={goBackHandler}>Vissza</StyledButton></>
+            <AButton onClick={()=>onGoingBack()}>Vissza</AButton></>
     )
 }
 
