@@ -11,5 +11,7 @@ namespace Classroom.Service.Repositories
         IEnumerable<Student> GetAllStudents();
         Parent GetParentById(string parentId);
         void AddParent(Parent parent);
+        string GetStudentFullNameById(string studentId);
+        int CheckParentsNumber(string studentId);
     }
 }

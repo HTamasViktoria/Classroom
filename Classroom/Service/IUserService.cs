@@ -12,6 +12,7 @@ namespace Classroom.Service
         void AddTeacher(Teacher teacher);
         void AddParent(Parent parent);
         User GetByEmail(string email);
-        string GetIdByName(string name);
+        bool CheckStudentId(string studentId, string studentName);
+        bool CheckParentsNumber(string studentId);
     }
 }

@@ -58,27 +58,44 @@ namespace Classroom.Service
             return null;
         }
 
-
-      
-
-        public string GetIdByName(string name)
+        public bool CheckStudentId(string studentId, string studentName)
         {
-            var nameParts = name.Split(' ');
+            var nameParts = studentName.Split(' ');
             if (nameParts.Length < 2)
             {
-          
-                return null;
+                return false;
             }
 
             var familyName = nameParts[0];
             var firstName = nameParts[1];
 
-    
-            var user = _userRepository.GetAllStudents()
-                .FirstOrDefault(u => u.FamilyName == familyName && u.FirstName == firstName);
+            var studentFullName = _userRepository.GetStudentFullNameById(studentId);
+          
 
-            return user.Id;
+            if (studentFullName == studentName)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
+
+        public bool CheckParentsNumber(string studentId)
+        {
+            int parentsNumberAlready = _userRepository.CheckParentsNumber(studentId);
+            if (parentsNumberAlready >= 4)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+
 
 
     }

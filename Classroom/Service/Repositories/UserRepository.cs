@@ -44,7 +44,25 @@ namespace Classroom.Service.Repositories
             return _dbContext.Parents.FirstOrDefault(p => p.Id == parentId);
         }
 
-   
+        public int CheckParentsNumber(string studentId)
+        {
+          
+            return _dbContext.Parents.Count(p => p.StudentId == studentId);
+        }
+
+        
+        public string GetStudentFullNameById(string studentId)
+        {
+            var student = _dbContext.Students.FirstOrDefault(s => s.Id == studentId);
+            if (student != null)
+            {
+               
+                return ($"{student.FamilyName} {student.FirstName}");
+            }
+            return (null);
+        }
+
+
         public void AddTeacher(Teacher teacher)
         {
             _dbContext.Teachers.Add(teacher);
