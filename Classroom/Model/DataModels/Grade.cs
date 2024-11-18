@@ -16,6 +16,7 @@ public class Grade
     public string StudentId { get; set; }
     public string Subject { get; set; }
     public string ForWhat { get; set; }
+    public bool Read { get; set; }
     public GradeValues Value { get; set; }
     public DateTime Date { get; set; }
 
