@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Box, Container, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import { Box, Container, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+import {BulkFormControl, BulkSelect} from '../../../StyledComponents.js'
 
 function GradeValueSelector({ selectedGrade, handleGradeChange }) {
     const [grades, setGrades] = useState([]);
@@ -13,30 +14,14 @@ function GradeValueSelector({ selectedGrade, handleGradeChange }) {
 
     return (
         <Container>
-            <Box my={4}>
-                <Typography variant="h6" gutterBottom>
-                    Jegy kiválasztása
-                </Typography>
-                <FormControl fullWidth variant="outlined" sx={{ mb: 2 }}>
+            <Box>
+                <BulkFormControl>
                     <InputLabel id="grade-select-label">Jegy kiválasztása</InputLabel>
-                    <Select
+                    <BulkSelect
                         labelId="grade-select-label"
                         value={selectedGrade}
                         onChange={handleGradeChange}
-                        label="Jegy kiválasztása"
-                        sx={{
-                            backgroundColor: 'background.default',
-                            color: 'text.primary',
-                            '& .MuiOutlinedInput-notchedOutline': {
-                                borderColor: 'primary.main',
-                            },
-                            '&:hover .MuiOutlinedInput-notchedOutline': {
-                                borderColor: 'primary.dark',
-                            },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                borderColor: 'primary.dark',
-                            },
-                        }}
+                        label="Jegy kiválasztása"                 
                     >
                         {grades.length > 0 ? (
                             grades.map((grade, index) => (
@@ -47,8 +32,8 @@ function GradeValueSelector({ selectedGrade, handleGradeChange }) {
                         ) : (
                             <MenuItem disabled>No grades available</MenuItem>
                         )}
-                    </Select>
-                </FormControl>
+                    </BulkSelect>
+                </BulkFormControl>
             </Box>
         </Container>
     );

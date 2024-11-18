@@ -1,49 +1,31 @@
-import react, {useState, useEffect} from "react";
-import {CustomBox, StyledButton} from "../../../StyledComponents.js";
-import ParentGradeTable from "../Parent/ParentGradeTable.jsx";
-
-function GradesByStudentMain({studentId, teacherId, teacherSubjects, nameOfClass, studentName, onGoBack}){
+import {useState} from "react";
+import MainGradeTable from "../../common/components/MainGradeTable.jsx";
+import TeacherSubjectsFetcher from "./TeacherSubjectsFetcher.jsx";
+import AllGradesFetcher from "../Parent/AllGradesFetcher.jsx";
+import SubjectFetcher from "../Parent/SubjectFetcher.jsx";
+function GradesByStudentMain({studentId, teacherId, nameOfClass, studentName, onGoBack}){
     
     const [grades, setGrades] = useState([])
     const [subjects, setSubjects] = useState([])
     const [refreshNeeded, setRefreshNeeded] = useState(false)
-    
-    
-    useEffect(()=>{
-        fetch(`/api/subjects`)
-            .then(response=>response.json())
-            .then(data=>setSubjects(data))
-            .catch(error=>console.error(`Error:`,error))
-    },[studentId])
+    const [teacherSubjects, setTeacherSubjects] = useState([])
 
 
-    useEffect(() => {
-       
-        fetch(`/api/grades/${studentId}`)
-            .then(response => response.json())
-            .then(data => {
-              console.log(grades)
-                setGrades(data);
-            })
-            .catch(error => console.error(`Error:`, error));
-    }, [refreshNeeded,studentId]);
-    
-    
-    const goBackHandler=()=>{
-        onGoBack()
-    }
-    
-    const refreshHandler=()=>{
-setGrades([])
-        setRefreshNeeded((prevState)=> !prevState)
+    const refreshHandler = () => {
+        setGrades([])
+        setRefreshNeeded((prevState) => !prevState)
     }
        
     
     return(<>
-    <ParentGradeTable onGoBack={goBackHandler} 
+        <TeacherSubjectsFetcher id={teacherId} onData={(data)=>setTeacherSubjects(data)}/>
+        <AllGradesFetcher studentId={studentId} onData={(data)=>setGrades(data)}/>
+        <SubjectFetcher onData={(data)=>setSubjects(data)}/>
+        
+        <MainGradeTable onGoBack={()=>onGoBack()} 
                       studentName={studentName} 
                       teacherId={teacherId} 
-                      id={studentId} 
+                      studentId={studentId} 
                       isEditable={true} 
                       subjects={subjects} 
                       grades={grades} 

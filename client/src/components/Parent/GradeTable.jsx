@@ -1,78 +1,55 @@
-import React from "react";
+import React, { useState } from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, Typography } from "@mui/material";
-import { PopupContainer, StyledButton, StyledTableCell, StyledTableHead } from "../../../StyledComponents.js";
+import { Cell, TableHeading, StyledTableContainer, StyledHeading } from "../../../StyledComponents";
 import MonthSelector from "./MonthSelector.jsx";
 import RenderGrades from "./RenderGrades.jsx";
+import SubjectFetcher from "./SubjectFetcher.jsx";
 
-function GradeTable({
-                        subjects,
-                        filterGradesByMonth,
-                        startHover,
-                        finishHover,
-                        popupPosition,
-                        hoverDate,
-                        hoverForWhat,
-                        id,
-                        grades,
-                        chosenMonthIndex,
-                        classAverages,
-                        isEditable,
-                        teacherSubjects,
-                        nameOfClass,
-                        editHandler,
-                        setChosenMonthIndex
-                    }) {
+
+
+function GradeTable({studentId, isEditable, teacherSubjects, nameOfClass, onEditHandler}) {
     
+    const [subjects, setSubjects] = useState([]);
+    const [chosenMonthIndex, setChosenMonthIndex] = useState(new Date().getMonth());
     
- 
     
     return (
-        <TableContainer component={Paper}>
-            <Typography variant="h6" component="div" sx={{ margin: 2 }}>
-                Osztályzatok
-            </Typography>
-            <PopupContainer
-                id="popUp"
-                top={popupPosition.top}
-                left={popupPosition.left}
-                visible={!!hoverDate && !!hoverForWhat}
-            >
-                <span>{hoverForWhat}</span>
-                <span>{hoverDate}</span>
-            </PopupContainer>
-            <Table>
-                <StyledTableHead>
-                    <tr>
-                        <StyledTableCell>Tantárgy</StyledTableCell>
-                        <StyledTableCell>
-                            <MonthSelector onMonthChange={setChosenMonthIndex} />
-                        </StyledTableCell>
-                        <StyledTableCell>Statisztika</StyledTableCell>
-                        {isEditable && <StyledTableCell>Műveletek</StyledTableCell>}
-                    </tr>
-                </StyledTableHead>
-                <TableBody>
-                    {subjects.map((subject, index) => (
-                        <RenderGrades
-                            key={subject}
-                            subject={subject}
-                            index={index}
-                            filterGradesByMonth={filterGradesByMonth}
-                            startHover={startHover}
-                            finishHover={finishHover}
-                            id={id}
-                            grades={grades}
-                            chosenMonthIndex={chosenMonthIndex}
-                            classAverages={classAverages}
-                            isEditable={isEditable}
-                            teacherSubjects={teacherSubjects}
-                            nameOfClass={nameOfClass}
-                            editHandler={editHandler}
-                        />
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <>
+            <SubjectFetcher studentId={studentId} onData={(data) => setSubjects(data)} />
+
+            <StyledTableContainer>
+                <StyledHeading>
+                    Osztályzatok
+                </StyledHeading>
+                <Table>
+                    <TableHeading>
+                        <tr>
+                            <Cell>Tantárgy</Cell>
+                            <Cell>
+                                <MonthSelector onMonthChange={setChosenMonthIndex} />
+                            </Cell>
+                            <Cell>Statisztika</Cell>
+                            {isEditable && <Cell>Műveletek</Cell>}
+                        </tr>
+                    </TableHeading>
+                    <TableBody>
+                        {subjects.map((subject, index) => (
+                            <RenderGrades
+                                studentId={studentId}
+                                key={subject}
+                                subject={subject}
+                                index={index}
+                                chosenMonthIndex={chosenMonthIndex}
+                                isEditable={isEditable}
+                                teacherSubjects={teacherSubjects}
+                                nameOfClass={nameOfClass}
+                                onEditHandler={onEditHandler}
+                            />
+                        ))}
+                    </TableBody>
+                </Table>
+            </StyledTableContainer>
+        </>
     );
 }
 

@@ -1,46 +1,28 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import {
-    ListItem,
-    Paper,
     Table,
     TableBody,
     TableCell,
     TableContainer,
     TableRow,
-    Typography
 } from "@mui/material";
 import {
-    PopupContainer, StyledButton,
-    StyledTableCell,
-    StyledTableHead,
+    Cell,
+    TableHeading,
 } from "../../../StyledComponents.js";
 import MonthSelector from "../Parent/MonthSelector.jsx";
+import StudentFetcherByClassId from "./StudentFetcherByClassId.jsx";
+import GradesByStudentByMonth from "./GradesByStudentByMonth.jsx";
+
+function GradesTableByClassBySubject({grades, classId}) {
 
 
-function GradesTableByClassBySubject({grades, students}) {
 
-
-    const [hoverDate, setHoverDate] = useState("");
-    const [hoverForWhat, setHoverForWhat] = useState("");
-    const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
     const [chosenMonthIndex, setChosenMonthIndex] = useState(new Date().getMonth());
-
-    const startHover = (grade, element) => {
-        const date = new Date(grade.date).toLocaleDateString();
-        setHoverDate(date);
-        setHoverForWhat(grade.forWhat);
-        const rect = element.getBoundingClientRect();
-        setPopupPosition({
-            top: rect.top + window.scrollY - 40,
-            left: rect.left + window.scrollX + rect.width + 10,
-        });
-    };
-    const finishHover = () => {
-        setHoverDate("");
-        setHoverForWhat("");
-    };
-
-
+    const [students, setStudents] = useState([])
+    
+    
+ 
 
     const filterGradesByMonth = (studentId) => {
         return grades.filter((grade) => {
@@ -50,51 +32,28 @@ function GradesTableByClassBySubject({grades, students}) {
         });
     };
     
-    const renderGrades = (id) => {
-        const filteredGrades = filterGradesByMonth(id)
-        return (
-            <>
-                {filteredGrades.map((grade) => (
-                    <span
-                        onMouseEnter={(e) => startHover(grade, e.currentTarget)}
-                        onMouseLeave={finishHover}
-                        key={grade.id}
-                        className="grade"
-                        style={{ margin: "0 10px" }}
-                    >
-                    {grade.value}
-                </span>
-                ))}
-            </>
-        );
-    };
-
+ 
 
     return (<>
-        <TableContainer>
-            <PopupContainer
-                id="popUp"
-                top={popupPosition.top}
-                left={popupPosition.left}
-                visible={!!hoverDate && !!hoverForWhat}
-            >
-                <span>{hoverForWhat}</span>
-                <span>{hoverDate}</span>
-            </PopupContainer>
+        <StudentFetcherByClassId classId={classId} onData={(data)=>setStudents(data)}/>
+        
+        <TableContainer>          
             <Table>
-                <StyledTableHead>
+                <TableHeading>
                     <TableRow>
-                <StyledTableCell>Név</StyledTableCell>
-                <StyledTableCell>Osztályzat</StyledTableCell>
-                <StyledTableCell>
+                <Cell>Név</Cell>
+                <Cell>Osztályzat</Cell>
+                <Cell>
                     <MonthSelector onMonthChange={setChosenMonthIndex}/>
-                </StyledTableCell>
+                </Cell>
             </TableRow>
-            </StyledTableHead>
+            </TableHeading>
                 <TableBody>
                     {students.map((student) => <TableRow key={student.id}>
                     <TableCell>{student.familyName} {student.firstName}</TableCell>
-                    <TableCell>{renderGrades(student.id)}</TableCell>
+                        
+                        <GradesByStudentByMonth studentId={student.id} 
+                                                studentGradesByMonth={filterGradesByMonth(student.id)}/>
                 </TableRow>)}
 
                 </TableBody>

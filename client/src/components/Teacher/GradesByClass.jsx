@@ -1,25 +1,13 @@
 import React, { useState, useEffect } from "react";
-import {
-    ListItem,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableRow,
-    Typography
-} from "@mui/material";
-import {
-    PopupContainer, StyledButton,
-    StyledTableCell,
-    StyledTableHead,
-} from "../../../StyledComponents.js";
+import {AButton} from "../../../StyledComponents.js";
 import GradesTableByClassBySubject from "./GradesTableByClassBySubject.jsx";
 
 function GradesByClass({ classId, onGoBack }) {
+    
+    
     const [grades, setGrades] = useState([]);
     const [subjects, setSubjects] = useState([]);
-    const [students, setStudents] = useState([])
+  
 
     
     useEffect(() => {
@@ -37,19 +25,6 @@ function GradesByClass({ classId, onGoBack }) {
     }, [classId]);
 
 
-    useEffect(() => {
-        fetch(`/api/classes/getStudents/${classId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Network response was not ok");
-                }
-                return response.json();
-            })
-            .then(data => {
-                setStudents(data);
-            })
-            .catch(error => console.error(`Error:`, error));
-    }, [classId]);
 
     
     useEffect(() => {
@@ -60,20 +35,20 @@ function GradesByClass({ classId, onGoBack }) {
         }
     }, [grades]);
 
-    const goBackHandler=()=>{
-        onGoBack()
-    }
+ 
  
     return (
         <div>
             {subjects.map((subject, index) => (
                 <div key={index}>
                     {subject}
-                    <GradesTableByClassBySubject students={students}
-                                                 grades={grades.filter(grade => grade.subject === subject)}/>
+                    <GradesTableByClassBySubject
+                        grades={grades.filter(grade => grade.subject === subject)}
+                    classId={classId}
+                    />
                 </div>
             ))}
-       <StyledButton onClick={goBackHandler}>Vissza</StyledButton>
+       <AButton onClick={()=>onGoBack()}>Vissza</AButton>
         </div>
     );
 }

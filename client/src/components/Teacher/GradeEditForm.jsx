@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { CustomBox, StyledButton, StyledTableCell, StyledTableHead } from "../../../StyledComponents.js";
+import {AButton} from "../../../StyledComponents.js";
 import DateSelector from "./DateSelector.jsx";
 import ForWhatSelector from "./ForWhatSelector.jsx";
 import EditingGradeValueSelector from "./EditingGradeValueSelector.jsx";
-import {Form} from "react-router-dom";
 
-function GradeEditForm({ grade, onGoBack }) {
+
+function GradeEditForm({ grade, onGoBack, onRefreshing }) {
+    
     const [selectedGrade, setSelectedGrade] = useState(grade.value);
     const [selectedDate, setSelectedDate] = useState(grade.date.split("T")[0]);
     const [selectedForWhat, setSelectedForWhat] = useState(grade.forWhat);
     const [grades, setGrades] = useState([]);
     const [updatedSelectedGrade, setUpdatedSelectedGrade] = useState("");
 
+    
+    
     useEffect(() => {
         fetch('/api/grades/gradeValues')
             .then(response => response.json())
@@ -19,6 +22,7 @@ function GradeEditForm({ grade, onGoBack }) {
             .catch(error => console.error('Error fetching data:', error));
     }, [grade]);
 
+    
     useEffect(() => {
         if (grades.length > 0) {
             const selectedGradeString = selectedGrade.toString();
@@ -62,7 +66,7 @@ function GradeEditForm({ grade, onGoBack }) {
                 return response.json();
             })
             .then(data => {
-                console.log(data.message);
+                onRefreshing()
                 onGoBack();
             })
             .catch(error => {
@@ -79,7 +83,7 @@ function GradeEditForm({ grade, onGoBack }) {
                 <EditingGradeValueSelector selectedGrade={updatedSelectedGrade} handleGradeChange={gradeChangeHandler} grades={grades} />
                 <button type="submit" onClick={submitHandler}>Módosítom</button>
             </form>
-            <StyledButton onClick={goBackHandler}>Vissza</StyledButton>
+            <AButton onClick={goBackHandler}>Vissza</AButton>
         </>
     );
 }
