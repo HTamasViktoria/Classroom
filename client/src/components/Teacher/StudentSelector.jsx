@@ -1,13 +1,20 @@
-import { FormControl, MenuItem, Typography } from "@mui/material";
-import { CustomBox, StyledInputLabel, StyledSelect } from '../../../StyledComponents';
-
-function StudentSelector({ students, selectedStudentId, handleStudentChange }) {
-    return (
-        <CustomBox sx={{ my: 4, width: '100%' }}>
-            <Typography variant="h4" gutterBottom>
+import { MenuItem} from "@mui/material";
+import { CustomBox, StyledInputLabel, StyledSelect, StudentsHeading, StudentsFormControl } from '../../../StyledComponents';
+import StudentsOfATeacherSubjectFetcher from "./StudentsOfATeacherSubjectFetcher.jsx";
+import React, {useState} from 'react';
+function StudentSelector({selectedStudentId, handleStudentChange, selectedSubjectId }) {
+    
+    const [students, setStudents] = useState([])
+    
+    return (<>
+            <StudentsOfATeacherSubjectFetcher selectedSubjectId={selectedSubjectId}
+            onData={(data)=>setStudents(data)}/>
+            
+        <CustomBox>
+            <StudentsHeading>
                 Diák kiválasztása
-            </Typography>
-            <FormControl fullWidth variant="outlined">
+            </StudentsHeading>
+            <StudentsFormControl>
                 <StyledInputLabel id="student-select-label">Válassz Diákot</StyledInputLabel>
                 <StyledSelect
                     labelId="student-select-label"
@@ -25,8 +32,9 @@ function StudentSelector({ students, selectedStudentId, handleStudentChange }) {
                         <MenuItem disabled>No students available</MenuItem>
                     )}
                 </StyledSelect>
-            </FormControl>
+            </StudentsFormControl>
         </CustomBox>
+        </>
     );
 }
 

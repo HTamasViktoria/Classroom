@@ -2,31 +2,31 @@ import React from "react";
 import AddAlertIcon from "@mui/icons-material/AddAlert";
 import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import { CustomBox, StyledButton, StyledSecondaryButton, StyledTypography } from '../../../StyledComponents';
+import { CustomBox, AButton, BButton, StyledTypography } from '../../../StyledComponents';
 
 function TaskSelector(props) {
     return (
         <CustomBox sx={{ padding: 2, display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-            <StyledButton
+            <AButton
                 onClick={() => props.onChosenTask("addNotification")}
                 startIcon={<AddAlertIcon />}
             >
                 <StyledTypography>Értesítést küldök</StyledTypography>
-            </StyledButton>
+            </AButton>
 
-            <StyledSecondaryButton
+            <BButton
                 onClick={() => props.onChosenTask("grades")}
                 startIcon={<AppRegistrationIcon />}
             >
                 <StyledTypography>Osztályzat</StyledTypography>
-            </StyledSecondaryButton>
+            </BButton>
 
-            <StyledButton
+            <AButton
                 onClick={() => props.onChosenTask("addMessage")}
                 startIcon={<ChatBubbleOutlineIcon />}
             >
                 <StyledTypography>Üzenetet küldök</StyledTypography>
-            </StyledButton>
+            </AButton>
         </CustomBox>
     );
 }
