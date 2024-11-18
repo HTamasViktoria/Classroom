@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Box, Container, FormControl, InputLabel, MenuItem, Select, Typography } from "@mui/material";
+
+import { Box, Container, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 function ForWhatSelector({ selectedForWhat, handleForWhatChange }){
     
     const forWhats = ["Röpdolgozat", "Felelés", "Órai munka", "Beadandó", "Témazáró"]
