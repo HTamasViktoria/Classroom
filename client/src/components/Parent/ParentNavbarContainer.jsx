@@ -1,10 +1,13 @@
 import {NavbarAppBar, NavbarToolbar, NavbarAccountIcon,NavbarButton,  NavbarTypography, NavbarBadge, NavbarSpacer, NavbarBox} from '../../../StyledComponents.js'
 import { useNavigate } from 'react-router-dom';
+import {useProfile} from "../../contexts/ProfileContext.jsx";
+
 function ParentNavbarContainer({newGradesLength, newNotificationsLength, profile, studentId}){
     
     
     const navigate = useNavigate();
     
+    const {logout} = useProfile()
     
     const menuItems = [
         { label: 'Üzenetek', value: 'messages' },

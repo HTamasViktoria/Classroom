@@ -13,6 +13,8 @@ function ParentNavbar({studentId, refreshNeeded}) {
     const [newGradesLength, setNewGradesLength] = useState(null)
 
 
+
+
     return (<>
             
             <GetNewNotifsNum studentId={studentId}
