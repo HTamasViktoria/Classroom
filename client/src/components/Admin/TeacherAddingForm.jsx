@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { StyledButton } from '../../../StyledComponents';
+import { AButton, CenteredStack, BButton } from '../../../StyledComponents';
 
 function TeacherAddingForm({ onSave, onCancel }) {
     const navigate = useNavigate();
@@ -11,84 +11,76 @@ function TeacherAddingForm({ onSave, onCancel }) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [secondPassword, setSecondPassword] = useState("")
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if(secondPassword !== password){
+            alert("A két jelszó nem egyezik!");
+            return;
+        }
+        
+       
         onSave({ familyName, firstName, username, email, password });
     };
 
-    const handleFamilyNameChange = (e) => {
-        setFamilyName(e.target.value);
-    };
 
-    const handleFirstNameChange = (e) => {
-        setFirstName(e.target.value);
-    };
 
-    const handleUsernameChange = (e) => {
-        setUsername(e.target.value);
-    };
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-    };
-
-    const goBackHandler = () => {
-        navigate("/admin/teachers");
-    };
 
     return (
         <>
             <h1>Tanár hozzáadása</h1>
             <form noValidate onSubmit={handleSubmit}>
-                <Stack spacing={2} width={400}>
+                <CenteredStack>
                     <TextField
                         label='Vezetéknév'
                         type='text'
                         value={familyName}
-                        onChange={handleFamilyNameChange}
+                        onChange={(e)=>setFamilyName(e.target.value)}
                     />
                     <TextField
                         label='Keresztnév'
                         type='text'
                         value={firstName}
-                        onChange={handleFirstNameChange}
+                        onChange={(e)=>setFirstName(e.target.value)}
                     />
                     <TextField
                         label='Felhasználónév'
                         type='text'
                         value={username}
-                        onChange={handleUsernameChange}
+                        onChange={(e)=>setUsername(e.target.value)}
                     />
                     <TextField
                         label='Email'
                         type='email'
                         value={email}
-                        onChange={handleEmailChange}
+                        onChange={(e)=>setEmail(e.target.value)}
                     />
                     <TextField
                         label='Jelszó'
                         type='password'
                         value={password}
-                        onChange={handlePasswordChange}
+                        onChange={(e)=> setPassword(e.target.value)}
                     />
-                    <StyledButton
+                    <TextField
+                        label='Jelszó újra'
+                        type='password'
+                        value={secondPassword}
+                        onChange={(e)=>setSecondPassword(e.target.value)}
+                    />
+                    <AButton
                         type='submit'
                     >
                         Hozzáad
-                    </StyledButton>
-                    <StyledButton
+                    </AButton>
+                    <BButton
                         type='button'
-                        onClick={goBackHandler}
+                        onClick={()=>navigate("/admin/teachers")}
                         variant='outlined'
                     >
                         Vissza
-                    </StyledButton>
-                </Stack>
+                    </BButton>
+                </CenteredStack>
             </form>
         </>
     );

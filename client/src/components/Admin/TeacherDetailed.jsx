@@ -10,53 +10,56 @@ import {
     Typography
 } from "@mui/material";
 import React from "react";
-import { StyledButton, StyledTableHead, StyledTableCell } from '../../../StyledComponents';
+import {
+    AdminStyledTableHead,
+    AdminStyledTableCell,
+    AdminStyledTableRow,
+    AdminStyledTableContainer,
+    BButton,
+    StyledHeading,
+} from '../../../StyledComponents';
 import { useNavigate } from 'react-router-dom';
+
 
 function TeacherDetailed({ teacher, subjects }) {
     const navigate = useNavigate();
 
-    const goBackHandler = () => {
-        navigate("/admin/teachers");
-    };
+
 
     return (
-        <Box sx={{ padding: 2 }}>
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>
+        <Box>
+            <StyledHeading>
                 {teacher.firstName} {teacher.familyName}
-            </Typography>
-            <TableContainer component={Paper} sx={{ overflow: 'hidden' }}>
-                <Table sx={{ minWidth: 650 }} aria-label="teachers table">
-                    <StyledTableHead>
+            </StyledHeading>
+            <AdminStyledTableContainer>
+                <Table aria-label="teachers table">
+                    <AdminStyledTableHead>
                         <TableRow>
-                            <StyledTableCell>Tantárgyak</StyledTableCell>
-                            <StyledTableCell>Osztályok</StyledTableCell>
+                            <AdminStyledTableCell>Tantárgyak</AdminStyledTableCell>
+                            <AdminStyledTableCell>Osztályok</AdminStyledTableCell>
                         </TableRow>
-                    </StyledTableHead>
+                    </AdminStyledTableHead>
                     <TableBody>
                         {subjects.length > 0 ? (
                             subjects.map((subject) => (
-                                <TableRow key={subject.id}>
+                                <AdminStyledTableRow key={subject.id}>
                                     <TableCell>{subject.subject}</TableCell>
                                     <TableCell>{subject.className || "N/A"}</TableCell>
-                                </TableRow>
+                                </AdminStyledTableRow>
                             ))
                         ) : (
-                            <TableRow>
-                                <TableCell colSpan={2} align="center">
+                            <AdminStyledTableRow>
+                                <TableCell>
                                     Nincsenek tantárgyai.
                                 </TableCell>
-                            </TableRow>
+                            </AdminStyledTableRow>
                         )}
                     </TableBody>
                 </Table>
-            </TableContainer>
-            <StyledButton
-                onClick={goBackHandler}
-                sx={{ marginTop: 2 }}
-            >
+            </AdminStyledTableContainer>
+            <BButton onClick={() => navigate("/admin/teachers")}>
                 Vissza
-            </StyledButton>
+            </BButton>
         </Box>
     );
 }

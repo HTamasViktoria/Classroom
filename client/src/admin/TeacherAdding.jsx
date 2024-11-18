@@ -37,14 +37,11 @@ function TeacherAdding() {
             .catch(error => console.error('Error:', error));
     };
 
-    const props = {
-        onSave: handleCreateTeacher,
-        onCancel: () => navigate("/admin")
-    };
+ 
 
     return (
         <><AdminNavbar/>
-            <TeacherAddingForm {...props}/>
+            <TeacherAddingForm onSave={handleCreateTeacher} onCancel={()=>navigate("/admin")}/>
         </>
     );
 }
