@@ -33,6 +33,8 @@ import GradeAddingForm from "./teacher/GradeAddingForm.jsx";
 import BulkGradeAdding from "./teacher/BulkGradeAdding.jsx";
 import NotificationMain from "./components/Teacher/NotificationMain.jsx";
 import TeachersLastNotifications from "./components/Teacher/TeachersLastNotifications.jsx";
+import TeacherMessages from "./teacher/TeacherMessages.jsx";
+
 
 const root = createRoot(document.getElementById('root'));
 root.render(
@@ -45,7 +47,9 @@ root.render(
                         {/* Nyilvános útvonalak */}
                         <Route path='/' element={<Starter />} />
                         <Route path='/signin' element={<Signin />} />
-
+                        
+                        
+                        
                         {/* Admin útvonalak */}
                         <Route path='/admin/parents/add-parent/:id' element={<ProtectedRoute element={<ParentAdding />} allowedRoles={['Admin']} />} />
                         <Route path='/admin/parentsOf/:id' element={<ProtectedRoute element={<ParentsOfAStudent />} allowedRoles={['Admin']} />} />
@@ -66,6 +70,7 @@ root.render(
                         {/* Tanár védett útvonalak */}
                         <Route path='/teacher/:id' element={<ProtectedRoute element={<TeacherStarter />} allowedRoles={['Teacher']} />} />
                         <Route path='/teacher/grades/:id' element={<ProtectedRoute element={<TeacherGrades />} allowedRoles={['Teacher']} />} />
+                        <Route path='/teacher/messages/:id' element={<ProtectedRoute element={<TeacherMessages />} allowedRoles={['Teacher']} />} />
                         <Route path='/teacher/notifications/:id' element={<ProtectedRoute element={< Notifications/>} allowedRoles={['Teacher']} />} />
                         <Route path='/teacher/viewGrades/:id' element={<ProtectedRoute element={< TeacherViewingGrades/>} allowedRoles={['Teacher']} />} />
                         <Route path='/teacher/addingOneGrade/:id' element={<ProtectedRoute element={<GradeAddingForm />} allowedRoles={['Teacher']} />} />
