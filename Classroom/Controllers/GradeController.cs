@@ -152,6 +152,8 @@ public class GradeController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+
+    
     
     [HttpGet("teachersLast/{id}", Name = "GetTeachersLastGrade")]
     public async Task<ActionResult<LatestGradeResponse>> GetTeachersLastGrade(string id)
@@ -163,7 +165,7 @@ public class GradeController : ControllerBase
             if (grade == null)
             {
            
-                return Ok(null);
+                return Ok(new LatestGradeResponse());
             }
 
      
