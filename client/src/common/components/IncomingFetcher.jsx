@@ -1,16 +1,16 @@
 import {useEffect} from "react";
 
-function MessageFetcher({id, onData}){
+function IncomingFetcher({id, onData, refreshNeeded}){
     
     useEffect(()=>{
         fetch(`/api/messages/getIncomings/${id}`)
             .then(response=>response.json())
             .then(data=>onData(data))
             .catch(error=>console.error(error))
-    },[id])
+    },[id, refreshNeeded])
     
     return null;
 }
 
 
-export default MessageFetcher
+export default IncomingFetcher

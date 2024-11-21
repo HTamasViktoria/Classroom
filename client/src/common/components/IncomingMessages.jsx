@@ -1,50 +1,80 @@
-import {HeadingTH, MessageItem, MessagesTable, IncomingMessagesContainer, UnreadButton} from "../../../StyledComponents.js";
+import { MessageDetail, MessageLine, IncomingMessagesContainer, UnreadMessageDetail } from "../../../StyledComponents.js";
+import { useState } from "react";
+import IncomingFetcher from "./IncomingFetcher.jsx";
+import formatDate from "./formatDate.js";
 
-function IncomingMessages({messages, onChosing}){
+function IncomingMessages({ onChosing, id }) {
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
+    const [messages, setMessages] = useState([]);
+    const [refreshNeeded, setRefreshNeeded] = useState(false);
 
-        return `${year}-${month}-${day} ${hours}:${minutes}`;
+    const deleteHandler = async (e) => {
+        e.stopPropagation();
+        const messageId = e.target.id;
+        try {
+            const response = await fetch(`/api/messages/receiverDelete/${messageId}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                setRefreshNeeded((prevState) => !prevState);
+                alert("Üzenet törölve");
+            } else {
+                throw new Error('Hiba történt az üzenet törlésekor.');
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
-    
-    
 
-    
-    return(<>
-        <IncomingMessagesContainer>
-        <MessagesTable>
-            <thead>
-            <tr>
-                <HeadingTH></HeadingTH>
-                <HeadingTH>Dátum</HeadingTH>
-                <HeadingTH>Feladó</HeadingTH>
-                <HeadingTH></HeadingTH>
-                <HeadingTH></HeadingTH>
-            </tr>
-            </thead>
-            <tbody>
-            {messages.map((message) => (
-                <tr key={message.id} onClick={()=>onChosing(message.id)}>
-                    {message.read == true && (<button>Olvasatlannak jelöl</button>)}
-                    <MessageItem>{formatDate(message.date)}</MessageItem>
-                    <MessageItem>{message.senderName}</MessageItem>
-                    <MessageItem>{message.headText}</MessageItem>
-                    <MessageItem>
-                        {message.text.length > 20 ? message.text.substring(0, 20) + "..." : message.text}
-                    </MessageItem>
-<button>Törlés</button>
-                </tr>
-            ))}
-            </tbody>
-        </MessagesTable>
-    </IncomingMessagesContainer></>)
+    const setToUnreadHandler = (e) => {
+        e.stopPropagation();
+        const messageId = e.target.id;
+        fetch(`/api/messages/setToUnread/${messageId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setRefreshNeeded((prevState) => !prevState);
+            })
+            .catch(error => console.error(error));
+    };
+
+    return (
+        <>
+            <IncomingFetcher onData={(data) => setMessages(data)} id={id} refreshNeeded={refreshNeeded} />
+            <IncomingMessagesContainer>
+                {messages.length === 0 && (<h1>Nincsenek üzenetek</h1>)}
+                {messages.map((message) => (
+                    <MessageLine key={message.id} onClick={() => onChosing(message)}>
+                        {message.read ? (
+                            <>
+                                <MessageDetail>{formatDate(message.date)}</MessageDetail>
+                                <MessageDetail>{message.senderName}</MessageDetail>
+                                <MessageDetail>{message.headText}</MessageDetail>
+                                <MessageDetail>
+                                    {message.text.length > 20 ? message.text.substring(0, 20) + "..." : message.text}
+                                </MessageDetail>
+                            </>
+                        ) : (
+                            <>
+                                <UnreadMessageDetail>{formatDate(message.date)}</UnreadMessageDetail>
+                                <UnreadMessageDetail>{message.senderName}</UnreadMessageDetail>
+                                <UnreadMessageDetail>{message.headText}</UnreadMessageDetail>
+                                <UnreadMessageDetail>
+                                    {message.text.length > 20 ? message.text.substring(0, 20) + "..." : message.text}
+                                </UnreadMessageDetail>
+                            </>
+                        )}
+                        <MessageDetail>
+                            <button id={message.id} onClick={deleteHandler}>Törlés</button>
+                            {message.read && (
+                                <button id={message.id} onClick={setToUnreadHandler}>Olvasatlannak jelöl</button>
+                            )}
+                        </MessageDetail>
+                    </MessageLine>
+                ))}
+            </IncomingMessagesContainer>
+        </>
+    );
 }
 
-
-export default IncomingMessages
+export default IncomingMessages;
