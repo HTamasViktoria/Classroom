@@ -1,8 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using Classroom.Data;
 using Classroom.Model.DataModels;
-using System.Collections.Generic;
-using System.Linq;
+using Classroom.Model.ResponseModels;
+
 
 namespace Classroom.Service.Repositories
 {
@@ -74,6 +73,36 @@ namespace Classroom.Service.Repositories
         {
             _dbContext.Parents.Add(parent);
             _dbContext.SaveChanges();
+        }
+
+
+        public IEnumerable<ReceiverResponse> GetTeachersAsReceivers()
+        {
+            var teachers = _dbContext.Teachers.ToList();
+  
+            var responseList = teachers.Select(t => new ReceiverResponse
+            {
+                Name = t.FirstName + " " + t.FamilyName,
+                Id = t.Id,  
+                Role = t.Role
+            }).ToList();
+
+            return responseList;
+        }
+        
+        
+        public IEnumerable<ReceiverResponse> GetParentsAsReceivers()
+        {
+            var parents = _dbContext.Parents.ToList();
+  
+            var responseList = parents.Select(p => new ReceiverResponse
+            {
+                Name = p.FirstName + " " + p.FamilyName,
+                Id = p.Id,  
+                Role = p.Role
+            }).ToList();
+
+            return responseList;
         }
 
 

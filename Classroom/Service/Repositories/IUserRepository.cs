@@ -1,4 +1,6 @@
 using Classroom.Model.DataModels;
+using Classroom.Model.ResponseModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace Classroom.Service.Repositories
 {
@@ -13,5 +15,7 @@ namespace Classroom.Service.Repositories
         void AddParent(Parent parent);
         string GetStudentFullNameById(string studentId);
         int CheckParentsNumber(string studentId);
+        IEnumerable<ReceiverResponse> GetTeachersAsReceivers();
+        IEnumerable<ReceiverResponse> GetParentsAsReceivers();
     }
 }

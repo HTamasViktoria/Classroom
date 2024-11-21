@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Classroom.Service.Repositories;
 using Classroom.Model.DataModels;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace Classroom.Controllers
 {
@@ -117,6 +116,48 @@ namespace Classroom.Controllers
             }
         }
 
-       
+        [HttpGet("getTeacherReceivers")]
+        public ActionResult<IEnumerable<IdentityUser>> GetTeacherReceivers()
+        {
+            try
+            {
+                var users = _userRepository.GetTeachersAsReceivers();
+        
+                if (users.Any())
+                {
+                    return Ok(users);
+                }
+    
+                return Ok(new List<IdentityUser>());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Hiba történt: {ex.Message}");
+            }
+        }
+
+        
+        
+        
+        [HttpGet("getParentReceivers")]
+        public ActionResult<IEnumerable<IdentityUser>> GetParentReceivers()
+        {
+            try
+            {
+                var users = _userRepository.GetParentsAsReceivers();
+        
+                if (users.Any())
+                {
+                    return Ok(users);
+                }
+    
+                return Ok(new List<IdentityUser>());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Hiba történt: {ex.Message}");
+            }
+        }
+
     }
 }
