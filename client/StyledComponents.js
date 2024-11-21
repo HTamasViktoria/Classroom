@@ -612,3 +612,241 @@ export const StudentsFormControl = styled(FormControl)`
     border-radius: 4px; /* Ha szükséges, beállíthatod a szegélyeket is */
   }
 `;
+
+
+export const Sidebar = styled('div')(({ theme }) => ({
+    width: '200px',
+    padding: '10px',
+    marginRight: '1em', // Ez helyes
+    // Helyesen hozzáférve a theme objektumhoz
+    borderRight: '1px solid #ddd',
+}));
+
+export const LeftListItem = styled('li')(({ theme }) => ({
+    listStyleType: 'none',   // Listaelemek pontjainak eltávolítása
+    margin: '5px 0',         // Margó a listaelemek között
+    width: '100%',           // Teljes szélesség beállítása
+    // Theme objektum helyes használata
+    padding: '10px', 
+    borderRadius:'5px',// Belül kis hely
+    cursor: 'pointer',       // Mutatóváltás hoverre
+
+    '&:hover': {             // Hover állapot stílusa
+      
+        backgroundColor: theme.palette.secondary.dark,// Betű vastagítása
+        boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Árnyék hozzáadása// Háttérszín változtatása
+        transition: 'all 0.3s ease', // Simább animáció
+    },
+}));
+
+
+export const MessageMainContainer = styled('div')({
+    display: 'flex', // Flexbox elrendezés
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    gap: '10px',
+});
+
+
+export const LeftList = styled('ul')({
+    listStyleType: 'none', // Nincs lista stílus (pontok)
+    padding: '0',          // Nincs padding
+});
+
+
+
+
+
+/*export const IncomingMessagesContainer = styled('div')({
+    flex: 1,               // Flex: 1 a jobb oldali résznek, hogy kitöltse a rendelkezésre álló helyet
+    padding: '10px', // Padding hozzáadása a tartalom köré
+});*/
+
+
+export const HeadingTH = styled('th')({
+    padding: '10px',
+    border: '1px solid #ddd',
+});
+
+export const MessagesTable = styled('table')({
+    width: '100%', 
+    minHeight: '200px',// 100%-os szélesség
+    borderCollapse: 'collapse', 
+   // A cellák közötti határok összeolvadása
+});
+
+
+/*export const MessageLine = styled('div')({
+    maxHeight: '5em',        // Maximális magasság beállítása
+    overflow: 'hidden',      // Ha a tartalom túl nagy, elvágja
+    display: 'flex',         // Flexbox használata a sorok elrendezésére
+    flexDirection: 'row',    // Elem közötti elrendezés
+    alignItems: 'left',    // Vertikális központosítás
+    '&:hover': {             // Hover állapot stílusa
+        fontWeight: 'bold',   // Betűk vastagítása// Háttérszín világos szürkére
+        transition: 'all 0.3s ease', // Simább átmenet
+    },
+});
+
+export const MessageDetail = styled('div')({
+   /!* maxHeight: '2em', *!/       // Maximális magasság beállítása
+    overflow: 'hidden',      // Ha a tartalom túl nagy, elvágja
+    padding: '0.5em',        // Padding a tartalom körül
+    flex: 1,                 // Minden elem ugyanakkora helyet kapjon
+    whiteSpace: 'nowrap',    // Ne törjön a szöveg
+    textOverflow: 'ellipsis',// Ha túl hosszú, három ponttal jelzi
+});*/
+
+
+/*export const UnreadButton = styled('td')({
+    padding: '10px',
+    border: '1px solid #ddd',
+
+    '& button': {
+        padding: '5px 10px',
+    },
+});*/
+
+export const MessageItem = styled('td')({
+    padding: '10px',
+    border: '1px solid #ddd',
+});
+
+
+export const FullWidthH2 = styled('h2')({
+    width: '100%',         // Teljes szélesség
+    margin: 0,            // Ne legyen margó
+    padding: 0,           // Ne legyen padding
+    textAlign: 'center',    // Balra igazítás, ha szeretnéd
+});
+
+
+export const MessageViewerBox = styled(Box)({
+    padding: 20,
+    maxWidth: '700px',
+    margin: '0 auto',
+    boxShadow: 3,
+    borderRadius: 2,
+    backgroundColor: '#fff',
+});
+
+
+export const InnerBox = styled(Box)({
+    marginBottom: 2,
+});
+
+
+export const MessageDetailTitle = styled(Typography)({
+    fontWeight: 'bold',
+    marginBottom: 1,
+    variant: 'h6',  // A `variant` nem tud közvetlenül bekerülni így, tehát a `variant="h6"`-ot a komponensnél kell beállítani
+});
+
+
+export const InnerTitle = styled(Typography)({
+    variant: 'body1',
+    fontWeight: 'normal',
+    marginBottom: 1,
+});
+
+
+export const TextHolder = styled(Box)({
+    border: '1px solid #ddd',
+    padding: 2,
+    minHeight: '150px',
+    width: '100%',
+    borderRadius: 1,
+    fontSize: 16,
+    lineHeight: 1.6,
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
+});
+
+export const ButtonContainer = styled(Box)({
+    marginTop: 3,
+    textAlign: 'center',
+});
+
+
+export const IncomingMessagesContainer = styled('div')({
+    width: '100%',                // Konténer szélessége
+    maxWidth: '900px',            // Maximális szélesség beállítása (igény szerint változtatható)
+    margin: '1em auto',           // Középre igazított konténer
+    padding: '0 1em',             // Padding a konténer körül
+    maxHeight: '500px',           // Maximális magasság, hogy görgethető legyen
+    overflowY: 'auto',            // Görgetés engedélyezése, ha túl sok az üzenet
+    backgroundColor: '#fff',      // Fehér háttérszín
+    borderRadius: '8px',          // Lekerekített sarkok
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',  // Finom árnyék a konténer körül
+});
+
+export const MessageLine = styled('div')({
+    maxHeight: '5em',              // Maximális magasság
+              // Ha a tartalom túl nagy, elvágja
+    display: 'flex',               // Flexbox használata a sorok elrendezésére
+    flexDirection: 'row',          // Elem közötti elrendezés
+    alignItems: 'center',          // Vertikális központosítás
+    padding: '0',              // Padding a sor körül
+    cursor: 'pointer',             // Mutató kurzor hoverre
+    borderBottom: '1px solid #ddd',// Finom elválasztó vonal a sorok között
+    '&:hover': {                   // Hover állapot
+        fontWeight: 'bold',         // Betűk vastagítása
+        backgroundColor: '#f5f5f5', // Háttérszín világos szürkére
+        transition: 'all 0.3s ease',// Simább átmenet
+    },
+});
+
+export const MessageDetail = styled('div')({
+    overflow: 'hidden',            // Ha a tartalom túl nagy, elvágja
+    padding: '0.5em',              // Padding a tartalom körül
+                          // Minden elem egyenlő szélességet kapjon
+    whiteSpace: 'nowrap',          // Ne törjön a szöveg
+    textOverflow: 'ellipsis',      // Ha túl hosszú, három ponttal jelzi
+    fontSize: '0.9em',             // Kisebb betűméret
+    color: '#333',                 // Szöveg színe
+    display: 'flex',               // Flexbox biztosítása az alább lévő elemek elrendezésére
+    justifyContent: 'flex-start',  // Szöveg igazítása balra
+    minWidth: '150px',             // Minimum szélesség biztosítása
+});
+
+
+
+export const ChosenHeading = styled(Typography)(({ theme }) => ({
+    fontSize: '2rem',              // Betűméret beállítása
+    fontWeight: 'bold',            // Félkövér betűk
+    color: theme.palette.primary.main, // Alap szín a téma szerint
+    marginBottom: '1em',           // Alsó margó a szöveg alá
+    textAlign: 'center',           // Középre igazított szöveg
+    [theme.breakpoints.up('md')]: {
+        fontSize: '3rem',          // Nagyobb betűméret közepes képernyőméretek és nagyobbak számára
+    },
+}));
+
+export const UnreadButton = styled('button')({
+    backgroundColor: '#2196f3',  // Kék háttérszín
+    color: 'white',              // Fehér szöveg
+    padding: '0.5em 1em',        // Padding
+    border: 'none',              // Nincs keret
+    borderRadius: '4px',         // Lekerekített sarkok
+    cursor: 'pointer',           // Mutató kurzor
+    fontSize: '0.9em',            // Kis betűméret
+    '&:hover': {                  // Hover effekt
+        backgroundColor: '#1976d2', // Sötétebb kék a hover alatt
+    }
+});
+
+
+
+export const UnreadMessageDetail = styled('div')({
+    overflow: 'hidden',            // Ha a tartalom túl nagy, elvágja
+    padding: '0.5em',   
+    fontWeight : 'bold',// Padding a tartalom körül
+    // Minden elem egyenlő szélességet kapjon
+    whiteSpace: 'nowrap',          // Ne törjön a szöveg
+    textOverflow: 'ellipsis',      // Ha túl hosszú, három ponttal jelzi
+    fontSize: '0.9em',             // Kisebb betűméret
+    color: '#333',                 // Szöveg színe
+    display: 'flex',               // Flexbox biztosítása az alább lévő elemek elrendezésére
+    justifyContent: 'flex-start',  // Szöveg igazítása balra
+    minWidth: '150px',             // Minimum szélesség biztosítása
+});
