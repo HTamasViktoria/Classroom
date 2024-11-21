@@ -1,29 +1,31 @@
-import React, {useEffect} from "react";
+import { useEffect } from "react";
 
-function LatestNotifFetcher({teacherId, onData}){
-    
-
-    useEffect(()=>{
+function LatestNotifFetcher({ teacherId, onData }) {
+    useEffect(() => {
         fetch(`/api/notifications/newestByTeacherId/${teacherId}`)
             .then(response => {
-          
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                return response.json();
+                if (response.headers.get('content-type')?.includes('application/json')) {
+                    return response.json();
+                } else {
+                    throw new Error("Response is not in JSON format");
+                }
             })
             .then(data => {
-            
-                onData(data);
+                if (data === null || (Object.keys(data).length === 0)) {
+                    onData(null);
+                } else {
+                    onData(data);
+                }
             })
             .catch(error => {
                 console.error("Fetch error:", error);
-                onData(null);
             });
+    }, [teacherId, onData]);
 
-    },[teacherId])
-    
     return null;
 }
 
-export default LatestNotifFetcher
+export default LatestNotifFetcher;

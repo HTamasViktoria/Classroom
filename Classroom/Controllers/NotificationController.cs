@@ -24,7 +24,7 @@ public class NotificationController : ControllerBase
     
     [HttpGet(Name = "notifications")]
     
-    //használom a get all-t bárhol?
+  
     public ActionResult<IEnumerable<NotificationBase>> GetAll()
     {
         try
@@ -166,20 +166,17 @@ public class NotificationController : ControllerBase
         }
     }
     
-   
     [HttpGet("newestByTeacherId/{id}", Name = "GetNewestByTeacherId")]
-    public ActionResult<NotificationBase> GetNewestByTeacherId(string id)
+    public ActionResult<NotificationBase?> GetNewestByTeacherId(string id)
     {
         try
         {
             var notification = _notificationRepository.GetNewestByTeacherId(id);
-        Console.WriteLine(notification);
             if (notification == null)
             {
-             
-                return Ok((NotificationBase?)null);
+                return Ok(new NotificationBase());
             }
-        
+
             return Ok(notification);
         }
         catch (Exception e)

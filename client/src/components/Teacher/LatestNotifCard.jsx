@@ -22,9 +22,10 @@ function LatestNotifCard({notification}) {
             <LastNotifInfo>
                 Tantárgy: {notification.subjectName}
             </LastNotifInfo>
-            <LastNotifInfo>
+            {notification.description && (<LastNotifInfo>
                 Leírás: {notification.description.length > 3 ? `${notification.description.substring(0, 3)}...` : notification.description}
-            </LastNotifInfo>
+            </LastNotifInfo>)}
+            
         </CardContent>
     </LastNotificationsCard>)
 }
