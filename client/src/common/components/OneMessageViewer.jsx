@@ -1,76 +1,77 @@
-import { CustomBox, AButton, BButton } from "../../../StyledComponents.js";
-import { Typography, Box, Button } from "@mui/material";
-import React from "react";
+import { CustomBox,MessageViewerBox, InnerBox,ButtonContainer, MessageDetailTitle, InnerTitle, TextHolder} from "../../../StyledComponents.js";
+import { Typography, Box } from "@mui/material";
+import React, {useEffect} from "react";
+import formatDate from "./formatDate.js";
+import {useNavigate} from "react-router-dom";
 
-function OneMessageViewer({ message, onGoBack }) {
+
+function OneMessageViewer({ message, onGoBack, onResponse}) {
+
+    const navigate = useNavigate()
+
+    useEffect(()=>{
+        fetch(`/api/messages/setToRead/${message.id}`)
+            .then(response=>response.json())
+            .then(data=>console.log(data))
+            .catch(error=>console.error(error))
+    },[])
+    
+    const deleteHandler = async (e) => {
+        const messageId = e.target.id;
+
+        try {
+            const response = await fetch(`/api/messages/receiverDelete/${messageId}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+            alert("Üzenet törölve");
+            onGoBack()
+                
+            } else {
+                throw new Error('Hiba történt az üzenet törlésekor.');
+            }
+        } catch (error) {console.error(error)
+        }
+    };
+    
+    const responseHandler=(e)=>{
+        onResponse(e.target.id)
+    }
+   
+    
     return (
         <CustomBox>
-            <Box sx={{
-                padding: 3,
-                maxWidth: '700px',
-                margin: '0 auto',
-                boxShadow: 3,
-                borderRadius: 2,
-                backgroundColor: '#fff',
-            }}>
-                {/* Üzenet információk */}
-                <Box sx={{ marginBottom: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
-                        Dátum:
-                    </Typography>
-                    <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                        {message.date.substring(0, 10)}
-                    </Typography>
-                </Box>
+            <MessageViewerBox>
+                <InnerBox>
+                    <MessageDetailTitle>Dátum:</MessageDetailTitle>
+                    <InnerTitle>{formatDate(message.date)}</InnerTitle>
+                </InnerBox>
+
+                <InnerBox>
+                    <MessageDetailTitle>Feladó:</MessageDetailTitle>
+                    <InnerTitle>{message.senderName}</InnerTitle>
+                </InnerBox>
+
+                <InnerBox>
+                    <MessageDetailTitle>Tárgy:</MessageDetailTitle>
+                    <InnerTitle>{message.headText}</InnerTitle>
+                </InnerBox>
 
                 <Box sx={{ marginBottom: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
-                        Feladó:
-                    </Typography>
-                    <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                        {message.senderName}
-                    </Typography>
+                    <InnerTitle>Üzenet szövege:</InnerTitle>
+                    <TextHolder>{message.text}</TextHolder>
                 </Box>
-
-                <Box sx={{ marginBottom: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
-                        Tárgy:
-                    </Typography>
-                    <Typography variant="body1" sx={{ marginBottom: 2 }}>
-                        {message.headText}
-                    </Typography>
-                </Box>
-
-                <Box sx={{ marginBottom: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 1 }}>
-                        Üzenet szövege:
-                    </Typography>
-                    <Box
-                        sx={{
-                            border: '1px solid #ddd',
-                            padding: 2,
-                            minHeight: '150px',
-                            width: '100%',
-                            borderRadius: 1,
-                            fontSize: 16,
-                            lineHeight: 1.6,
-                            whiteSpace: 'pre-wrap',
-                            wordWrap: 'break-word',
-                        }}
-                    >
-                        {message.text}
-                    </Box>
-                </Box>
-                <Box sx={{ marginTop: 3, textAlign: 'center' }}>
-                    <BButton>
+                <ButtonContainer>
+                    <button id={message.id} onClick={responseHandler}>
                         Válasz
-                    </BButton>
-                    <AButton>
+                    </button>
+                    <button id={message.id} onClick={deleteHandler}>
                         Törlés
-                    </AButton>
-                    <AButton onClick={()=>onGoBack()}>Vissza</AButton>
-                </Box>
-            </Box>
+                    </button>
+                    <button onClick={()=>onGoBack()}>Vissza</button>
+                </ButtonContainer>
+            </MessageViewerBox>
         </CustomBox>
     );
 }
