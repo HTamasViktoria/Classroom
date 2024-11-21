@@ -94,6 +94,7 @@ public partial class Program
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IMessagesRepository, MessagesRepository>();
 
     
         services.AddTransient<ITokenService, TokenService>();
