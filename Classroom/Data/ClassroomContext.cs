@@ -14,6 +14,7 @@ namespace Classroom.Data
         public DbSet<TeacherSubject> TeacherSubjects { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<NotificationBase> Notifications { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         public ClassroomContext(DbContextOptions<ClassroomContext> options)
             : base(options)
@@ -78,6 +79,20 @@ namespace Classroom.Data
                 .WithMany()
                 .HasForeignKey(p => p.StudentId)
                 .OnDelete(DeleteBehavior.Restrict);
+            
+            
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany()
+                .HasForeignKey("SenderId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany()
+                .HasForeignKey("ReceiverId")
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
