@@ -8,7 +8,7 @@ function TeacherNavbar({ id }) {
     useEffect(() => {
        
         const isLoggedIn = localStorage.getItem('isLoggedIn');
-        console.log("isLoggedIn from localStorage:", isLoggedIn);
+     
     }, []);
 
     return (

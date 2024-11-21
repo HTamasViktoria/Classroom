@@ -1,15 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavbarAppBar, NavbarToolbar, NavbarAccountIcon, NavbarButton, NavbarTypography, NavbarBadge, NavbarSpacer, NavbarBox } from '../../../StyledComponents.js';
 import { useProfile } from '../../contexts/ProfileContext.jsx';
+import GetNewMessagesNum from "../../common/components/GetNewMessagesNum.jsx";
 
 function TeacherNavbarContainer({ profile, id }) {
     const navigate = useNavigate();
     const { logout } = useProfile();
 
+    const [newMessagesNum, setNewMessagesNum] = useState(0)
+
     const menuItems = [
         { label: 'Jegyek', value: 'grades' },
-        { label: 'Üzenetek', value: 'messages' },
+        { label: 'Üzenetek', value: 'messages',badge: newMessagesNum },
         { label: 'Értesítések', value: 'notifications' },
         { label: 'Hiányzások', value: 'absences' },
         { label: 'Órarend', value: 'schedule' },
@@ -29,7 +32,7 @@ function TeacherNavbarContainer({ profile, id }) {
         navigate(`/teacher/${value}/${id}`);
     };
 
-    return (
+    return (<> <GetNewMessagesNum id={id} onData={(data)=>setNewMessagesNum(data)}/>
         <NavbarAppBar>
             <NavbarToolbar>
                 {menuItems.map(item => (
@@ -62,6 +65,7 @@ function TeacherNavbarContainer({ profile, id }) {
                 </NavbarTypography>
             </NavbarToolbar>
         </NavbarAppBar>
+        </>
     );
 }
 

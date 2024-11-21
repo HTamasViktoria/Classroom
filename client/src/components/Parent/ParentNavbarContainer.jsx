@@ -1,16 +1,18 @@
 import {NavbarAppBar, NavbarToolbar, NavbarAccountIcon,NavbarButton,  NavbarTypography, NavbarBadge, NavbarSpacer, NavbarBox} from '../../../StyledComponents.js'
 import { useNavigate } from 'react-router-dom';
 import {useProfile} from "../../contexts/ProfileContext.jsx";
-
-function ParentNavbarContainer({newGradesLength, newNotificationsLength, profile, studentId}){
+import GetNewMessagesNum from "../../common/components/GetNewMessagesNum.jsx";
+import {useState} from "react";
+function ParentNavbarContainer({newGradesLength, newNotificationsLength,studentId}){
     
     
     const navigate = useNavigate();
+    const [newMessagesNum, setNewMessagesNum] = useState(0)
     
-    const {logout} = useProfile()
+    const {logout, profile} = useProfile()
     
     const menuItems = [
-        { label: 'Üzenetek', value: 'messages' },
+        { label: 'Üzenetek', value: 'messages' , badge: newMessagesNum},
         { label: 'Osztályzatok', value: 'grades', badge: newGradesLength },
         { label: 'Értesítések', value: 'notifications', badge: newNotificationsLength },
         { label: 'Hiányzások', value: 'absences' },
@@ -31,6 +33,8 @@ function ParentNavbarContainer({newGradesLength, newNotificationsLength, profile
     };
     
     return(   
+        <>
+            <GetNewMessagesNum id={profile.id} onData={(data)=>setNewMessagesNum(data)}/>
         <NavbarAppBar>
             <NavbarToolbar>
                 {menuItems.map(item => (
@@ -62,7 +66,8 @@ function ParentNavbarContainer({newGradesLength, newNotificationsLength, profile
                     <NavbarButton onClick={logoutHandler}>Kilépés</NavbarButton>
                 </NavbarTypography>
             </NavbarToolbar>
-        </NavbarAppBar>)
+        </NavbarAppBar>
+        </>)
 }
 
 
