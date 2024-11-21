@@ -34,6 +34,8 @@ import BulkGradeAdding from "./teacher/BulkGradeAdding.jsx";
 import NotificationMain from "./components/Teacher/NotificationMain.jsx";
 import TeachersLastNotifications from "./components/Teacher/TeachersLastNotifications.jsx";
 import TeacherMessages from "./teacher/TeacherMessages.jsx";
+import ParentMessages from "./parent/ParentMessages.jsx";
+import ResponseMessage from "./common/components/ResponseMessage.jsx";
 
 
 const root = createRoot(document.getElementById('root'));
@@ -67,6 +69,8 @@ root.render(
                         <Route path='/parent/grades/:id' element={<ProtectedRoute element={<ParentGrades />} allowedRoles={['Parent']} />} />
                         <Route path='/parent/notifications/:id' element={<ProtectedRoute element={<ParentNotificationsMain />} allowedRoles={['Parent']} />} />
                         <Route path='/parent/profile/:id' element={<ProtectedRoute element={<ParentProfile />} allowedRoles={['Parent']} />} />
+                        <Route path='/parent/messages/:id' element={<ProtectedRoute element={<ParentMessages />} allowedRoles={['Parent']} />} />
+    
                         {/* Tanár védett útvonalak */}
                         <Route path='/teacher/:id' element={<ProtectedRoute element={<TeacherStarter />} allowedRoles={['Teacher']} />} />
                         <Route path='/teacher/grades/:id' element={<ProtectedRoute element={<TeacherGrades />} allowedRoles={['Teacher']} />} />
