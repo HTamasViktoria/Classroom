@@ -55,7 +55,8 @@ function MessagesMain({id}) {
 
 
                 {showing === "incoming" && (<IncomingMessages id={id} onChosing={chosingHandler}/>)}
-                {showing === "new" && <NewMessage id={id} onSuccessfulSending={() => setShowing("incoming")}/>}
+                {showing === "new" && <NewMessage id={id} onSuccessfulSending={() => setShowing("incoming")}
+                onGoBack={()=>setShowing("incoming")}/>}
                 {showing === "oneChosen" &&
                     <OneMessageViewer message={chosenMessage} onGoBack={() => setShowing("incoming")}
                                       onResponse={responsingHandler}/>}
