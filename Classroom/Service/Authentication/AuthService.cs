@@ -1,10 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Classroom.Contracts;
 using Classroom.Model.DataModels;
-using Classroom.Service.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Classroom.Service.Authentication
 {
@@ -158,6 +155,30 @@ namespace Classroom.Service.Authentication
                 Token = "GeneratedJWTTokenHere",
                 Role = role.FirstOrDefault()
             };
+        }
+        
+        
+        public ActionResult HandleErrors(Dictionary<string, string> errorMessages)
+        {
+            
+            if (errorMessages.Any(error => error.Value.Contains("email already taken")))
+            {
+                return new ConflictObjectResult(new { message = "Email is already taken." });
+            }
+
+            if (errorMessages.Any(error => error.Value.Contains("username already taken")))
+            {
+                return new ConflictObjectResult(new { message = "Username is already taken." });
+            }
+
+        
+            var modelState = new ModelStateDictionary();
+            foreach (var error in errorMessages)
+            {
+                modelState.AddModelError(error.Key, error.Value);
+            }
+
+            return new BadRequestObjectResult(modelState);
         }
     }
 }
