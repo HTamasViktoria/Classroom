@@ -44,7 +44,7 @@ namespace Classroom.Service
         }
 
        
-        public User GetByEmail(string email)
+        public User? GetByEmail(string email)
         {
             var student = _userRepository.GetAllStudents().FirstOrDefault(s => s.Email == email);
             if (student != null) return student;
@@ -95,6 +95,28 @@ namespace Classroom.Service
             }
         }
 
+        
+        
+        public IEnumerable<string> ValidateParentRegistration(string studentId, string studentName)
+        {
+            var errors = new List<string>();
+
+      
+            var studentIdIsValid = CheckStudentId(studentId, studentName);
+            if (!studentIdIsValid)
+            {
+                errors.Add("Invalid student ID or child name.");
+            }
+
+            
+            var parentsNumberOk = CheckParentsNumber(studentId);
+            if (!parentsNumberOk)
+            {
+                errors.Add("The student already has the maximum number of registered parents.");
+            }
+
+            return errors;
+        }
 
 
 

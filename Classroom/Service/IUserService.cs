@@ -11,8 +11,9 @@ namespace Classroom.Service
         Parent GetParentById(string parentId);
         void AddTeacher(Teacher teacher);
         void AddParent(Parent parent);
-        User GetByEmail(string email);
+        User? GetByEmail(string email);
         bool CheckStudentId(string studentId, string studentName);
         bool CheckParentsNumber(string studentId);
+        IEnumerable<string> ValidateParentRegistration(string studentId, string studentName);
     }
 }
