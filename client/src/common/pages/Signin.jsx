@@ -20,17 +20,23 @@ function Signin() {
                 body: JSON.stringify({ email, password }),
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                setProfile(data);
-                login(data);
-                navigateBasedOnRole(data);
-            } else {
-                throw new Error('Sign-in failed');
+         
+            if (!response.ok) {
+             
+                setError('Hibás bejelentkezési adatok! Kérjük, ellenőrizze a hitelesítő adatokat és próbálkozzon újra.');
+                return;
             }
+
+            const data = await response.json();
+
+            setProfile(data);
+            login(data);
+            navigateBasedOnRole(data);
+
         } catch (error) {
             console.error('Error during sign-in:', error);
-            setError('Bejelentkezés nem sikerült. Kérjük, ellenőrizze a hitelesítő adatait és próbálkozzon újra.');
+   
+            setError('Hibás bejelentkezési adatok! Kérjük, ellenőrizze a hitelesítő adatokat és próbálkozzon újra.');
         }
     };
 
