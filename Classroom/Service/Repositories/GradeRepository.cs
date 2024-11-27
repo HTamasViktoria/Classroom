@@ -1,0 +1,351 @@
+using Classroom.Data;
+using Classroom.Model.DataModels;
+using Classroom.Model.DataModels.Enums;
+using Classroom.Model.RequestModels;
+using Classroom.Model.ResponseModels;
+using Microsoft.EntityFrameworkCore;
+
+
+namespace Classroom.Service.Repositories;
+
+
+public class GradeRepository : IGradeRepository
+{
+    private ClassroomContext _dbContext;
+    private IUserRepository _userRepository;
+    
+    public GradeRepository(ClassroomContext context, IUserRepository userRepository)
+    {
+        _dbContext = context;
+        _userRepository = userRepository;
+    }
+
+    public IEnumerable<Grade> GetAll()
+    {
+        return _dbContext.Grades.ToList();
+    }
+
+
+    public void Add(GradeRequest request)
+    {
+        
+        if (string.IsNullOrWhiteSpace(request.TeacherId))
+        {
+            throw new ArgumentException("Teacher ID cannot be null or empty.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.StudentId))
+        {
+            throw new ArgumentException("Student ID cannot be null or empty.");
+        }
+
+       
+        if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
+        {
+            throw new ArgumentException($"Invalid grade value: {request.Value}");
+        }
+
+      
+        if (!DateTime.TryParse(request.Date, out var date))
+        {
+            throw new ArgumentException($"Invalid date format: {request.Date}");
+        }
+
+      
+        var grade = new Grade
+        {
+            TeacherId = request.TeacherId,
+            StudentId = request.StudentId,
+            Subject = request.Subject,
+            ForWhat = request.ForWhat,
+            Value = gradeValue,
+            Date = date
+        };
+
+        _dbContext.Grades.Add(grade);
+        _dbContext.SaveChanges();
+    }
+
+    
+    public IEnumerable<Grade> GetByStudentId(string studentId)
+    {
+        return _dbContext.Grades.Where(grade => grade.StudentId == studentId).ToList();
+    }
+    
+    
+
+    public async Task<LatestGradeResponse> GetTeachersLastGradeAsync(string teacherId)
+    {
+        
+        var grade = await _dbContext.Grades
+            .Where(g => g.TeacherId == teacherId)
+            .OrderByDescending(g => g.Date)
+            .FirstOrDefaultAsync();
+
+        if (grade == null)
+        {
+            return null;
+        }
+
+        var studentFullName = _userRepository.GetStudentFullNameById(grade.StudentId);
+        
+        if (string.IsNullOrEmpty(studentFullName))
+        {
+            return null;
+        }
+        
+        var gradeResponse = new LatestGradeResponse
+        {
+            Id = grade.Id,
+            TeacherId = grade.TeacherId,
+            StudentId = grade.StudentId,
+            StudentName = studentFullName,
+            Subject = grade.Subject,
+            ForWhat = grade.ForWhat,
+            Read = grade.Read,
+            Value = grade.Value,
+            Date = grade.Date
+        };
+
+        return gradeResponse;
+    }
+
+    
+    
+    public IEnumerable<Grade> GetNewGradesByStudentId(string studentId)
+    {
+        return _dbContext.Grades.Where(grade => grade.StudentId == studentId && grade.Read == false).
+            OrderByDescending(grade=>grade.Date).ToList();
+    }
+    
+    
+    public int GetNewGradesNumber(string id)
+    {
+         return _dbContext.Grades.Where(grade => grade.StudentId == id && grade.Read == false).
+                    Count();
+    }
+
+    
+    
+    public void Delete(int id)
+    {
+        var gradeToDelete = _dbContext.Grades.FirstOrDefault(g => g.Id == id);
+    
+        if (gradeToDelete == null)
+        {
+            throw new ArgumentException($"Grade with Id {id} not found.");
+        }
+    
+        _dbContext.Grades.Remove(gradeToDelete);
+        _dbContext.SaveChanges();
+    }
+
+
+    public async Task<Dictionary<string, double>> GetClassAveragesBySubject(string subject)
+    {
+        var classAverages = new Dictionary<string, double>();
+    
+
+        var teacherSubjects = await _dbContext.TeacherSubjects
+            .Include(ts => ts.ClassOfStudents)
+            .Where(ts => ts.Subject == subject)
+            .ToListAsync();
+    
+        var classGroups = teacherSubjects
+            .GroupBy(ts => ts.ClassOfStudentsId)
+            .ToList();
+
+        foreach (var classGroup in classGroups)
+        {
+            var classId = classGroup.Key;
+            var className = classGroup.First().ClassOfStudents.Name;
+            var studentIds = await _dbContext.ClassesOfStudents
+                .Where(c => c.Id == classId)
+                .SelectMany(c => c.Students.Select(s => s.Id))
+                .ToListAsync();
+        
+  
+            var grades = await _dbContext.Grades
+                .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
+                .ToListAsync();
+  
+            if (grades.Count == 0)
+            {
+                classAverages[className] = 0;
+                continue;
+            }
+        
+            var average = grades.Average(g => (double)g.Value);
+            var roundedAverage = Math.Round(average, 2);
+
+            classAverages[className] = roundedAverage;
+        }
+
+        return classAverages;
+    }
+
+
+
+    public async Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject)
+    {
+       
+        var studentIds = await _dbContext.ClassesOfStudents
+            .Where(c => c.Id == classId)
+            .SelectMany(c => c.Students.Select(s => s.Id))
+            .ToListAsync();
+
+       
+        var grades = await _dbContext.Grades
+            .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
+            .ToListAsync();
+
+        return grades;
+    }
+
+    
+    
+    public async Task<IEnumerable<Grade>> GetGradesByClass(int classId)
+    {
+        var studentIds = await _dbContext.ClassesOfStudents
+            .Where(c => c.Id == classId)
+            .SelectMany(c => c.Students.Select(s => s.Id))
+            .ToListAsync();
+
+       
+        var grades = await _dbContext.Grades
+            .Where(g => studentIds.Contains(g.StudentId))
+            .ToListAsync();
+
+        return grades;
+    }
+    
+    
+    
+    public async Task<IEnumerable<Grade>> GetGradesBySubjectByStudent(string subject, string studentId)
+    {
+       
+        if (string.IsNullOrWhiteSpace(subject))
+        {
+            throw new ArgumentException("Subject cannot be null or empty.");
+        }
+        if (string.IsNullOrWhiteSpace(studentId))
+        {
+            throw new ArgumentException("Student ID cannot be null or empty.");
+        }
+
+        try
+        {
+           
+            var grades = await _dbContext.Grades
+                .Where(g => g.Subject == subject && g.StudentId == studentId)
+                .ToListAsync();
+        
+            return grades;
+        }
+        catch (Exception ex)
+        {
+           
+            throw new Exception("An error occurred while retrieving the grades.", ex);
+        }
+    }
+
+
+
+
+    
+    public async Task<Dictionary<string, double>> GetClassAveragesByStudentId(string studentId)
+    {
+        var student = await _dbContext.Students.FirstOrDefaultAsync(s => s.Id == studentId);
+
+        if (student == null)
+        {
+            throw new Exception("Student not found");
+        }
+
+        var classOfStudent = await _dbContext.ClassesOfStudents
+            .Include(c => c.Students)
+            .FirstOrDefaultAsync(c => c.Students.Any(s => s.Id == studentId));
+
+        if (classOfStudent == null)
+        {
+            throw new Exception("Class not found for the given student");
+        }
+    
+        var studentIds = classOfStudent.Students.Select(s => s.Id).ToList();
+    
+        var grades = await _dbContext.Grades
+            .Where(g => studentIds.Contains(g.StudentId))
+            .ToListAsync();
+    
+        var subjectAverages = grades
+            .GroupBy(g => g.Subject)
+            .Select(g => new 
+            {
+                Subject = g.Key,
+                Average = Math.Round(g.Average(x => (double)x.Value), 2)
+            })
+            .ToDictionary(g => g.Subject, g => g.Average);
+
+        return subjectAverages;
+    }
+    
+    
+
+    public void Edit(GradeRequest request, int id)
+    {
+        var gradeToUpdate = _dbContext.Grades.FirstOrDefault(g => g.Id == id);
+
+        if (gradeToUpdate != null)
+        {
+          if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
+            {
+                throw new ArgumentException($"Invalid grade value: {request.Value}");
+            }
+
+        
+            if (!DateTime.TryParse(request.Date, out var date))
+            {
+                throw new ArgumentException($"Invalid date format: {request.Date}");
+            }
+
+            gradeToUpdate.TeacherId = request.TeacherId;
+            gradeToUpdate.StudentId = request.StudentId;
+            gradeToUpdate.Date = date;
+            gradeToUpdate.ForWhat = request.ForWhat;
+            gradeToUpdate.Value = gradeValue;
+            _dbContext.SaveChanges();
+        }
+        else
+        {
+            throw new Exception($"Grade with Id {id} not found.");
+        }
+    }
+
+    
+    private string ExtractGradeValue(string valueWithLabel)
+    {
+        
+        var parts = valueWithLabel.Split('=');
+        return parts.Length > 1 ? parts[0].Trim() : valueWithLabel.Trim();
+    }
+    
+    
+    public void SetToOfficiallyRead(int gradeId)
+    {
+        var grade = _dbContext.Grades.FirstOrDefault(g => g.Id == gradeId);
+
+        if (grade == null)
+        {
+            throw new ArgumentException($"Grade with ID {gradeId} not found.");
+        }
+
+        grade.Read = true;
+        _dbContext.SaveChanges();
+    }
+
+    
+    
+    
+}
+
+

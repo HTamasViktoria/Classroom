@@ -1,0 +1,15 @@
+# ASP.NET Core
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Rider project files
+.idea/
+
+# Secrets
+secrets.json
+config/secrets/
+*.secret
