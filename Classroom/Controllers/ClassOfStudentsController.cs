@@ -21,20 +21,27 @@ public class ClassOfStudentsController : ControllerBase
         _classOfStudentsRepository = classOfStudentsRepository;
     }
 
-    
     [HttpGet(Name = "classes")]
     public ActionResult<IEnumerable<ClassOfStudents>> GetAll()
     {
         try
         {
-            return Ok(_classOfStudentsRepository.GetAll());
+            var classes = _classOfStudentsRepository.GetAll();
+        
+            if ( !classes.Any()) 
+            {
+                return NotFound(new { message = "No classes found." });
+            }
+
+            return Ok(classes);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, e.Message);
-            return StatusCode(500, $"Internal server error: {e.Message}");
+            _logger.LogError(e, "An error occurred while fetching classes.");
+            return StatusCode(500, new { message = "An error occurred, please try again later." });
         }
     }
+
     
     
     [HttpGet("allStudentsWithClasses")]
@@ -53,20 +60,24 @@ public class ClassOfStudentsController : ControllerBase
     }
     
     
-    
     [HttpGet("getStudents/{classId}")]
     public ActionResult<IEnumerable<Student>> GetStudents(int classId)
     {
         try
         {
             var students = _classOfStudentsRepository.GetStudents(classId);
-        
-            if (students == null || !students.Any())
+            
+            if (!students.Any())
             {
                 return Ok(Enumerable.Empty<Student>());
             }
-
+            
             return Ok(students);
+        }
+        catch (KeyNotFoundException knfEx)
+        {
+            _logger.LogError(knfEx, knfEx.Message);
+            return NotFound(knfEx.Message);
         }
         catch (Exception e)
         {
@@ -74,17 +85,16 @@ public class ClassOfStudentsController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+
     
     
-    
-       
     [HttpGet("getClassesBySubject/{subject}")]
     public ActionResult<IEnumerable<ClassOfStudents>> GetClassesBySubject(string subject)
     {
         try
         {
             var classes = _classOfStudentsRepository.GetClassesBySubject(subject);
-            
+
             if (!classes.Any())
             {
                 return Ok(Enumerable.Empty<ClassOfStudents>());
@@ -92,9 +102,13 @@ public class ClassOfStudentsController : ControllerBase
             
             return Ok(classes);
         }
+        catch (ArgumentException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return BadRequest(ex.Message);
+        }
         catch (Exception e)
         {
-           
             _logger.LogError(e, e.Message);
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
@@ -102,14 +116,23 @@ public class ClassOfStudentsController : ControllerBase
 
 
     
-    
     [HttpPost("add")]
     public ActionResult<string> Post([FromBody] ClassOfStudentsRequest request)
     {
         try
         {
             _classOfStudentsRepository.Add(request);
-            return Ok(new { message = "Successfully added new grade" });
+            return Ok(new { message = "Successfully added new class" });
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return BadRequest(new { error = ex.Message });
         }
         catch (Exception e)
         {
@@ -117,8 +140,8 @@ public class ClassOfStudentsController : ControllerBase
             return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
         }
     }
-    
-    
+
+
     
     [HttpPost("addStudent")]
     public ActionResult<string> Post([FromBody] AddingStudentToClassRequest request)
@@ -128,11 +151,22 @@ public class ClassOfStudentsController : ControllerBase
             _classOfStudentsRepository.AddStudent(request);
             return Ok(new { message = "Successfully added new student" });
         }
-        catch (Exception e)
+        catch (InvalidOperationException ex)
         {
-            _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
+            _logger.LogError(ex, ex.Message);
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
         }
     }
+
     
 }
