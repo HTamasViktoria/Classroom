@@ -83,7 +83,7 @@ function NewMessage({ id, onSuccessfulSending, onGoBack }) {
                 <button type="submit" onClick={submitHandler}>
                     Küldés
                 </button>
-                <button type="button">Vissza</button>
+                <button onClick={()=>onGoBack()} type="button">Vissza</button>
             </form>
         </>
     );

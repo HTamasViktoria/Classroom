@@ -13,16 +13,13 @@ function SentMessages({id}){
             {sentMessages.length === 0  &&(<h1>Nincsenek elküldött üzenetek</h1>)}
             {sentMessages.map((message) => (
                 <MessageLine key={message.id} onClick={()=>onChosing(message.id) }>
-                    {message.read === true && (<button>Olvasatlannak jelöl</button>)}
                     <MessageDetail>{formatDate(message.date)}</MessageDetail>
                     <MessageDetail>{message.senderName}</MessageDetail>
                     <MessageDetail>{message.headText}</MessageDetail>
                     <MessageDetail>
                         {message.text.length > 20 ? message.text.substring(0, 20) + "..." : message.text}
                     </MessageDetail>
-                    <MessageDetail>
-                        <button>Törlés</button>
-                    </MessageDetail>
+                  
 
                 </MessageLine>
             ))}
