@@ -5,7 +5,7 @@ using Classroom.Model.RequestModels;
 using Classroom.Model.ResponseModels;
 using Classroom.Service;
 using Classroom.Service.Authentication;
-using Classroom.Service.Repositories;
+
 
 namespace Classroom.Controllers
 {
@@ -23,7 +23,10 @@ namespace Classroom.Controllers
             _configuration = configuration;
             _userService = userService;
         }
-
+        
+        
+        
+        
         [HttpPost("sign-up/student")]
         public async Task<ActionResult<RegistrationResponse>> Register(StudentRequest request)
         {
@@ -36,24 +39,28 @@ namespace Classroom.Controllers
                 request.Email,
                 request.Username,
                 request.Password,
-                role:"Student",
+                role: "Student",
                 request.FirstName,
                 request.FamilyName,
                 DateTime.Parse(request.BirthDate),
                 request.BirthPlace,
                 request.StudentNo,
                 childName: null,
-                studentId:null
+                studentId: null
             );
 
             if (!result.Success)
             {
-                AddErrors(result);
-                return BadRequest(ModelState);
+   
+                var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
+        
+                return _authenticationService.HandleErrors(errorMessages);
             }
 
-            return CreatedAtAction(nameof(Register), new RegistrationResponse(result.Email, result.UserName));
+            var response = new RegistrationResponse(result.Email, result.UserName);
+            return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
         }
+        
         
         
         [HttpPost("sign-up/teacher")]
@@ -80,11 +87,14 @@ namespace Classroom.Controllers
 
             if (!result.Success)
             {
-                AddErrors(result);
-                return BadRequest(ModelState);
+   
+                var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
+        
+                return _authenticationService.HandleErrors(errorMessages);
             }
+            var response = new RegistrationResponse(result.Email, result.UserName);
 
-            return CreatedAtAction(nameof(Register), new RegistrationResponse(result.Email, result.UserName));
+            return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
         }
         
         
@@ -97,20 +107,17 @@ namespace Classroom.Controllers
                 return BadRequest(ModelState);
                 
             }
-
-            var studentIdToBe = _userService.CheckStudentId(request.StudentId, request.ChildName);
-           
-            if (studentIdToBe == false)
+            var validationErrors = _userService.ValidateParentRegistration(request.StudentId, request.ChildName);
+            if (validationErrors.Any())
             {
+            
+                foreach (var error in validationErrors)
+                {
+                    ModelState.AddModelError("ValidationError", error);
+                }
                 return BadRequest(ModelState);
             }
-
-            var parentsNumberOk = _userService.CheckParentsNumber(request.StudentId);
-            if (!parentsNumberOk)
-            {
-                ModelState.AddModelError("ParentsNumber", "The student already has the maximum number of registered parents.");
-                return BadRequest(ModelState);
-            }
+        
 
             var result = await _authenticationService.RegisterAsync(
                 request.Email,
@@ -128,32 +135,31 @@ namespace Classroom.Controllers
 
             if (!result.Success)
             {
-               
-                return BadRequest(ModelState);
+   
+                var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
+        
+                return _authenticationService.HandleErrors(errorMessages);
             }
+            var response = new RegistrationResponse(result.Email, result.UserName);
 
-            return CreatedAtAction(nameof(Register), new RegistrationResponse(result.Email, result.UserName));
+            return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
         }
 
   
-
         [HttpPost("sign-in")]
         public async Task<ActionResult<UserResponse>> Authenticate([FromBody] AuthRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Invalid input data.", errors = ModelState });
             }
 
             var result = await _authenticationService.LoginAsync(request.Email, request.Password);
 
             if (!result.Success)
             {
-                AddErrors(result);
-                return BadRequest(ModelState);
+                return BadRequest(new { message = "Invalid email or password." });
             }
-
-   
 
             if (result.Email == _configuration["AdminUser:Email"])
             {
@@ -163,48 +169,46 @@ namespace Classroom.Controllers
                     Email = result.Email,
                     Role = "Admin"
                 };
-      
 
                 return Ok(admin);
             }
 
-           
             var userResp = _userService.GetByEmail(result.Email);
 
-            if (userResp != null)
+            if (userResp == null)
             {
-                userResp.Role = result.Role;
+                return NotFound(new { message = "User not found." });
             }
 
-           
-            HttpContext.Response.Cookies.Append("access_token", result.Token, new CookieOptions { HttpOnly = true, Expires = DateTime.Now.AddMinutes(30) });
+            userResp.Role = result.Role;
 
-            return Ok(userResp); 
+            HttpContext.Response.Cookies.Append("access_token", result.Token, new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.Now.AddMinutes(30)
+            });
+
+            return Ok(new { message = "Login successful", user = userResp });
         }
-
-
-
-        
 
         
       
         
-        
         [HttpPost("sign-out")]
         public IActionResult Logout()
         {
-            
-            HttpContext.Response.Cookies.Delete("access_token");
-            return Ok();
-        }
-
-        private void AddErrors(AuthResult result)
-        {
-            foreach (var error in result.ErrorMessages)
+            HttpContext.Response.Cookies.Delete("access_token", new CookieOptions
             {
-                ModelState.AddModelError(error.Key, error.Value);
-            }
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            });
+
+            HttpContext.Session.Clear();
+
+            return NoContent();
         }
 
+      
     }
 }
