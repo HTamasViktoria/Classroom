@@ -9,6 +9,7 @@ function StudentAdding() {
 
     const postStudent = (student) => {
         console.log('Posting student data:', JSON.stringify(student, null, 2));
+
         return fetch(`/api/auth/sign-up/student`, {
             method: "POST",
             headers: {
@@ -18,19 +19,32 @@ function StudentAdding() {
         })
             .then((res) => {
                 if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
+                    return res.json().then((json) => {
+                        const errorMessages = json.RegistrationError || [];
+
+                        if (errorMessages.length > 0) {
+                  
+                            alert(`Hiba történt: ${errorMessages.join(", ")}`);
+                        } else {
+                            alert("Ismeretlen hiba történt.");
+                        }
+
+                        throw new Error(errorMessages.join(", ") || "Ismeretlen hiba történt.");
+                    });
                 }
-                return res.text();
+
+                return res.json();
             })
-            .then((text) => {
-                console.log('Server response:', text);
-                return text;
+            .then((data) => {
+                console.log('Server response:', data);
+                return data;
             })
             .catch((error) => {
                 console.error('Error:', error);
                 throw error;
             });
     };
+
 
     const handleCreateStudent = (student) => {
         postStudent(student)
