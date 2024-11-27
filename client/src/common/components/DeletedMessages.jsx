@@ -27,7 +27,6 @@ function DeletedMessages({id}){
             {deletedMessages.length === 0  &&(<h1>Nincsenek törölt üzenetek</h1>)}
             {deletedMessages.map((message) => (
                 <MessageLine key={message.id}>
-                    {message.read === true && (<button>Olvasatlannak jelöl</button>)}
                     <MessageDetail>{formatDate(message.date)}</MessageDetail>
                     <MessageDetail>{message.senderName}</MessageDetail>
                     <MessageDetail>{message.headText}</MessageDetail>
