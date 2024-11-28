@@ -28,9 +28,9 @@ public class ClassOfStudentsController : ControllerBase
         {
             var classes = _classOfStudentsRepository.GetAll();
         
-            if ( !classes.Any()) 
+            if ( !classes.Any())
             {
-                return NotFound(new { message = "No classes found." });
+                return Ok(new List<ClassOfStudents>());
             }
 
             return Ok(classes);
@@ -50,6 +50,10 @@ public class ClassOfStudentsController : ControllerBase
         try
         {
             var studentsWithClasses = _classOfStudentsRepository.GetAllStudentsWithClasses();
+            if (!studentsWithClasses.Any())
+            {
+                return Ok(new List<StudentWithClassResponse>());
+            }
             return Ok(studentsWithClasses);
         }
         catch (Exception e)
@@ -69,7 +73,7 @@ public class ClassOfStudentsController : ControllerBase
             
             if (!students.Any())
             {
-                return Ok(Enumerable.Empty<Student>());
+                return Ok(new List<Student>());
             }
             
             return Ok(students);
@@ -97,7 +101,7 @@ public class ClassOfStudentsController : ControllerBase
 
             if (!classes.Any())
             {
-                return Ok(Enumerable.Empty<ClassOfStudents>());
+                return Ok(new List<ClassOfStudents>());
             }
             
             return Ok(classes);
@@ -119,6 +123,10 @@ public class ClassOfStudentsController : ControllerBase
     [HttpPost("add")]
     public ActionResult<string> Post([FromBody] ClassOfStudentsRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { errors = ModelState });
+        }
         try
         {
             _classOfStudentsRepository.Add(request);
@@ -146,6 +154,10 @@ public class ClassOfStudentsController : ControllerBase
     [HttpPost("addStudent")]
     public ActionResult<string> Post([FromBody] AddingStudentToClassRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { errors = ModelState });
+        }
         try
         {
             _classOfStudentsRepository.AddStudent(request);
