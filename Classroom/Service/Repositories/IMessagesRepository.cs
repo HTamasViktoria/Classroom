@@ -14,7 +14,7 @@ public interface IMessagesRepository
     bool Restore(int messageId, string userId);
     bool SetToUnread(int messageId);
     bool SetToRead(int messageId);
-    IEnumerable<Message> GetAllMessages();
+    Task<IEnumerable<Message>> GetAllMessagesAsync();
     int GetNewMessagesNum(string userId);
     Message GetById(int id);
 }

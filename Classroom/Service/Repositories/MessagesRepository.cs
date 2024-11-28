@@ -18,27 +18,32 @@ public class MessagesRepository : IMessagesRepository
 
     public IEnumerable<Message> GetIncomings(string id)
     {
+        ValidateUser(id);
         return _dbContext.Messages.Where(m => (m.Receiver.Id == id) && (m.DeletedByReceiver==false)).ToList();
     }
     
     
     public IEnumerable<Message> GetSents(string id)
     {
+        ValidateUser(id);
         return _dbContext.Messages.Where(m => (m.Sender.Id == id) && (m.DeletedBySender == false)).ToList();
     }
     
     
     public IEnumerable<Message> GetDeleteds(string id)
     {
+        ValidateUser(id);
         return _dbContext.Messages.Where(m => ((m.Receiver.Id == id && m.DeletedByReceiver == true))
                                               || (m.Sender.Id == id && m.DeletedBySender == true)).ToList();
     }
 
     public IEnumerable<Message> GetOutgoings(string id)
     {
+        ValidateUser(id);
         return _dbContext.Messages.Where(m => m.Sender.Id == id).ToList();
     }
 
+  
 
     public User GetUserById(string id)
     {
@@ -55,32 +60,35 @@ public class MessagesRepository : IMessagesRepository
         return null;
     }
 
+    
     public bool DeleteOnReceiverSide(int messageId)
     {
         var message = _dbContext.Messages.FirstOrDefault(m => m.Id == messageId);
     
         if (message == null)
         {
-            return false;
+            throw new ArgumentException($"Üzenet nem található a következő ID-val: {messageId}");
         }
-        
+    
         message.DeletedByReceiver = true;
         _dbContext.SaveChanges();
         return true;
     }
+
     
     
-    public IEnumerable<Message> GetAllMessages()
+    public async Task<IEnumerable<Message>> GetAllMessagesAsync()
     {
-        return _dbContext.Messages.ToList();
+        return await _dbContext.Messages.ToListAsync();
     }
-    
     
    
     
    
     public bool Restore(int messageId, string userId)
     {
+        ValidateUser(userId);
+
         var message = _dbContext.Messages
             .Include(m => m.Receiver)
             .Include(m => m.Sender)
@@ -88,15 +96,15 @@ public class MessagesRepository : IMessagesRepository
 
         if (message == null)
         {
-            return false;
+            throw new ArgumentException($"Az üzenet ({messageId}) nem található.");
         }
-        
-        if (message.DeletedByReceiver == true && message.Receiver.Id == userId)
+
+        if (message.DeletedByReceiver && message.Receiver.Id == userId)
         {
             message.DeletedByReceiver = false;
             _dbContext.SaveChanges();
         }
-        if (message.DeletedBySender == true && message.Sender.Id == userId)
+        else if (message.DeletedBySender && message.Sender.Id == userId)
         {
             message.DeletedBySender = false;
             _dbContext.SaveChanges();
@@ -104,27 +112,36 @@ public class MessagesRepository : IMessagesRepository
 
         return true;
     }
-    
+
+
     
     public int GetNewMessagesNum(string userId)
     {
-      
-        var newMessages = _dbContext.Messages
-            .Where(m => m.Receiver.Id == userId && m.Read == false)
-            .ToList();
+        ValidateUser(userId);
+        
+        var newMessagesCount = _dbContext.Messages
+            .Count(m => m.Receiver.Id == userId && m.Read == false);
 
-        return newMessages.Count();
+        return newMessagesCount;
     }
 
 
-    
     public Message GetById(int id)
     {
-        return _dbContext.Messages
+        var message = _dbContext.Messages
             .Include(m => m.Sender)
             .Include(m => m.Receiver)
             .FirstOrDefault(m => m.Id == id);
+
+        if (message == null)
+        {
+            throw new ArgumentException($"Message with ID {id} not found.");
+        }
+
+        return message;
     }
+
+    
     
     public bool SetToUnread(int messageId)
     {
@@ -133,7 +150,7 @@ public class MessagesRepository : IMessagesRepository
     
         if (message == null)
         {
-            return false;
+            throw new ArgumentException($"Message with ID {messageId} not found.");
         }
 
         message.Read = false;
@@ -149,7 +166,7 @@ public class MessagesRepository : IMessagesRepository
     
         if (message == null)
         {
-            return false;
+            throw new ArgumentException($"Message with ID {messageId} not found.");
         }
 
         message.Read = true;
@@ -161,12 +178,10 @@ public class MessagesRepository : IMessagesRepository
 
     public void AddMessage(MessageRequest request)
     {
+        ValidateUser(request.FromId);
         var sender = GetUserById(request.FromId);
-
-        if (sender == null)
-        {
-            throw new ArgumentException("A küldő felhasználó nem található.");
-        }
+        var failedReceivers = new List<string>();
+        var successfulMessages = new List<Message>();
 
         foreach (var receiverId in request.ReceiverIds)
         {
@@ -174,15 +189,10 @@ public class MessagesRepository : IMessagesRepository
 
             if (receiver == null)
             {
-                receiver = _dbContext.Parents.FirstOrDefault(p => p.Id == receiverId);
-            }
-            
-            if (receiver == null)
-            {
-                throw new ArgumentException($"A címzett ({receiverId}) nem található.");
+                failedReceivers.Add(receiverId);
+                continue;
             }
 
-           
             var message = new Message
             {
                 Date = request.Date,
@@ -198,11 +208,27 @@ public class MessagesRepository : IMessagesRepository
             };
 
             _dbContext.Messages.Add(message);
+            successfulMessages.Add(message);
+        }
+        
+        if (failedReceivers.Any())
+        {
+            var failedReceiverList = string.Join(", ", failedReceivers);
+            throw new ArgumentException($"Az üzenet küldése a következő felhasználók számára nem sikerült: {failedReceiverList}");
         }
 
         _dbContext.SaveChanges();
     }
 
 
+    
+    public void ValidateUser(string userId)
+    {
+        var userExists = _dbContext.Users.Any(u => u.Id == userId);
+        if (!userExists)
+        {
+            throw new ArgumentException($"User with ID {userId} not found.");
+        }
+    }
 
 }
