@@ -34,13 +34,26 @@ namespace Classroom.Service.Repositories
       
         public Teacher GetTeacherById(string teacherId)
         {
-            return _dbContext.Teachers.FirstOrDefault(t => t.Id == teacherId);
+            var teacher = _dbContext.Teachers.FirstOrDefault(t => t.Id == teacherId);
+    
+            if (teacher == null)
+            {
+                throw new ArgumentException($"Teacher with ID {teacherId} not found.");
+            }
+
+            return teacher;
         }
 
      
         public Parent GetParentById(string parentId)
         {
-            return _dbContext.Parents.FirstOrDefault(p => p.Id == parentId);
+            var parent = _dbContext.Parents.FirstOrDefault(p => p.Id == parentId);
+            if (parent == null)
+            {
+                throw new ArgumentException($"Parent with ID {parentId} not found.");
+            }
+
+            return parent;
         }
 
         public int CheckParentsNumber(string studentId)
@@ -53,17 +66,23 @@ namespace Classroom.Service.Repositories
         public string GetStudentFullNameById(string studentId)
         {
             var student = _dbContext.Students.FirstOrDefault(s => s.Id == studentId);
-            if (student != null)
+            if (student == null)
             {
-               
-                return ($"{student.FamilyName} {student.FirstName}");
+                return null;
             }
-            return (null);
+            return $"{student.FamilyName} {student.FirstName}";
         }
+
 
 
         public void AddTeacher(Teacher teacher)
         {
+            bool existingTeacher = _dbContext.Teachers.Any(t => t.FamilyName == teacher.FamilyName &&
+                                                                t.FirstName == teacher.FirstName);
+            if (existingTeacher)
+            {
+                throw new ArgumentException($"Teacher with name {teacher.FirstName} {teacher.FamilyName} already exists.");
+            }
             _dbContext.Teachers.Add(teacher);
             _dbContext.SaveChanges();
         }
