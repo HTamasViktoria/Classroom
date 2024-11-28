@@ -2,6 +2,7 @@ using Classroom.Model.DataModels;
 using Classroom.Model.RequestModels;
 using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Classroom.Service;
 
 namespace Classroom.Controllers;
 
@@ -24,6 +25,7 @@ public class TeacherSubjectController : ControllerBase
     [HttpGet("getByTeacherId/{teacherId}")]
     public ActionResult<IEnumerable<TeacherSubject>> GetSubjectsByTeacherId(string teacherId)
     {
+        StringValidationHelper.IsValidId(teacherId);
         try
         {
             var subjects = _teacherSubjectRepository.GetSubjectsByTeacherId(teacherId);

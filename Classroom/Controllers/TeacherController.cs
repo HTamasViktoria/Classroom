@@ -3,6 +3,7 @@ using Classroom.Model.RequestModels;
 using Microsoft.AspNetCore.Mvc;
 using Classroom.Service.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Classroom.Service;
 
 namespace Classroom.Controllers
 {
@@ -25,6 +26,7 @@ namespace Classroom.Controllers
         [HttpGet("{id}", Name = "GetByTeacherId")]
         public ActionResult<Teacher> GetByTeacherId(string id)
         {
+            StringValidationHelper.IsValidId(id);
             try
             {
                 var teacher = _teacherRepository.GetTeacherById(id);

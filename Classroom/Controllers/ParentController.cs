@@ -1,6 +1,7 @@
 using Classroom.Model.DataModels;
 using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Classroom.Service;
 
 
 namespace Classroom.Controllers;
@@ -21,6 +22,7 @@ public class ParentController : ControllerBase
     [HttpGet("{id}", Name = "GetByParentId")]
     public ActionResult<Parent> GetByParentId(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var parent = _parentRepository.GetParentById(id);
@@ -43,6 +45,7 @@ public class ParentController : ControllerBase
     [HttpGet("api/getbyStudentId/{id}", Name = "GetByParentByStudentId")]
     public ActionResult<IEnumerable<Parent>> GetParentsByStudentId(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var parents = _parentRepository.GetParentsByStudentId(id);

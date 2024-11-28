@@ -48,6 +48,8 @@ public class NotificationController : ControllerBase
     [HttpGet("byStudent/byParent/{studentId}/{parentId}", Name = "GetByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(string studentId, string parentId)
     {
+        StringValidationHelper.IsValidId(studentId);
+        StringValidationHelper.IsValidId(parentId);
         try
         {
             var notifications = _notificationRepository.GetByStudentId(studentId, parentId);
@@ -69,6 +71,7 @@ public class NotificationController : ControllerBase
     [HttpGet("ofTeacher/{id}", Name = "GetTeachersNotifications")]
     public ActionResult<IEnumerable<NotificationBase>> GetByTeacherId(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var notifications = _notificationRepository.GetByTeacherId(id);
@@ -94,6 +97,8 @@ public class NotificationController : ControllerBase
     [HttpGet("lastsByStudentId/{studentId}/{parentId}", Name = "GetLastsByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(string studentId, string parentId)
     {
+        StringValidationHelper.IsValidId(studentId);
+        StringValidationHelper.IsValidId(parentId);
         try
         {
             var notifications = _notificationRepository.GetLastsByStudentId(studentId, parentId);
@@ -122,6 +127,9 @@ public class NotificationController : ControllerBase
     [HttpGet("getNewNotifsNumber/{studentId}/{parentId}", Name = "GetNewNotifsNumber")]
     public ActionResult<int> GetNewNotifsNumber(string studentId, string parentId)
     {
+        
+        StringValidationHelper.IsValidId(studentId);
+        StringValidationHelper.IsValidId(parentId);
         try
         {
             var newNotifsNumber = _notificationRepository.GetNewNotifsNumber(studentId, parentId);
@@ -145,6 +153,9 @@ public class NotificationController : ControllerBase
     [HttpGet("newNotifsByStudentId/{studentId}/{parentId}", Name = "GetNewNotifsByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetNewNotifsByStudentId(string studentId, string parentId)
     {
+        
+        StringValidationHelper.IsValidId(studentId);
+        StringValidationHelper.IsValidId(parentId);
         try
         {
             var notifications = _notificationRepository.GetNewNotifsByStudentId(studentId, parentId);
@@ -172,6 +183,8 @@ public class NotificationController : ControllerBase
     [HttpGet("lastsByTeacherId/{id}", Name = "GetLastsByTeacherId")]
     public ActionResult<IEnumerable<NotificationResponse>> GetLastsByTeacherId(string id)
     {
+        
+        StringValidationHelper.IsValidId(id);
         try
         {
             var notifications = _notificationRepository.GetLastsByTeacherId(id);
@@ -199,6 +212,8 @@ public class NotificationController : ControllerBase
     [HttpGet("newestByTeacherId/{id}", Name = "GetNewestByTeacherId")]
     public ActionResult<NotificationBase?> GetNewestByTeacherId(string id)
     {
+        
+        StringValidationHelper.IsValidId(id);
         try
         {
             var notification = _notificationRepository.GetNewestByTeacherId(id);

@@ -3,6 +3,7 @@ using Classroom.Service.Repositories;
 using Classroom.Model.DataModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Classroom.Service;
 
 namespace Classroom.Controllers
 {
@@ -64,6 +65,7 @@ namespace Classroom.Controllers
         [HttpGet("teachers/{teacherId}")]
         public ActionResult<Teacher> GetTeacherById(string teacherId)
         {
+            StringValidationHelper.IsValidId(teacherId);
             try
             {
                 var teacher = _userRepository.GetTeacherById(teacherId);
@@ -92,6 +94,7 @@ namespace Classroom.Controllers
         [HttpGet("parents/{parentId}")]
         public ActionResult<Parent> GetParentById(string parentId)
         {
+            StringValidationHelper.IsValidId(parentId);
             try
             {
                 var parent = _userRepository.GetParentById(parentId);

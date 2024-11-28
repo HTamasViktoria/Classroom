@@ -2,6 +2,7 @@ using Classroom.Model.DataModels;
 using Classroom.Model.RequestModels;
 using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Classroom.Service;
 
 namespace Classroom.Controllers;
 
@@ -43,6 +44,7 @@ public class MessagesController : ControllerBase
     [HttpGet("getNewMessagesNum/{id}", Name = "GetNewMessagesNum")]
     public ActionResult<int> GetNewMessagesNum(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var newMessagesNum = _messagesRepository.GetNewMessagesNum(id);
@@ -85,6 +87,8 @@ public class MessagesController : ControllerBase
     [HttpGet("getIncomings/{id}", Name = "GetIncomings")]
     public ActionResult<IEnumerable<Message>> GetIncomings(string id)
     {
+        
+        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetIncomings(id);
@@ -110,6 +114,8 @@ public class MessagesController : ControllerBase
     [HttpGet("getDeleteds/{id}", Name = "GetDeleteds")]
     public ActionResult<IEnumerable<Message>> GetDeleteds(string id)
     {
+        
+        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetDeleteds(id);
@@ -135,6 +141,8 @@ public class MessagesController : ControllerBase
     [HttpGet("getSents/{id}", Name = "GetSents")]
     public ActionResult<IEnumerable<Message>> GetSents(string id)
     {
+        
+        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetSents(id);
@@ -160,6 +168,8 @@ public class MessagesController : ControllerBase
     [HttpGet("getOutgoings/{id}", Name = "GetOutgoings")]
     public ActionResult<IEnumerable<Message>> GetOutgoings(string id)
     {
+        
+        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetOutgoings(id);
@@ -239,6 +249,8 @@ public class MessagesController : ControllerBase
     [HttpGet("restore/{messageId}/{userId}")]
     public IActionResult Restore(int messageId, string userId)
     {
+        
+        StringValidationHelper.IsValidId(userId);
         try
         {
             var result = _messagesRepository.Restore(messageId, userId);

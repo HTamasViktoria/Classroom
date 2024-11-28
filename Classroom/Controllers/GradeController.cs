@@ -3,7 +3,7 @@ using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
 using Classroom.Model.ResponseModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using Classroom.Service;
 using Classroom.Service.Repositories;
 
 namespace Classroom.Controllers;
@@ -97,6 +97,8 @@ public class GradeController : ControllerBase
     [HttpGet("getGradesBySubjectByStudent/{subject}/{studentId}")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesBySubjectByStudent(string subject, string studentId)
     {
+        StringValidationHelper.IsValidId(studentId);
+        StringValidationHelper.IsValidId(subject);
         try
         {
             var grades = await _gradeRepository.GetGradesBySubjectByStudent(subject, studentId);
@@ -177,6 +179,7 @@ public class GradeController : ControllerBase
     [HttpGet("{id}", Name = "GetGradesByStudentId")]
     public ActionResult<IEnumerable<Grade>> GetGradesByStudentId(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var grades = _gradeRepository.GetByStudentId(id);
@@ -206,6 +209,7 @@ public class GradeController : ControllerBase
     [HttpGet("teachersLast/{id}", Name = "GetTeachersLastGrade")]
     public async Task<ActionResult<LatestGradeResponse>> GetTeachersLastGrade(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var grade = await _gradeRepository.GetTeachersLastGradeAsync(id);
@@ -235,6 +239,7 @@ public class GradeController : ControllerBase
     [HttpGet("getNewGradesNumber/{id}", Name = "GetNewGradesNumber")]
     public ActionResult<int> GetNewGradesNumber(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var newGradesNumber = _gradeRepository.GetNewGradesNumber(id);
@@ -257,6 +262,8 @@ public class GradeController : ControllerBase
     [HttpGet("newGrades/{id}", Name = "GetNewGradesByStudentId")]
     public ActionResult<IEnumerable<Grade>> GetNewGradesByStudentId(string id)
     {
+        
+        StringValidationHelper.IsValidId(id);
         try
         {
             var newGrades = _gradeRepository.GetNewGradesByStudentId(id);
@@ -283,6 +290,8 @@ public class GradeController : ControllerBase
     [HttpGet("getGradesByClassBySubject/{classId}/{subject}")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesByClassBySubject(int classId, string subject)
     {
+        
+        StringValidationHelper.IsValidId(subject);
         try
         {
             var grades = await _gradeRepository.GetGradesByClassBySubject(classId, subject);
@@ -339,6 +348,7 @@ public class GradeController : ControllerBase
     [HttpGet("class-averages/byStudent/{studentId}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesByStudentId(string studentId)
     {
+        StringValidationHelper.IsValidId(studentId);
         try
         {
             var averages = await _gradeRepository.GetClassAveragesByStudentId(studentId);
@@ -360,6 +370,8 @@ public class GradeController : ControllerBase
     [HttpGet("class-averages/bySubject/{subject}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesBySubject(string subject)
     {
+        
+        StringValidationHelper.IsValidId(subject);
         try
         {
             var averages = await _gradeRepository.GetClassAveragesBySubject(subject);

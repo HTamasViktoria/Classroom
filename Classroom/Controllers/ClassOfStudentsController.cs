@@ -3,6 +3,7 @@ using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Classroom.Model.RequestModels;
 using Classroom.Model.ResponseModels;
+using Classroom.Service;
 
 namespace Classroom.Controllers;
 
@@ -67,6 +68,7 @@ public class ClassOfStudentsController : ControllerBase
     [HttpGet("getStudents/{classId}")]
     public ActionResult<IEnumerable<Student>> GetStudents(int classId)
     {
+        
         try
         {
             var students = _classOfStudentsRepository.GetStudents(classId);
@@ -95,6 +97,7 @@ public class ClassOfStudentsController : ControllerBase
     [HttpGet("getClassesBySubject/{subject}")]
     public ActionResult<IEnumerable<ClassOfStudents>> GetClassesBySubject(string subject)
     {
+        StringValidationHelper.IsValidId(subject);
         try
         {
             var classes = _classOfStudentsRepository.GetClassesBySubject(subject);
