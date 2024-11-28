@@ -5,31 +5,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Classroom.Controllers;
 
-
-
 [ApiController]
 [Route("api/messages")]
-public class MessagesController: ControllerBase
+public class MessagesController : ControllerBase
 {
     private readonly ILogger<MessagesController> _logger;
     private readonly IMessagesRepository _messagesRepository;
-    
-    
-    
+
+
     public MessagesController(ILogger<MessagesController> logger, IMessagesRepository messagesRepository)
     {
         _logger = logger;
         _messagesRepository = messagesRepository;
-       
     }
-    
+
     [HttpGet("getall")]
     public async Task<IActionResult> GetAllMessagesAsync()
     {
         try
         {
             var messages = await _messagesRepository.GetAllMessagesAsync();
-        
+            if (!messages.Any())
+            {
+                return Ok(new List<Message>());
+            }
+
             return Ok(messages);
         }
         catch (Exception ex)
@@ -39,9 +39,7 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
-    
-    
+
     [HttpGet("getNewMessagesNum/{id}", Name = "GetNewMessagesNum")]
     public ActionResult<int> GetNewMessagesNum(string id)
     {
@@ -61,7 +59,6 @@ public class MessagesController: ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
-
 
 
     [HttpGet("getById/{id}", Name = "GetById")]
@@ -85,14 +82,16 @@ public class MessagesController: ControllerBase
     }
 
 
-
-    
     [HttpGet("getIncomings/{id}", Name = "GetIncomings")]
     public ActionResult<IEnumerable<Message>> GetIncomings(string id)
     {
         try
         {
             var messages = _messagesRepository.GetIncomings(id);
+            if (!messages.Any())
+            {
+                return Ok(new List<Message>());
+            }
             return Ok(messages);
         }
         catch (ArgumentException e)
@@ -106,7 +105,6 @@ public class MessagesController: ControllerBase
             return StatusCode(500, new { message = "Internal server error: " + e.Message });
         }
     }
-
 
 
     [HttpGet("getDeleteds/{id}", Name = "GetDeleteds")]
@@ -115,6 +113,10 @@ public class MessagesController: ControllerBase
         try
         {
             var messages = _messagesRepository.GetDeleteds(id);
+            if (!messages.Any())
+            {
+                return Ok(new List<Message>());
+            }
             return Ok(messages);
         }
         catch (ArgumentException e)
@@ -129,15 +131,17 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
-    
-    
+
     [HttpGet("getSents/{id}", Name = "GetSents")]
     public ActionResult<IEnumerable<Message>> GetSents(string id)
     {
         try
         {
             var messages = _messagesRepository.GetSents(id);
+            if (!messages.Any())
+            {
+                return Ok(new List<Message>());
+            }
             return Ok(messages);
         }
         catch (ArgumentException e)
@@ -152,14 +156,18 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
+
     [HttpGet("getOutgoings/{id}", Name = "GetOutgoings")]
     public ActionResult<IEnumerable<Message>> GetOutgoings(string id)
     {
         try
         {
             var messages = _messagesRepository.GetOutgoings(id);
-            return Ok(messages); 
+            if (!messages.Any())
+            {
+                return Ok(new List<Message>());
+            }
+            return Ok(messages);
         }
         catch (ArgumentException e)
         {
@@ -173,10 +181,14 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
+
     [HttpPost("add")]
     public IActionResult Post([FromBody] MessageRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { errors = ModelState });
+        }
         try
         {
             _messagesRepository.AddMessage(request);
@@ -194,17 +206,14 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
-    
-    
-    
+
     [HttpDelete("receiverDelete/{messageId}")]
     public IActionResult DeleteMessageOnReceiverSide(int messageId)
     {
         try
         {
             var result = _messagesRepository.DeleteOnReceiverSide(messageId);
-            
+
             if (result)
             {
                 return Ok(new { message = "Üzenet sikeresen törölve a fogadó fél oldalán." });
@@ -226,15 +235,14 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
-    
+
     [HttpGet("restore/{messageId}/{userId}")]
     public IActionResult Restore(int messageId, string userId)
     {
         try
         {
             var result = _messagesRepository.Restore(messageId, userId);
-            
+
             return Ok(new { message = "Üzenet sikeresen visszaállítva." });
         }
         catch (ArgumentException ex)
@@ -249,8 +257,7 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
-    
+
     [HttpPost("setToUnread/{messageId}")]
     public IActionResult SetToUnread(int messageId)
     {
@@ -272,7 +279,7 @@ public class MessagesController: ControllerBase
         }
     }
 
-    
+
     [HttpGet("setToRead/{messageId}")]
     public IActionResult SetToRead(int messageId)
     {
@@ -293,9 +300,4 @@ public class MessagesController: ControllerBase
             return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
         }
     }
-
-
-
 }
-
-
