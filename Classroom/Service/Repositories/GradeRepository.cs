@@ -8,12 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Classroom.Service.Repositories;
 
-
 public class GradeRepository : IGradeRepository
 {
     private ClassroomContext _dbContext;
     private IUserRepository _userRepository;
-    
+
     public GradeRepository(ClassroomContext context, IUserRepository userRepository)
     {
         _dbContext = context;
@@ -26,32 +25,26 @@ public class GradeRepository : IGradeRepository
     }
 
 
+
     public void Add(GradeRequest request)
     {
-        
-        if (string.IsNullOrWhiteSpace(request.TeacherId))
-        {
-            throw new ArgumentException("Teacher ID cannot be null or empty.");
-        }
+        ValidateTeacher(request.TeacherId);
+        ValidateStudent(request.StudentId);
+        ValidateSubject(request.Subject);
+        ValidateForWhat(request.ForWhat);
 
-        if (string.IsNullOrWhiteSpace(request.StudentId))
-        {
-            throw new ArgumentException("Student ID cannot be null or empty.");
-        }
-
-       
         if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
         {
             throw new ArgumentException($"Invalid grade value: {request.Value}");
         }
 
-      
+
         if (!DateTime.TryParse(request.Date, out var date))
         {
             throw new ArgumentException($"Invalid date format: {request.Date}");
         }
 
-      
+
         var grade = new Grade
         {
             TeacherId = request.TeacherId,
@@ -66,17 +59,19 @@ public class GradeRepository : IGradeRepository
         _dbContext.SaveChanges();
     }
 
-    
+
     public IEnumerable<Grade> GetByStudentId(string studentId)
     {
+        ValidateStudent(studentId);
+
         return _dbContext.Grades.Where(grade => grade.StudentId == studentId).ToList();
     }
-    
-    
+
 
     public async Task<LatestGradeResponse> GetTeachersLastGradeAsync(string teacherId)
     {
-        
+        ValidateTeacher(teacherId);
+
         var grade = await _dbContext.Grades
             .Where(g => g.TeacherId == teacherId)
             .OrderByDescending(g => g.Date)
@@ -88,12 +83,7 @@ public class GradeRepository : IGradeRepository
         }
 
         var studentFullName = _userRepository.GetStudentFullNameById(grade.StudentId);
-        
-        if (string.IsNullOrEmpty(studentFullName))
-        {
-            return null;
-        }
-        
+
         var gradeResponse = new LatestGradeResponse
         {
             Id = grade.Id,
@@ -110,32 +100,32 @@ public class GradeRepository : IGradeRepository
         return gradeResponse;
     }
 
-    
-    
+
     public IEnumerable<Grade> GetNewGradesByStudentId(string studentId)
     {
-        return _dbContext.Grades.Where(grade => grade.StudentId == studentId && grade.Read == false).
-            OrderByDescending(grade=>grade.Date).ToList();
-    }
-    
-    
-    public int GetNewGradesNumber(string id)
-    {
-         return _dbContext.Grades.Where(grade => grade.StudentId == id && grade.Read == false).
-                    Count();
+        ValidateStudent(studentId);
+
+        return _dbContext.Grades.Where(grade => grade.StudentId == studentId && grade.Read == false)
+            .OrderByDescending(grade => grade.Date).ToList();
     }
 
-    
-    
+
+    public int GetNewGradesNumber(string studentId)
+    {
+        ValidateStudent(studentId);
+        return _dbContext.Grades.Count(grade => grade.StudentId == studentId && !grade.Read);
+    }
+
+
     public void Delete(int id)
     {
         var gradeToDelete = _dbContext.Grades.FirstOrDefault(g => g.Id == id);
-    
+
         if (gradeToDelete == null)
         {
             throw new ArgumentException($"Grade with Id {id} not found.");
         }
-    
+
         _dbContext.Grades.Remove(gradeToDelete);
         _dbContext.SaveChanges();
     }
@@ -143,14 +133,15 @@ public class GradeRepository : IGradeRepository
 
     public async Task<Dictionary<string, double>> GetClassAveragesBySubject(string subject)
     {
+        ValidateSubject(subject);
         var classAverages = new Dictionary<string, double>();
-    
+
 
         var teacherSubjects = await _dbContext.TeacherSubjects
             .Include(ts => ts.ClassOfStudents)
             .Where(ts => ts.Subject == subject)
             .ToListAsync();
-    
+
         var classGroups = teacherSubjects
             .GroupBy(ts => ts.ClassOfStudentsId)
             .ToList();
@@ -163,18 +154,18 @@ public class GradeRepository : IGradeRepository
                 .Where(c => c.Id == classId)
                 .SelectMany(c => c.Students.Select(s => s.Id))
                 .ToListAsync();
-        
-  
+
+
             var grades = await _dbContext.Grades
                 .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
                 .ToListAsync();
-  
+
             if (grades.Count == 0)
             {
                 classAverages[className] = 0;
                 continue;
             }
-        
+
             var average = grades.Average(g => (double)g.Value);
             var roundedAverage = Math.Round(average, 2);
 
@@ -184,17 +175,25 @@ public class GradeRepository : IGradeRepository
         return classAverages;
     }
 
-
+    
 
     public async Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject)
     {
-       
+        ValidateClassOfStudents(classId);
+        ValidateSubject(subject);
+
+        var subjectExistsForClass =
+            await _dbContext.TeacherSubjects.AnyAsync(ts => ts.ClassOfStudentsId == classId && ts.Subject == subject);
+        if (!subjectExistsForClass)
+        {
+            throw new ArgumentException($"Class with ID {classId} does not have subject {subject}.");
+        }
+
         var studentIds = await _dbContext.ClassesOfStudents
             .Where(c => c.Id == classId)
             .SelectMany(c => c.Students.Select(s => s.Id))
             .ToListAsync();
 
-       
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
             .ToListAsync();
@@ -202,65 +201,47 @@ public class GradeRepository : IGradeRepository
         return grades;
     }
 
-    
-    
+
     public async Task<IEnumerable<Grade>> GetGradesByClass(int classId)
     {
+       ValidateClassOfStudents(classId);
+
         var studentIds = await _dbContext.ClassesOfStudents
             .Where(c => c.Id == classId)
             .SelectMany(c => c.Students.Select(s => s.Id))
             .ToListAsync();
 
-       
+
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId))
             .ToListAsync();
 
         return grades;
     }
-    
-    
-    
+
+
     public async Task<IEnumerable<Grade>> GetGradesBySubjectByStudent(string subject, string studentId)
     {
-       
-        if (string.IsNullOrWhiteSpace(subject))
-        {
-            throw new ArgumentException("Subject cannot be null or empty.");
-        }
-        if (string.IsNullOrWhiteSpace(studentId))
-        {
-            throw new ArgumentException("Student ID cannot be null or empty.");
-        }
-
+        ValidateSubject(subject);
+        ValidateStudent(studentId);
         try
         {
-           
             var grades = await _dbContext.Grades
                 .Where(g => g.Subject == subject && g.StudentId == studentId)
                 .ToListAsync();
-        
+
             return grades;
         }
         catch (Exception ex)
         {
-           
             throw new Exception("An error occurred while retrieving the grades.", ex);
         }
     }
 
 
-
-
-    
     public async Task<Dictionary<string, double>> GetClassAveragesByStudentId(string studentId)
     {
-        var student = await _dbContext.Students.FirstOrDefaultAsync(s => s.Id == studentId);
-
-        if (student == null)
-        {
-            throw new Exception("Student not found");
-        }
+        ValidateStudent(studentId);
 
         var classOfStudent = await _dbContext.ClassesOfStudents
             .Include(c => c.Students)
@@ -268,18 +249,19 @@ public class GradeRepository : IGradeRepository
 
         if (classOfStudent == null)
         {
-            throw new Exception("Class not found for the given student");
+            throw new Exception("Class not found for the given student.");
         }
-    
+
         var studentIds = classOfStudent.Students.Select(s => s.Id).ToList();
-    
+
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId))
             .ToListAsync();
-    
+
+
         var subjectAverages = grades
             .GroupBy(g => g.Subject)
-            .Select(g => new 
+            .Select(g => new
             {
                 Subject = g.Key,
                 Average = Math.Round(g.Average(x => (double)x.Value), 2)
@@ -288,48 +270,47 @@ public class GradeRepository : IGradeRepository
 
         return subjectAverages;
     }
-    
-    
+
 
     public void Edit(GradeRequest request, int id)
     {
         var gradeToUpdate = _dbContext.Grades.FirstOrDefault(g => g.Id == id);
 
-        if (gradeToUpdate != null)
+        if (gradeToUpdate == null)
         {
-          if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
-            {
-                throw new ArgumentException($"Invalid grade value: {request.Value}");
-            }
-
-        
-            if (!DateTime.TryParse(request.Date, out var date))
-            {
-                throw new ArgumentException($"Invalid date format: {request.Date}");
-            }
-
-            gradeToUpdate.TeacherId = request.TeacherId;
-            gradeToUpdate.StudentId = request.StudentId;
-            gradeToUpdate.Date = date;
-            gradeToUpdate.ForWhat = request.ForWhat;
-            gradeToUpdate.Value = gradeValue;
-            _dbContext.SaveChanges();
+            throw new KeyNotFoundException($"Grade with Id {id} not found.");
         }
-        else
+
+        if (!Enum.TryParse<GradeValues>(ExtractGradeValue(request.Value), out var gradeValue))
         {
-            throw new Exception($"Grade with Id {id} not found.");
+            throw new ArgumentException($"Invalid grade value: {request.Value}");
         }
+
+        if (!DateTime.TryParse(request.Date, out var date))
+        {
+            throw new ArgumentException($"Invalid date format: {request.Date}");
+        }
+
+        ValidateStudent(request.StudentId);
+        ValidateTeacher(request.TeacherId);
+
+        gradeToUpdate.TeacherId = request.TeacherId;
+        gradeToUpdate.StudentId = request.StudentId;
+        gradeToUpdate.Date = date;
+        gradeToUpdate.ForWhat = request.ForWhat;
+        gradeToUpdate.Value = gradeValue;
+
+        _dbContext.SaveChanges();
     }
 
-    
+
     private string ExtractGradeValue(string valueWithLabel)
     {
-        
         var parts = valueWithLabel.Split('=');
         return parts.Length > 1 ? parts[0].Trim() : valueWithLabel.Trim();
     }
-    
-    
+
+
     public void SetToOfficiallyRead(int gradeId)
     {
         var grade = _dbContext.Grades.FirstOrDefault(g => g.Id == gradeId);
@@ -339,13 +320,71 @@ public class GradeRepository : IGradeRepository
             throw new ArgumentException($"Grade with ID {gradeId} not found.");
         }
 
+
+        if (grade.Read == true)
+        {
+            throw new ArgumentException($"Grade with ID {gradeId} is already marked as read.");
+        }
+
         grade.Read = true;
         _dbContext.SaveChanges();
     }
+    
+    
+    private void ValidateTeacher(string teacherId)
+    {
+        if (string.IsNullOrWhiteSpace(teacherId))
+        {
+            throw new ArgumentException("Teacher ID cannot be null or empty.");
+        }
 
+        var teacher = _dbContext.Teachers.FirstOrDefault(t => t.Id == teacherId);
+        if (teacher == null)
+        {
+            throw new ArgumentException($"Teacher with ID {teacherId} not found.");
+        }
+    }
+
+
+    public void ValidateStudent(string studentId)
+    {
+        if (string.IsNullOrWhiteSpace(studentId))
+        {
+            throw new ArgumentException("Student ID cannot be null or empty.");
+        }
+
+        var student = _dbContext.Students.FirstOrDefault(s => s.Id == studentId);
+        if (student == null)
+        {
+            throw new ArgumentException($"Student with ID {studentId} not found.");
+        }
+    }
+
+
+    public void ValidateSubject(string subject)
+    {
+        if (string.IsNullOrWhiteSpace(subject) || !Enum.IsDefined(typeof(Subjects), subject))
+        {
+            throw new ArgumentException($"Subject {subject} is not a valid subject.");
+        }
+    }
+
+
+    public void ValidateForWhat(string forWhat)
+    {
+        if (string.IsNullOrWhiteSpace(forWhat))
+        {
+            throw new ArgumentException("ForWhat cannot be null or empty.");
+        }
+    }
     
     
-    
+    public async void ValidateClassOfStudents(int classId)
+    {
+        var classExists = await _dbContext.ClassesOfStudents.AnyAsync(c => c.Id == classId);
+        if (!classExists)
+        {
+            throw new ArgumentException($"Class with ID {classId} not found.");
+        }
+    }
 }
-
-
