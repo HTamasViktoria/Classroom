@@ -23,8 +23,16 @@ public class ParentRepository : IParentRepository
     }
     
     
-    public IEnumerable<Parent> GetParentsByStudentId( string id)
+    public IEnumerable<Parent> GetParentsByStudentId(string id)
     {
-        return _dbContext.Parents.Where(parent => parent.StudentId == id).ToList();
+        bool studentFound = _dbContext.Students.Any(s => s.Id == id);
+    
+        if (!studentFound)
+        {
+            throw new ArgumentException("No student found with the given ID.");
+        }
+
+        return _dbContext.Parents.Where(parent => parent.StudentId == id);
     }
+
 }
