@@ -29,7 +29,12 @@ public class GradeController : ControllerBase
     {
         try
         {
-            return Ok(_gradeRepository.GetAll());
+            var grades = _gradeRepository.GetAll();
+            if (!grades.Any())
+            {
+                return Ok(new List<Grade>());
+            }
+            return Ok(grades);
         }
         catch (Exception e)
         {
@@ -67,6 +72,10 @@ public class GradeController : ControllerBase
     [HttpPost("add")]
     public ActionResult<string> Post([FromBody] GradeRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { errors = ModelState });
+        }
         try
         {
             _gradeRepository.Add(request);
@@ -115,6 +124,10 @@ public class GradeController : ControllerBase
     [HttpPut("edit/{id}")]
     public ActionResult<string> Put([FromBody] GradeRequest request, int id)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { errors = ModelState });
+        }
         try
         {
             _gradeRepository.Edit(request, id);
@@ -170,7 +183,7 @@ public class GradeController : ControllerBase
         
             if (!grades.Any())
             {
-                return Ok(new { message = $"No grades found for student ID {id}.", grades });
+                return Ok(new List<Grade>());
             }
 
             return Ok(grades);
@@ -247,6 +260,10 @@ public class GradeController : ControllerBase
         try
         {
             var newGrades = _gradeRepository.GetNewGradesByStudentId(id);
+            if (!newGrades.Any())
+            {
+                return Ok(new List<Grade>());
+            }
             return Ok(newGrades);
         }
         catch (ArgumentException ex)
@@ -272,7 +289,7 @@ public class GradeController : ControllerBase
 
             if (!grades.Any())
             {
-                return Ok(new { message = $"No grades found for class ID {classId} and subject {subject}.", grades });
+                return Ok(new List<Grade>());
             }
 
             return Ok(grades);
@@ -300,7 +317,7 @@ public class GradeController : ControllerBase
 
             if (!grades.Any())
             {
-                return Ok(new { message = $"No grades found for class ID {classId}.", grades });
+                return Ok(new List<Grade>());
             }
 
             return Ok(grades);
