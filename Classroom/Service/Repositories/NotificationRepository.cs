@@ -2,8 +2,7 @@ using Classroom.Data;
 using Classroom.Model.DataModels;
 using Classroom.Model.DataModels.Enums;
 using Classroom.Model.RequestModels;
-using Classroom.Model.ResponseModels;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace Classroom.Service.Repositories;
 
@@ -21,51 +20,49 @@ public class NotificationRepository : INotificationRepository
         return _dbContext.Notifications.ToList();
     }
 
+    public void ValidateUser(string userId)
+    {
+        var userFound = _dbContext.Users.Any(u => u.Id == userId);
+        if (!userFound)
+        {
+            throw new ArgumentException($"User with the given id not found");
+        }
+    }
 
     public IEnumerable<NotificationBase> GetByStudentId(string studentId, string parentId)
     {
-       
-        var notifications = _dbContext.Notifications
-            .Where(n => n.StudentId == studentId)
-            .ToList();
+       ValidateUser(studentId);
+       ValidateUser(parentId);
+       var notifications = _dbContext.Notifications
+           .Where(n => n.StudentId == studentId && n.ParentId == parentId)
+           .ToList();
 
-   
-        if (!string.IsNullOrEmpty(parentId))
-        {
-           
-            notifications = notifications
-                .Where(n => n.ParentId == parentId)
-                .ToList();
-        }
-
-        return notifications;
+       return notifications;
     }
 
-    
-    public int GetNewNotifsNumber(string studentId, string parentId) 
+
+    public int GetNewNotifsNumber(string studentId, string parentId)
     {
-        
+        ValidateUser(studentId);
+        ValidateUser(parentId);
         return _dbContext.Notifications
-            .Where(n => n.StudentId == studentId && n.ParentId == parentId && !n.Read)
-            .Count();
+            .Count(n => n.StudentId == studentId && n.ParentId == parentId && !n.Read);
     }
-
 
     
     public IEnumerable<NotificationBase> GetByTeacherId(string id)
     {
+        ValidateUser(id);
         return _dbContext.Notifications
             .Where(n => n.TeacherId == id).ToList();
     }
 
     
     
-   
-
-    
-    
     public IEnumerable<NotificationBase> GetNewNotifsByStudentId(string studentId, string parentId)
     {
+        ValidateUser(studentId);
+        ValidateUser(parentId);
         return _dbContext.Notifications
             .Where(n => n.StudentId == studentId && n.ParentId == parentId && !n.Read)
             .OrderByDescending(n => n.Date)
@@ -75,6 +72,8 @@ public class NotificationRepository : INotificationRepository
 
     public IEnumerable<NotificationBase> GetLastsByStudentId(string studentId, string parentId)
     {
+        ValidateUser(studentId);
+        ValidateUser(parentId);
         return _dbContext.Notifications
             .Where(n => n.StudentId == studentId && n.ParentId == parentId && !n.Read)
             .OrderByDescending(n => n.Date)
@@ -84,6 +83,7 @@ public class NotificationRepository : INotificationRepository
 
     public IEnumerable<NotificationResponse> GetLastsByTeacherId(string id)
     {
+        ValidateUser(id);
         var notifications = _dbContext.Notifications
             .Where(not => not.TeacherId == id)
             .OrderByDescending(not => not.Date)
@@ -112,6 +112,7 @@ public class NotificationRepository : INotificationRepository
     
     public NotificationBase? GetNewestByTeacherId(string teacherId)
     {
+        ValidateUser(teacherId);
         return _dbContext.Notifications
             .Where(notification => notification.TeacherId == teacherId)
             .OrderByDescending(notification => notification.Date)
@@ -119,42 +120,26 @@ public class NotificationRepository : INotificationRepository
     }
 
 
- public void Add(NotificationRequest request)
-{
-  
-    var allStudents = _dbContext.Students.ToList(); 
-    
-  
-    var students = allStudents
-        .Where(s => request.StudentIds.Contains(s.Id.ToString()))
-        .ToList();
-
-    
-    if (request.Type != "OtherNotification")
+    public void ValidateSubject(string subject)
     {
-        if (string.IsNullOrEmpty(request.Subject))
+        if (string.IsNullOrWhiteSpace(subject) || !Enum.IsDefined(typeof(Subjects), subject))
         {
-            throw new ArgumentException("Subject is required when type is not 'OtherNotification'.");
+            throw new ArgumentException($"Subject {subject} is not a valid subject.");
         }
+    }
 
-        if (!Enum.TryParse<Subjects>(request.Subject, out var subjectEnum))
-        {
-            throw new ArgumentException($"Invalid subject value: {request.Subject}");
-        }
-        
+    public void CreateNotificationsBasedOnStudentsList(bool subjectNeeded, IEnumerable<Student> students, NotificationRequest request)
+    {
         foreach (var student in students)
         {
-            
             var studentName = $"{student.FirstName} {student.FamilyName}";
 
-    
             var parents = _dbContext.Parents
                 .Where(p => p.StudentId == student.Id)
                 .ToList();
 
             foreach (var parent in parents)
             {
-                
                 var notification = new NotificationBase
                 {
                     TeacherId = request.TeacherId,
@@ -170,56 +155,56 @@ public class NotificationRepository : INotificationRepository
                     OfficiallyRead = request.OfficiallyRead,
                     Description = request.Description,
                     SubjectName = request.Subject,
-                    Subject = subjectEnum,
                     OptionalDescription = request.OptionalDescription
                 };
-
+                
+                if (subjectNeeded && Enum.TryParse<Subjects>(request.Subject, out var subjectEnum))
+                {
+                    notification.Subject = subjectEnum;
+                }
+            
                 _dbContext.Notifications.Add(notification);
+            }
+        }
+
+        _dbContext.SaveChanges();
+    }
+
+
+    public void Add(NotificationRequest request)
+    {
+        var allStudents = _dbContext.Students.ToList();
+        var invalidStudents = new List<string>();
+
+        var students = allStudents
+            .Where(s => request.StudentIds.Contains(s.Id.ToString()))
+            .ToList();
+
+        foreach (var student in students)
+        {
+            try
+            {
+                ValidateUser(student.Id.ToString());
+            }
+            catch (ArgumentException ex)
+            {
+                invalidStudents.Add(student.Id.ToString());
+                students.Remove(student);
             }
         }
         
-        _dbContext.SaveChanges();
-    }
-    else
-    {
-        foreach (var student in students)
+        if (request.Type != "OtherNotification")
         {
-           
-            var studentName = $"{student.FirstName} {student.FamilyName}";
-
-            
-            var parents = _dbContext.Parents
-                .Where(p => p.StudentId == student.Id)
-                .ToList();
-
-            foreach (var parent in parents)
-            {
-                
-                var notification = new NotificationBase
-                {
-                    TeacherId = request.TeacherId,
-                    TeacherName = request.TeacherName,
-                    Type = request.Type,
-                    Date = request.Date,
-                    DueDate = request.DueDate,
-                    StudentId = student.Id,
-                    StudentName = studentName,
-                    ParentId = parent.Id,
-                    ParentName = $"{parent.FamilyName} {parent.FirstName}",
-                    Read = request.Read,
-                    OfficiallyRead = request.OfficiallyRead,
-                    Description = request.Description,
-                    SubjectName = request.Subject,
-                    OptionalDescription = request.OptionalDescription
-                };
-
-                _dbContext.Notifications.Add(notification);
-            }
+            ValidateSubject(request.Subject);
+            CreateNotificationsBasedOnStudentsList(true, students, request);
+        }
+        else
+        {
+            CreateNotificationsBasedOnStudentsList(false, students, request);
         }
 
         _dbContext.SaveChanges();
     }
-}
 
 
 
@@ -240,12 +225,15 @@ public class NotificationRepository : INotificationRepository
 
     public void SetToOfficiallyRead(int id)
     {
+        var notification = _dbContext.Notifications.FirstOrDefault(n => n.Id == id);
+    
+        if (notification == null)
+        {
+            throw new ArgumentException("Értesítés nem található.");
+        }
 
-        var notification = _dbContext.Notifications
-            .FirstOrDefault(n => n.Id == id);
-
-            notification.OfficiallyRead = true;
-        
+        notification.OfficiallyRead = true;
+    
         _dbContext.SaveChanges();
     }
 
@@ -277,7 +265,7 @@ public class NotificationRepository : INotificationRepository
     public void Delete(int id)
     {
         var notification = _dbContext.Notifications.FirstOrDefault(n => n.Id == id);
-        
+    
         if (notification == null)
         {
             throw new KeyNotFoundException($"Notification with ID {id} not found.");
