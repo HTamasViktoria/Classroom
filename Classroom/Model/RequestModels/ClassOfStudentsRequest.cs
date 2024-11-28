@@ -11,6 +11,6 @@ public class ClassOfStudentsRequest
     public string Grade { get; set; }
     [Required]
     public string Section { get; set; }
-    
+    [Required]
     public ICollection<Student> Students { get; set; } = new List<Student>();
 }
