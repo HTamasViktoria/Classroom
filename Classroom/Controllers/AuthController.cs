@@ -5,6 +5,7 @@ using Classroom.Model.RequestModels;
 using Classroom.Model.ResponseModels;
 using Classroom.Service;
 using Classroom.Service.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace Classroom.Controllers
@@ -100,6 +101,7 @@ namespace Classroom.Controllers
         
 
         [HttpPost("sign-up/parent")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<RegistrationResponse>> Register(ParentRequest request)
         { 
             if (!ModelState.IsValid)
@@ -146,69 +148,97 @@ namespace Classroom.Controllers
         }
 
   
-        [HttpPost("sign-in")]
-        public async Task<ActionResult<UserResponse>> Authenticate([FromBody] AuthRequest request)
+       [HttpPost("sign-in")]
+public async Task<ActionResult<UserResponse>> Authenticate([FromBody] AuthRequest request)
+{
+    if (!ModelState.IsValid)
+    {
+        return BadRequest(new { message = "Invalid input data.", errors = ModelState });
+    }
+
+    var result = await _authenticationService.LoginAsync(request.Email, request.Password);
+
+    if (!result.Success)
+    {
+        return BadRequest(new { message = "Invalid email or password." });
+    }
+
+
+    if (result.Email == _configuration["AdminUser:Email"])
+    {
+        var adminResponse = new AdminResponse
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { message = "Invalid input data.", errors = ModelState });
-            }
+            Id = 1,
+            UserName = result.Email,
+            Email = result.Email,
+            Role = "Admin"
+        };
 
-            var result = await _authenticationService.LoginAsync(request.Email, request.Password);
+        HttpContext.Response.Cookies.Append("access_token", result.Token, new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.Now.AddMinutes(30)
+        });
 
-            if (!result.Success)
-            {
-                return BadRequest(new { message = "Invalid email or password." });
-            }
+        return Ok(new { message = "Login successful", token = result.Token, user = adminResponse });
+    }
 
-            if (result.Email == _configuration["AdminUser:Email"])
-            {
-                var admin = new Admin
-                {
-                    UserName = result.Email,
-                    Email = result.Email,
-                    Role = "Admin"
-                };
 
-                return Ok(admin);
-            }
+    var userResp = _userService.GetByEmail(result.Email);
 
-            var userResp = _userService.GetByEmail(result.Email);
+    if (userResp == null)
+    {
+        return NotFound(new { message = "User not found." });
+    }
 
-            if (userResp == null)
-            {
-                return NotFound(new { message = "User not found." });
-            }
+    if (userResp is Parent parent)
+    {
+        var parentResponse = new ParentResponse
+        {
+            Id = parent.Id,
+            FamilyName = parent.FamilyName,
+            FirstName = parent.FirstName,
+            Role = result.Role,
+            ChildName = parent.ChildName,
+            Student = parent.Student
+        };
 
-            userResp.Role = result.Role;
+        HttpContext.Response.Cookies.Append("access_token", result.Token, new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.Now.AddMinutes(30)
+        });
 
-            HttpContext.Response.Cookies.Append("access_token", result.Token, new CookieOptions
-            {
-                HttpOnly = true,
-                Expires = DateTime.Now.AddMinutes(30)
-            });
+        return Ok(new { message = "Login successful", token = result.Token, user = parentResponse });
+    }
 
-            return Ok(new { message = "Login successful", user = userResp });
-        }
+    userResp.Role = result.Role;
+
+    HttpContext.Response.Cookies.Append("access_token", result.Token, new CookieOptions
+    {
+        HttpOnly = true,
+        Expires = DateTime.Now.AddMinutes(30)
+    });
+
+    return Ok(new { message = "Login successful", token = result.Token, user = userResp });
+}
+
 
         
       
-        
         [HttpPost("sign-out")]
         public IActionResult Logout()
         {
+           
             HttpContext.Response.Cookies.Delete("access_token", new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.Strict
             });
-
-            HttpContext.Session.Clear();
-
+            
             return NoContent();
         }
 
-      
     }
 }

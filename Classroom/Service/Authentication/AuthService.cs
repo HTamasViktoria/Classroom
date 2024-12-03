@@ -9,14 +9,16 @@ namespace Classroom.Service.Authentication
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ITokenService _tokenService;
         private readonly IConfiguration _configuration;
 
         public AuthService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration)
+            ITokenService tokenService, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _tokenService = tokenService;
         }
 
 
@@ -146,13 +148,13 @@ namespace Classroom.Service.Authentication
 
             
             var role = await _userManager.GetRolesAsync(user);
-
+            var accessToken = _tokenService.CreateToken(user, role[0].ToString());
             return new AuthResult
             {
                 Success = true,
                 Email = user.Email,
                 UserName = user.UserName,
-                Token = "GeneratedJWTTokenHere",
+                Token = accessToken,
                 Role = role.FirstOrDefault()
             };
         }
