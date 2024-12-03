@@ -42,7 +42,7 @@ public class ParentController : ControllerBase
     }
  
     
-    [HttpGet("api/getbyStudentId/{id}", Name = "GetByParentByStudentId")]
+    [HttpGet("getbyStudentId/{id}", Name = "GetByParentByStudentId")]
     public ActionResult<IEnumerable<Parent>> GetParentsByStudentId(string id)
     {
         StringValidationHelper.IsValidId(id);
