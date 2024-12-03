@@ -23,7 +23,6 @@ public partial class Program
 
         var app = builder.Build();
 
-     
         await SeedRolesAndAdminAsync(app.Services);
 
         ConfigureMiddleware(app);
@@ -80,7 +79,6 @@ public partial class Program
 
     private static void ConfigureCustomServices(IServiceCollection services)
     {
- 
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<IGradeRepository, GradeRepository>();
         services.AddScoped<IStudentRepository, StudentRepository>();
@@ -89,14 +87,12 @@ public partial class Program
         services.AddScoped<ITeacherSubjectRepository, TeacherSubjectRepository>();
         services.AddScoped<IParentRepository, ParentRepository>();
 
-  
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMessagesRepository, MessagesRepository>();
 
-    
         services.AddTransient<ITokenService, TokenService>();
     }
 
