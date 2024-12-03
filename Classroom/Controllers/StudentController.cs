@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Classroom.Service.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Classroom.Service;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Classroom.Controllers;
 
@@ -23,6 +24,8 @@ public class StudentController : ControllerBase
     }
     
     [HttpGet(Name = "students")]
+    [Authorize(Roles = "Admin,Teacher")]
+
     public ActionResult<IEnumerable<Student>> GetAll()
     {
         try
