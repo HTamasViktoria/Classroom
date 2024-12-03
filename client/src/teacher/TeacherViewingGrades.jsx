@@ -4,7 +4,7 @@ import ViewGradesBySubjects from "../components/Teacher/ViewGradesBySubjects.jsx
 import ViewGradesByClass from "../components/Teacher/ViewGradesByClass.jsx";
 import ViewGradesByStudent from "../components/Teacher/ViewGradesByStudent.jsx";
 import {useNavigate, useParams} from "react-router-dom";
-
+import TeacherNavbar from "../components/Teacher/TeacherNavbar.jsx";
 function TeacherViewingGrades() {
 
     const {id} = useParams();
@@ -21,7 +21,7 @@ function TeacherViewingGrades() {
         setChosen("")
     }
 
-    return (<>
+    return (<>  <TeacherNavbar id={id}/>
 
             {chosen === "bySubject" ? (<ViewGradesBySubjects onGoBack={chosenNoneHandler} teacherid={id}/>) :
 
