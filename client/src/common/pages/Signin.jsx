@@ -28,7 +28,7 @@ function Signin() {
             }
 
             const data = await response.json();
-
+   
             setProfile(data);
             login(data);
             navigateBasedOnRole(data);
@@ -41,7 +41,13 @@ function Signin() {
     };
 
     const navigateBasedOnRole = (data) => {
-        const { role, studentId, id } = data;
+
+        const role = data.user.role;
+        const id = data.user.id;
+        let studentId = "";
+        if(role === "Parent"){
+            studentId = data.user.student.id;
+        }
         const roleRoutes = {
             Admin: '/admin',
             Parent: `/parent/${studentId}`,
@@ -50,7 +56,11 @@ function Signin() {
         };
 
         const route = roleRoutes[role];
-        if (route) navigate(route);
+
+        if (route) {
+          
+        navigate(route)
+        }
         else console.log("Nincs ilyen role");
     };
 
