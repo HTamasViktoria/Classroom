@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Paper, Table, TableBody, TableCell, TableContainer, Typography } from "@mui/material";
+import {Table, TableBody} from "@mui/material";
 import { Cell, TableHeading, StyledTableContainer, StyledHeading } from "../../../StyledComponents";
 import MonthSelector from "./MonthSelector.jsx";
 import RenderGrades from "./RenderGrades.jsx";

@@ -6,7 +6,7 @@ function ClassAverageFetcher({ studentId, onData }) {
 
     useEffect(() => {
         if (studentId && studentId !== "") {
-            fetch(`/api/grades/class-averages/byStudent/${studentId}`)
+            fetch(`/api/grades/class-averages/bystudent/${studentId}`)
                 .then(response => response.json())
                 .then(data => {
                     onData(data);

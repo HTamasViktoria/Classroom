@@ -14,7 +14,7 @@ function ViewGradesByStudent({teacherId, onGoBack}){
     const [chosenStudentName, setChosenStudentName] = useState("")
     
     useEffect(()=>{
-        fetch(`/api/classes/allStudentsWithClasses`)
+        fetch(`/api/classes/students`)
             .then(response=>response.json())
             .then(data=>{
                 const sortedData = data.sort((a,b)=>a.familyName.localeCompare(b.familyName));

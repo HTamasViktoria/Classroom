@@ -14,28 +14,40 @@ function Signin() {
         e.preventDefault();
 
         try {
-            const response = await fetch('/api/auth/sign-in', {
+            const response = await fetch('/api/auth/signin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                setProfile(data);
-                login(data);
-                navigateBasedOnRole(data);
-            } else {
-                throw new Error('Sign-in failed');
+         
+            if (!response.ok) {
+             
+                setError('Hibás bejelentkezési adatok! Kérjük, ellenőrizze a hitelesítő adatokat és próbálkozzon újra.');
+                return;
             }
+
+            const data = await response.json();
+   
+            setProfile(data);
+            login(data);
+            navigateBasedOnRole(data);
+
         } catch (error) {
             console.error('Error during sign-in:', error);
-            setError('Bejelentkezés nem sikerült. Kérjük, ellenőrizze a hitelesítő adatait és próbálkozzon újra.');
+   
+            setError('Hibás bejelentkezési adatok! Kérjük, ellenőrizze a hitelesítő adatokat és próbálkozzon újra.');
         }
     };
 
     const navigateBasedOnRole = (data) => {
-        const { role, studentId, id } = data;
+
+        const role = data.user.role;
+        const id = data.user.id;
+        let studentId = "";
+        if(role === "Parent"){
+            studentId = data.user.student.id;
+        }
         const roleRoutes = {
             Admin: '/admin',
             Parent: `/parent/${studentId}`,
@@ -44,7 +56,11 @@ function Signin() {
         };
 
         const route = roleRoutes[role];
-        if (route) navigate(route);
+
+        if (route) {
+          
+        navigate(route)
+        }
         else console.log("Nincs ilyen role");
     };
 

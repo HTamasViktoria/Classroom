@@ -10,7 +10,7 @@ function OneMessageViewer({ message, onGoBack, onResponse}) {
     const navigate = useNavigate()
 
     useEffect(()=>{
-        fetch(`/api/messages/setToRead/${message.id}`)
+        fetch(`/api/messages/read/${message.id}`)
             .then(response=>response.json())
             .then(data=>console.log(data))
             .catch(error=>console.error(error))
@@ -20,7 +20,7 @@ function OneMessageViewer({ message, onGoBack, onResponse}) {
         const messageId = e.target.id;
 
         try {
-            const response = await fetch(`/api/messages/receiverDelete/${messageId}`, {
+            const response = await fetch(`/api/messages/receiverdelete/${messageId}`, {
                 method: 'DELETE',
             });
 

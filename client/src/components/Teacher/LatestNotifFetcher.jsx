@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 function LatestNotifFetcher({ teacherId, onData }) {
     useEffect(() => {
-        fetch(`/api/notifications/newestByTeacherId/${teacherId}`)
+        fetch(`/api/notifications/teachersnewest/${teacherId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

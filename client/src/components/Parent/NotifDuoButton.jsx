@@ -5,7 +5,7 @@ function NotifDuoButton({ notification, onRefresh, onGoBack }) {
     const setToReadHandler = (e) => {
         const id = e.target.id;
 
-        fetch(`/api/notifications/setToRead/${id}`, { method: 'POST' })
+        fetch(`/api/notifications/read/${id}`, { method: 'POST' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to set notification to read');

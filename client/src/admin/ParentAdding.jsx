@@ -11,7 +11,7 @@ function ParentAdding() {
 
     const postParent = (parent) => {
         console.log('Posting parent data:', parent, JSON.stringify(parent, null, 2));
-        return fetch(`/api/auth/sign-up/parent`, {
+        return fetch(`/api/auth/signup/parent`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -20,13 +20,26 @@ function ParentAdding() {
         })
             .then((res) => {
                 if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
+                    return res.json().then((json) => {
+                        const errorMessages = json.RegistrationError || [];
+
+                        if (errorMessages.length > 0) {
+
+                            alert(`Hiba történt: ${errorMessages.join(", ")}`);
+                        } else {
+                            alert("Ismeretlen hiba történt.");
+                        }
+
+                        throw new Error(errorMessages.join(", ") || "Ismeretlen hiba történt.");
+                    });
                 }
-                return res.text();
+
+                return res.json();
             })
-            .then((text) => {
-                console.log('Server response:', text);
-                return text;
+            .then((data) => {
+                console.log('Server response:', data);
+                alert("Szülő sikeresen hozzáadva");
+                return data;
             })
             .catch((error) => {
                 console.error('Error:', error);

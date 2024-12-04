@@ -28,6 +28,11 @@ public class StudentRepository : IStudentRepository
     
     public void Add(StudentRequest request)
     {
+        var existingStudent = _dbContext.Students.FirstOrDefault(s => s.StudentNo == request.StudentNo);
+        if (existingStudent != null)
+        {
+            throw new ArgumentException("A student with the same student number already exists.");
+        }
         DateTime birthDate;
         if (!DateTime.TryParse(request.BirthDate, out birthDate))
         {

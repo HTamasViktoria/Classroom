@@ -64,7 +64,7 @@ function AddingTeacherSubject(props) {
         };
 
         try {
-            const response = await fetch('/api/teacherSubjects/add', {
+            const response = await fetch('/api/teachersubjects', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(teacherSubjectData)

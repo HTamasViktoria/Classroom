@@ -6,7 +6,7 @@ function NotifButtonContainer({notification, onGoBack, onRefresh}) {
 
     const setToReadHandler = (e) => {
         const id = e.target.id;
-        fetch(`/api/notifications/setToRead/${id}`, {method: 'POST'})
+        fetch(`/api/notifications/read/${id}`, {method: 'POST'})
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to set notification to read');
@@ -25,7 +25,7 @@ function NotifButtonContainer({notification, onGoBack, onRefresh}) {
         const id = e.target.id;
         onButtonClick();
 
-        fetch(`/api/notifications/delete/${id}`, {method: 'DELETE'})
+        fetch(`/api/notifications/${id}`, {method: 'DELETE'})
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to delete notification');

@@ -1,10 +1,7 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Classroom.Contracts;
 using Classroom.Model.DataModels;
-using Classroom.Service.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Classroom.Service.Authentication
 {
@@ -12,14 +9,16 @@ namespace Classroom.Service.Authentication
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly ITokenService _tokenService;
         private readonly IConfiguration _configuration;
 
         public AuthService(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager,
-            IConfiguration configuration)
+            ITokenService tokenService, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _tokenService = tokenService;
         }
 
 
@@ -149,15 +148,39 @@ namespace Classroom.Service.Authentication
 
             
             var role = await _userManager.GetRolesAsync(user);
-
+            var accessToken = _tokenService.CreateToken(user, role[0].ToString());
             return new AuthResult
             {
                 Success = true,
                 Email = user.Email,
                 UserName = user.UserName,
-                Token = "GeneratedJWTTokenHere",
+                Token = accessToken,
                 Role = role.FirstOrDefault()
             };
+        }
+        
+        
+        public ActionResult HandleErrors(Dictionary<string, string> errorMessages)
+        {
+            
+            if (errorMessages.Any(error => error.Value.Contains("email already taken")))
+            {
+                return new ConflictObjectResult(new { message = "Email is already taken." });
+            }
+
+            if (errorMessages.Any(error => error.Value.Contains("username already taken")))
+            {
+                return new ConflictObjectResult(new { message = "Username is already taken." });
+            }
+
+        
+            var modelState = new ModelStateDictionary();
+            foreach (var error in errorMessages)
+            {
+                modelState.AddModelError(error.Key, error.Value);
+            }
+
+            return new BadRequestObjectResult(modelState);
         }
     }
 }

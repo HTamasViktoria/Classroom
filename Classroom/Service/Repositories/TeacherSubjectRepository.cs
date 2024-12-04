@@ -22,37 +22,30 @@ namespace Classroom.Service.Repositories
         
         public IEnumerable<TeacherSubject> GetSubjectsByTeacherId(string teacherId)
         {
-         
-            if (string.IsNullOrWhiteSpace(teacherId))
+            var teacherExisting = _dbContext.Teachers.Any(t => t.Id == teacherId);
+            if (!teacherExisting)
             {
-                throw new ArgumentException("Teacher ID cannot be null or empty.", nameof(teacherId));
+                throw new ArgumentException($"Teacher with ID {teacherId} does not exist.");
             }
 
-           
             var subjects = _dbContext.TeacherSubjects
                 .Where(ts => ts.TeacherId == teacherId)
                 .ToList();
 
-     
             return subjects;
         }
-
 
         
         
         public void Add(TeacherSubjectRequest request)
         {
-      
-            if (request == null)
+            bool existingTeacherSubject = _dbContext.TeacherSubjects.Any(ts => ts.TeacherId == request.TeacherId &&
+                                                                               ts.ClassName == request.ClassName &&
+                                                                               ts.Subject == request.Subject);
+            if (existingTeacherSubject)
             {
-                throw new ArgumentNullException(nameof(request), "Request cannot be null.");
+                throw new ArgumentException("Already existing teachersubject");
             }
-
-            if (string.IsNullOrWhiteSpace(request.Subject))
-            {
-                throw new ArgumentException("Subject cannot be null or empty.", nameof(request.Subject));
-            }
-
      
             var teacher = _dbContext.Teachers.FirstOrDefault(t => t.Id == request.TeacherId);
             if (teacher == null)
@@ -77,12 +70,12 @@ namespace Classroom.Service.Repositories
                 ClassOfStudents = classOfStudents,
                 ClassName = request.ClassName
             };
-
-     
+            
             _dbContext.TeacherSubjects.Add(teacherSubject);
             _dbContext.SaveChanges();
         }
 
+        
         
         public async Task<ClassOfStudents> GetStudentsByTeacherSubjectIdAsync(int teacherSubjectId)
         {
@@ -93,11 +86,12 @@ namespace Classroom.Service.Repositories
 
             if (teacherSubject == null)
             {
-                return null;
+                throw new ArgumentException($"TeacherSubject with ID {teacherSubjectId} not found.");
             }
-
+            
             return teacherSubject.ClassOfStudents;
         }
+
 
     }
 }

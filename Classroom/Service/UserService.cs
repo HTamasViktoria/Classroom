@@ -1,5 +1,6 @@
 using Classroom.Model.DataModels;
 using Classroom.Service.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Classroom.Service
@@ -44,19 +45,29 @@ namespace Classroom.Service
         }
 
        
-        public User GetByEmail(string email)
+        public User? GetByEmail(string email)
         {
-            var student = _userRepository.GetAllStudents().FirstOrDefault(s => s.Email == email);
+          
+            var student = _userRepository.GetAllStudents()
+                .AsQueryable()
+                .FirstOrDefault(s => s.Email == email);
             if (student != null) return student;
 
-            var parent = _userRepository.GetAllParents().FirstOrDefault(p => p.Email == email);
+            var parent = _userRepository.GetAllParents()
+                .AsQueryable()
+                .Include(p => p.Student) 
+                .FirstOrDefault(p => p.Email == email);
             if (parent != null) return parent;
 
-            var teacher = _userRepository.GetAllTeachers().FirstOrDefault(t => t.Email == email);
+
+            var teacher = _userRepository.GetAllTeachers()
+                .AsQueryable()
+                .FirstOrDefault(t => t.Email == email);
             if (teacher != null) return teacher;
 
             return null;
         }
+
 
         public bool CheckStudentId(string studentId, string studentName)
         {
@@ -95,6 +106,28 @@ namespace Classroom.Service
             }
         }
 
+        
+        
+        public IEnumerable<string> ValidateParentRegistration(string studentId, string studentName)
+        {
+            var errors = new List<string>();
+
+      
+            var studentIdIsValid = CheckStudentId(studentId, studentName);
+            if (!studentIdIsValid)
+            {
+                errors.Add("Invalid student ID or child name.");
+            }
+
+            
+            var parentsNumberOk = CheckParentsNumber(studentId);
+            if (!parentsNumberOk)
+            {
+                errors.Add("The student already has the maximum number of registered parents.");
+            }
+
+            return errors;
+        }
 
 
 

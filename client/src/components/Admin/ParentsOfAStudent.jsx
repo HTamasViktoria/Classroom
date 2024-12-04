@@ -11,7 +11,7 @@ function ParentsOfAStudent() {
     const [parents, setParents] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/getbyStudentId/${id}`)
+        fetch(`/api/parents/bystudent/${id}`)
             .then(response => response.json())
             .then(data => {
                 setParents(data);

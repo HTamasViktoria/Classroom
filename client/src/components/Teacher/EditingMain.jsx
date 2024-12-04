@@ -4,7 +4,7 @@ import {AButton, Cell, TableHeading} from "../../../StyledComponents.js";
 function EditingMain({onEditingGrade, onEditing, onGoingBack, teacherId, gradesOfThisSubject, studentName, studentId, onRefreshing, subject}) {
 
     const deleteHandler = (id) => {
-        fetch(`/api/grades/delete/${id}`, {
+        fetch(`/api/grades/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

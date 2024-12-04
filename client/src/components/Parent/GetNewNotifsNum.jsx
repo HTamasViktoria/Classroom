@@ -12,7 +12,7 @@ function GetNewNotifsNum({ studentId, onLength, refreshNeeded }) {
 
     useEffect(() => {
         if (id) {
-            fetch(`/api/notifications/getNewNotifsNumber/${studentId}/${id}`)
+            fetch(`/api/notifications/newnotifsnum/${studentId}/${id}`)
                 .then(response => response.json())
                 .then(data => onLength(data))
                 .catch(error => console.error(error));

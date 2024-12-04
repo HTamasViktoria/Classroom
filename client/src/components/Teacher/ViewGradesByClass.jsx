@@ -1,7 +1,6 @@
 import {useState, useEffect} from "react";
 import {ListItem} from "@mui/material";
-import {AButton} from '../../../StyledComponents.js'
-
+import {AButton} from '../../../StyledComponents.js';
 import GradesByClass from "./GradesByClass.jsx";
 function ViewGradesByClass({teacherId, onGoBack}){
     

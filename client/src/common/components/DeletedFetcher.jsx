@@ -4,7 +4,7 @@ function DeletedFetcher({id, onData, refreshNeeded}){
     
     
     useEffect(()=>{
-        fetch(`/api/messages/getDeleteds/${id}`)
+        fetch(`/api/messages/deleteds/${id}`)
             .then(response=>response.json())
             .then(data=>onData(data))
             .catch(error=>console.error(error))

@@ -29,7 +29,7 @@ function NewMessage({ id, onSuccessfulSending, onGoBack }) {
         };
 
         try {
-            const response = await fetch(`/api/messages/add`, {
+            const response = await fetch(`/api/messages`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

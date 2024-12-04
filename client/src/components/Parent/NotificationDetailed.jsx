@@ -5,7 +5,7 @@ import NotifButtonContainer from "./NotifButtonContainer.jsx";
 
 function NotificationDetailed({ notification, onButtonClick, onRefreshNeeded }) {
     useEffect(() => {
-        fetch(`/api/notifications/setToOfficiallyRead/${notification.id}`, {
+        fetch(`/api/notifications/officiallyread/${notification.id}`, {
             method: 'POST',
         })
             .then(response => response.json())

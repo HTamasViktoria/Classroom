@@ -5,7 +5,7 @@ function ParentReceiverFetcher({onData}){
     
     
     useEffect(()=>{
-        fetch(`/api/users/getParentReceivers`)
+        fetch(`/api/users/parentreceivers`)
             .then(response=>response.json())
             .then(data=>onData(data))
             .catch(error=>console.error(error))

@@ -21,7 +21,7 @@ function BulkGradeAddingByPerson({ selectedDate, selectedSubjectName, teacherId,
             date: formattedDate
         };
 
-        fetch('/api/grades/add', {
+        fetch('/api/grades', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(gradeData)

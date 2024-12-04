@@ -21,6 +21,11 @@ function StudentAddingForm({ onSave, onCancel }) {
             return;
         }
 
+        if(!email.includes('@')){
+            alert("Nem megfelelő email-formátum");
+            return;
+        }
+        
         if (!familyName || !firstName || !birthDate || !birthPlace || !studentNo || !email || !username || !password || !secondaryPassword) {
             alert("Kérjük, töltse ki az összes mezőt.");
             return;

@@ -10,7 +10,7 @@ function ResponseMessage({ id, onGoBack }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch(`/api/messages/getById/${id}`)
+        fetch(`/api/messages/${id}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data);
@@ -33,7 +33,7 @@ function ResponseMessage({ id, onGoBack }) {
         };
 
         try {
-            const response = await fetch(`/api/messages/add`, {
+            const response = await fetch(`/api/messages`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

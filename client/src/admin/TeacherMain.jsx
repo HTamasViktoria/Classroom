@@ -31,7 +31,7 @@ function TeacherMain() {
 
     const fetchTeacherSubjects = async (teacherId) => {
         try {
-            const response = await fetch(`/api/teacherSubjects/getByTeacherId/${teacherId}`);
+            const response = await fetch(`/api/teacherSubjects/byteacher/${teacherId}`);
             const data = await response.json();
             setSubjects(data);
         } catch (error) {

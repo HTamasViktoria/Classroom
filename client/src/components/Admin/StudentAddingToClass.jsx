@@ -37,7 +37,7 @@ function StudentAddingToClass({ classId, className, onSuccessfulAdding }) {
             classId: classId
         };
 
-        fetch('/api/classes/addStudent', {
+        fetch('/api/classes/addstudent', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(addingStudentToClassData)
@@ -63,7 +63,7 @@ function StudentAddingToClass({ classId, className, onSuccessfulAdding }) {
                 <CenteredStack>
                     <SelectFromAllStudents
                         selectedStudentId={selectedStudentId}
-                        handleStudentChange={(e) => setSelectedStudentId(e.target.value)} // Átadjuk a változó frissítésére szolgáló funkciót
+                        handleStudentChange={(e) => setSelectedStudentId(e.target.value)}
                     />
                     <AButton
                         type='submit'

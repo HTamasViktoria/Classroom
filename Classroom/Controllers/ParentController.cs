@@ -1,6 +1,7 @@
 using Classroom.Model.DataModels;
 using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Classroom.Service;
 
 
 namespace Classroom.Controllers;
@@ -18,45 +19,51 @@ public class ParentController : ControllerBase
         _parentRepository = parentRepository;
     }
     
-    
     [HttpGet("{id}", Name = "GetByParentId")]
     public ActionResult<Parent> GetByParentId(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var parent = _parentRepository.GetParentById(id);
-                
+
             if (parent == null)
             {
-                return NotFound(new { Message = "No parent found with the given id." });
+                return NotFound(new { message = "No parent found with the given id." });
             }
+        
             return Ok(parent);
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, $"Internal server error: {e.Message}");
+            return StatusCode(500, new { message = $"Internal server error: {e.Message}" });
         }
     }
-        
+ 
     
-    [HttpGet("/api/getbyStudentId/{id}", Name = "GetByParentByStudentId")]
+    [HttpGet("bystudent/{id}", Name = "GetByParentByStudentId")]
     public ActionResult<IEnumerable<Parent>> GetParentsByStudentId(string id)
     {
+        StringValidationHelper.IsValidId(id);
         try
         {
             var parents = _parentRepository.GetParentsByStudentId(id);
 
-         
+            if (!parents.Any())
+            {
+                return Ok(new List<Parent>());
+            }
+
             return Ok(parents);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, e.Message);
-       
+            _logger.LogError(e, "An error occurred while retrieving parents.");
             return StatusCode(500, new { Message = $"Internal server error: {e.Message}" });
         }
     }
+
 
         
     [HttpGet(Name = "parents")]
@@ -64,7 +71,14 @@ public class ParentController : ControllerBase
     {
         try
         {
-            return Ok(_parentRepository.GetAllParents());
+            var parents = _parentRepository.GetAllParents();
+
+            if (!parents.Any())
+            {
+                return Ok(new List<Parent>());
+            }
+
+            return Ok(parents);
         }
         catch (Exception e)
         {

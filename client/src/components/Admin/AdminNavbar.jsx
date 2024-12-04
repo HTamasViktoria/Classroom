@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../contexts/ProfileContext.jsx";
-import { NavbarAppBar, NavbarToolbar, NavbarTypography, NavbarBox, NavbarAccountIcon, NavbarBadge, NavbarButton, NavbarSpacer } from "../../../StyledComponents.js"; // Importáld a styled komponenseket
+import { NavbarAppBar, NavbarToolbar, NavbarTypography, NavbarBox, NavbarAccountIcon, NavbarBadge, NavbarButton, NavbarSpacer } from "../../../StyledComponents.js";
 
 function AdminNavbar() {
     const navigate = useNavigate();

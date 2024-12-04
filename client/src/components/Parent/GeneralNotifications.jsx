@@ -8,7 +8,7 @@ function GeneralNotifications({ chosen, onRefreshing, onGoBack, id, refreshNeede
     const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/notifications/setToOfficiallyRead/${id}`, { method: 'POST' })
+        fetch(`/api/notifications/officiallyread/${id}`, { method: 'POST' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);

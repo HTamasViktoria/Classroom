@@ -16,7 +16,7 @@ function GradeEditForm({ grade, onGoBack, onRefreshing }) {
     
     
     useEffect(() => {
-        fetch('/api/grades/gradeValues')
+        fetch('/api/grades/gradevalues')
             .then(response => response.json())
             .then(data => setGrades(data))
             .catch(error => console.error('Error fetching data:', error));
@@ -52,7 +52,7 @@ function GradeEditForm({ grade, onGoBack, onRefreshing }) {
         };
         
      
-        fetch(`/api/grades/edit/${grade.id}`, {
+        fetch(`/api/grades/${grade.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

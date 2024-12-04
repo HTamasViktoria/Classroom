@@ -6,7 +6,7 @@ function NotifDeleteButton({notification, onRefresh}){
         const id = e.target.id;
         onRefreshing();
 
-        fetch(`/api/notifications/delete/${id}`, { method: 'DELETE' })
+        fetch(`/api/notifications/${id}`, { method: 'DELETE' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to delete notification');

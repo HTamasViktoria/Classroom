@@ -11,7 +11,7 @@ function GradesByClass({ classId, onGoBack }) {
 
     
     useEffect(() => {
-        fetch(`/api/grades/getGradesByClass/${classId}`)
+        fetch(`/api/grades/byclass/${classId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Network response was not ok");

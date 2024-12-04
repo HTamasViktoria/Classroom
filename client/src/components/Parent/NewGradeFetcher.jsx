@@ -8,7 +8,7 @@ function NewGradeFetcher({onData,studentId, refreshNeeded}){
 
 
     useEffect(()=>{
-        fetch(`/api/grades/newGrades/${studentId}`)
+        fetch(`/api/grades/newgrades/${studentId}`)
             .then(response=>response.json())
             .then(data=> onData(data))
             .catch(error=>console.error(error))

@@ -11,7 +11,7 @@ function NotificationAlerts({ teacher }) {
         const fetchNotifications = async () => {
             try {
              
-                const response = await fetch(`/api/notifications/ofTeacher/${teacher.id}`);
+                const response = await fetch(`/api/notifications/teacher/${teacher.id}`);
 
                 if (!response.ok) {
                     throw new Error('Hiba történt az értesítések lekérése során');
