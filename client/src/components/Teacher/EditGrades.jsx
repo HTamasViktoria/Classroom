@@ -1,4 +1,3 @@
-
 import {useEffect, useState} from "react";
 import EditingMain from "./EditingMain.jsx";
 import GradeEditForm from "./GradeEditForm.jsx";
@@ -11,7 +10,7 @@ function EditGrades({teacherId, subject, studentId, studentName, onGoBack, onRef
     const [refreshNeeded, setRefreshNeeded] = useState(false)
 
     useEffect(() => {
-        fetch(`/api/grades/getGradesBySubjectByStudent/${subject}/${studentId}`)
+        fetch(`/api/grades/bysubject/${subject}/bystudent/${studentId}`)
             .then(response => response.json())
             .then(data => {
                 setGradesOfThisSubject(data);

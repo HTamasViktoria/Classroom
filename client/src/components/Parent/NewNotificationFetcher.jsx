@@ -12,7 +12,7 @@ function NewNotificationFetcher({onData,studentId, refreshNeeded}){
     }
     
     useEffect(() => {
-        fetch(`/api/notifications/newNotifsByStudentId/${studentId}/${id}`)
+        fetch(`/api/notifications/newnotifs/${studentId}/${id}`)
             .then(response => response.json())
             .then(data => onData(data))
             .catch(error => console.error(error));

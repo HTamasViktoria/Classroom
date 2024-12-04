@@ -4,7 +4,7 @@ function SentFetcher({id, onData}){
     
     
     useEffect(()=>{
-        fetch(`/api/messages/getSents/${id}`)
+        fetch(`/api/messages/sents/${id}`)
             .then(response=>response.json())
             .then(data=>onData(data))
             .catch(error=>console.error(error))

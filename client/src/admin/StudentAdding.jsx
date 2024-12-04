@@ -10,7 +10,7 @@ function StudentAdding() {
     const postStudent = (student) => {
         console.log('Posting student data:', JSON.stringify(student, null, 2));
 
-        return fetch(`/api/auth/sign-up/student`, {
+        return fetch(`/api/auth/signup/student`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

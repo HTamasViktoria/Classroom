@@ -36,7 +36,7 @@ function NotificationAdder(props) {
         handleChange('selectedSubjectId', subjectId);
         handleChange('selectedSubjectName', subjectName);
 
-        fetch(`/api/teacherSubjects/getStudentsByTeacherSubjectId/${subjectId}`)
+        fetch(`/api/teachersubjects/studentsof/${subjectId}`)
             .then(response => response.json())
             .then(data => handleChange('allStudents', data))
             .catch(error => console.error('Error fetching data:', error));
@@ -66,7 +66,7 @@ function NotificationAdder(props) {
         };
 
         console.log(notificationData)
-        fetch('/api/notifications/add', {
+        fetch('/api/notifications', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(notificationData),

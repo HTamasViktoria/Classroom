@@ -4,7 +4,7 @@ import {useEffect} from "react";
 function TeacherSubjectsFetcher({teacherId, onData}){
     
     useEffect(()=>{
-       fetch(`/api/teacherSubjects/getByTeacherId/${teacherId}`) 
+       fetch(`/api/teachersubjects/byteacher/${teacherId}`) 
            .then(response=>response.json())
            .then(data=> {console.log(data)
                onData(data)

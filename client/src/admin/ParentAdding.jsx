@@ -11,7 +11,7 @@ function ParentAdding() {
 
     const postParent = (parent) => {
         console.log('Posting parent data:', parent, JSON.stringify(parent, null, 2));
-        return fetch(`/api/auth/sign-up/parent`, {
+        return fetch(`/api/auth/signup/parent`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

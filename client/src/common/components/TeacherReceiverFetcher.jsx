@@ -4,7 +4,7 @@ function TeacherReceiverFetcher({id, onData}){
 
 
     useEffect(() => {
-        fetch(`/api/users/getTeacherReceivers`)
+        fetch(`/api/users/teacherreceivers`)
             .then((response) => response.json())
             .then((data) => {
                 const filteredUsers = data.filter((user) => user.id !== id);

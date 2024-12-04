@@ -15,7 +15,7 @@ function ClassOfStudentsSelector({ subject, onGoBack }) {
     const [averages, setAverages] = useState([])
 
     useEffect(() => {
-        fetch(`/api/classes/getClassesBySubject/${subject}/`)
+        fetch(`/api/classes/bysubject/${subject}/`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

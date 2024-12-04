@@ -10,7 +10,7 @@ function TeachersLastNotifications() {
     const [lastNotifications, setLastNotifications] = useState([]);
 
     useEffect(() => {
-        fetch(`/api/notifications/lastsByTeacherId/${id}`)
+        fetch(`/api/notifications/teacherslasts/${id}`)
             .then(response => response.json())
             .then(data => {
                 setLastNotifications(data);

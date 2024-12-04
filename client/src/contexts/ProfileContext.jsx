@@ -56,7 +56,7 @@ export const ProfileContextProvider = ({ children }) => {
     
     const logout = async () => {
         try {
-            const response = await fetch('/api/auth/sign-out', {
+            const response = await fetch('/api/auth/signout', {
                 method: 'POST',
                 credentials: 'include',
             });

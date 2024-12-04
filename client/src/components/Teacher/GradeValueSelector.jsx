@@ -6,7 +6,7 @@ function GradeValueSelector({ selectedGrade, handleGradeChange }) {
     const [grades, setGrades] = useState([]);
 
     useEffect(() => {
-        fetch('/api/grades/gradeValues')
+        fetch('/api/grades/gradevalues')
             .then(response => response.json())
             .then(data => setGrades(data))
             .catch(error => console.error('Error fetching data:', error));

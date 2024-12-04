@@ -1,5 +1,3 @@
-
-
 import {AButton} from "../../../StyledComponents.js";
 
 function SetToReadButton({notification, onRefresh}){
@@ -9,7 +7,7 @@ function SetToReadButton({notification, onRefresh}){
         const id = e.target.id;
         onRefresh();
 
-        fetch(`/api/notifications/setToRead/${id}`, { method: 'POST' })
+        fetch(`/api/notifications/read/${id}`, { method: 'POST' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to set notification to read');

@@ -4,7 +4,7 @@ function StudentsOfATeacherSubjectFetcher({selectedSubjectId, onData}){
     
     
     useEffect(()=>{
-        if(selectedSubjectId !== ""){ fetch(`/api/teacherSubjects/getStudentsByTeacherSubjectId/${selectedSubjectId}`)
+        if(selectedSubjectId !== ""){ fetch(`/api/teachersubjects/studentsof/${selectedSubjectId}`)
             .then(response => response.json())
             .then(data => {
                 onData(data)

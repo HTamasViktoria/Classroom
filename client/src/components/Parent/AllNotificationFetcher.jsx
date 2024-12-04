@@ -10,7 +10,7 @@ let id;
     }
     
     useEffect(() => {
-        fetch(`/api/notifications/byStudent/byParent/${studentId}/${id}`)
+        fetch(`/api/notifications/bystudent/${studentId}/byParent/${id}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data)

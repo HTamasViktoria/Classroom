@@ -3,7 +3,7 @@ import {useEffect} from "react";
 function GetNewMessagesNum({id, onData}){
     
     useEffect(()=>{
-        fetch(`/api/messages/getNewMessagesNum/${id}`)
+        fetch(`/api/messages/newmessagesnum/${id}`)
             .then(response=>response.json())
             .then(data=>{console.log(data);
             onData(data)})

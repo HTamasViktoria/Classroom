@@ -8,7 +8,7 @@ function GradeDetailed({ grade, onButtonClick, onRefreshNeeded }) {
 
     useEffect(() => {
         if (grade && grade.id) {
-            fetch(`/api/grades/setToOfficiallyRead/${grade.id}`, {
+            fetch(`/api/grades/officiallyread/${grade.id}`, {
                 method: 'POST',
             })
                 .then(response => response.json())

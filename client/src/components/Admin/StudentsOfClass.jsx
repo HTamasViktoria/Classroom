@@ -15,7 +15,7 @@ function StudentsOfClass({classId, className, onGoBack}) {
  
 
     useEffect(() => {
-        fetch(`/api/classes/getStudents/${classId}`)
+        fetch(`/api/classes/students-of-a-class/${classId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

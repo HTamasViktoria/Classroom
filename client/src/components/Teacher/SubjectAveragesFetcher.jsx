@@ -6,7 +6,7 @@ function SubjectAveragesFetcher({subject, onData}){
     const [averages, setAverages] = useState([])
 
     useEffect(()=>{
-        fetch(`/api/grades/class-averages/bySubject/${subject}`)
+        fetch(`/api/grades/class-averages/bysubject/${subject}`)
             .then(response=>response.json())
             .then(data=> {console.log(data)
                 onData(data)

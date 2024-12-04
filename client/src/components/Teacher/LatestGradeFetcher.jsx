@@ -4,7 +4,7 @@ function LatestGradeFetcher({ teacherId, onData }) {
     useEffect(() => {
 
 
-        fetch(`/api/grades/teachersLast/${teacherId}`)
+        fetch(`/api/grades/teacherslast/${teacherId}`)
             .then(response => {
                
                 if (!response.ok) {

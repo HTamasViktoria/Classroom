@@ -4,7 +4,7 @@ function GetNewGradesNum({studentId, onLength, refreshNeeded}){
     
     
     useEffect(()=>{
-        fetch(`/api/grades/getNewGradesNumber/${studentId}`)
+        fetch(`/api/grades/newgradesnum/${studentId}`)
             .then(response=>response.json())
             .then(data=>onLength(data))
             .catch(error=>console.error(error))

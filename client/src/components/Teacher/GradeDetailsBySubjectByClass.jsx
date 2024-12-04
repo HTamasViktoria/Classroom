@@ -10,7 +10,7 @@ function GradeDetailsBySubjectByClass({subject, classId, onGoBack, className}) {
 
 
     useEffect(() => {
-        fetch(`/api/classes/getStudents/${classId}`)
+        fetch(`/api/classes/students-of-a-class/${classId}`)
             .then(response => response.json())
             .then(data => {
                 setStudentsOfClass(data);

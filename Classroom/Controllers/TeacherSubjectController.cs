@@ -7,7 +7,7 @@ using Classroom.Service;
 namespace Classroom.Controllers;
 
 [ApiController]
-[Route("api/teacherSubjects")]
+[Route("api/teachersubjects")]
 
 public class TeacherSubjectController : ControllerBase
 {
@@ -22,7 +22,7 @@ public class TeacherSubjectController : ControllerBase
     }
     
     
-    [HttpGet("getByTeacherId/{teacherId}")]
+    [HttpGet("byteacher/{teacherId}")]
     public ActionResult<IEnumerable<TeacherSubject>> GetSubjectsByTeacherId(string teacherId)
     {
         StringValidationHelper.IsValidId(teacherId);
@@ -49,7 +49,7 @@ public class TeacherSubjectController : ControllerBase
 
 
 
-    [HttpPost("add")]
+    [HttpPost]
     public ActionResult<object> Post([FromBody] TeacherSubjectRequest request)
     {
         
@@ -72,7 +72,7 @@ public class TeacherSubjectController : ControllerBase
 
     
     
-    [HttpGet("getStudentsByTeacherSubjectId/{teacherSubjectId}")]
+    [HttpGet("studentsof/{teacherSubjectId}")]
     public async Task<IActionResult> GetStudentsByTeacherSubjectId(int teacherSubjectId)
     {
         try

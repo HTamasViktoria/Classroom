@@ -12,7 +12,7 @@ function IncomingMessages({ onChosing, id }) {
         e.stopPropagation();
         const messageId = e.target.id;
         try {
-            const response = await fetch(`/api/messages/receiverDelete/${messageId}`, {
+            const response = await fetch(`/api/messages/receiverdelete/${messageId}`, {
                 method: 'DELETE',
             });
             if (response.ok) {
@@ -29,7 +29,7 @@ function IncomingMessages({ onChosing, id }) {
     const setToUnreadHandler = (e) => {
         e.stopPropagation();
         const messageId = e.target.id;
-        fetch(`/api/messages/setToUnread/${messageId}`)
+        fetch(`/api/messages/unread/${messageId}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data);
