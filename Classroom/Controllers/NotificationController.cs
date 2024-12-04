@@ -45,7 +45,7 @@ public class NotificationController : ControllerBase
     
     
     
-    [HttpGet("byStudent/byParent/{studentId}/{parentId}", Name = "GetByStudentId")]
+    [HttpGet("bystudent/{studentId}/byparent/{parentId}", Name = "GetByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetByStudentId(string studentId, string parentId)
     {
         StringValidationHelper.IsValidId(studentId);
@@ -68,7 +68,7 @@ public class NotificationController : ControllerBase
     }
 
     
-    [HttpGet("ofTeacher/{id}", Name = "GetTeachersNotifications")]
+    [HttpGet("teacher/{id}", Name = "GetTeachersNotifications")]
     public ActionResult<IEnumerable<NotificationBase>> GetByTeacherId(string id)
     {
         StringValidationHelper.IsValidId(id);
@@ -94,7 +94,7 @@ public class NotificationController : ControllerBase
     }
 
     
-    [HttpGet("lastsByStudentId/{studentId}/{parentId}", Name = "GetLastsByStudentId")]
+    [HttpGet("studentslasts/{studentId}/{parentId}", Name = "GetLastsByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetLastsByStudentId(string studentId, string parentId)
     {
         StringValidationHelper.IsValidId(studentId);
@@ -124,7 +124,7 @@ public class NotificationController : ControllerBase
 
     
 
-    [HttpGet("getNewNotifsNumber/{studentId}/{parentId}", Name = "GetNewNotifsNumber")]
+    [HttpGet("newnotifsnum/{studentId}/{parentId}", Name = "GetNewNotifsNumber")]
     public ActionResult<int> GetNewNotifsNumber(string studentId, string parentId)
     {
         
@@ -150,7 +150,7 @@ public class NotificationController : ControllerBase
 
     
     
-    [HttpGet("newNotifsByStudentId/{studentId}/{parentId}", Name = "GetNewNotifsByStudentId")]
+    [HttpGet("newnotifs/{studentId}/{parentId}", Name = "GetNewNotifsByStudentId")]
     public ActionResult<IEnumerable<NotificationBase>> GetNewNotifsByStudentId(string studentId, string parentId)
     {
         
@@ -180,7 +180,7 @@ public class NotificationController : ControllerBase
 
     
     
-    [HttpGet("lastsByTeacherId/{id}", Name = "GetLastsByTeacherId")]
+    [HttpGet("teacherslasts/{id}", Name = "GetLastsByTeacherId")]
     public ActionResult<IEnumerable<NotificationResponse>> GetLastsByTeacherId(string id)
     {
         
@@ -209,7 +209,7 @@ public class NotificationController : ControllerBase
     }
 
     
-    [HttpGet("newestByTeacherId/{id}", Name = "GetNewestByTeacherId")]
+    [HttpGet("teachersnewest/{id}", Name = "GetNewestByTeacherId")]
     public ActionResult<NotificationBase?> GetNewestByTeacherId(string id)
     {
         
@@ -237,7 +237,7 @@ public class NotificationController : ControllerBase
     }
 
 
-    [HttpPost("add")]
+    [HttpPost]
     public IActionResult Post([FromBody] NotificationRequest request)
     {
       
@@ -260,7 +260,7 @@ public class NotificationController : ControllerBase
 
     
     
-    [HttpPost("setToRead/{id}")]
+    [HttpPost("read/{id}")]
     public IActionResult SetToRead(int id)
     {
         try
@@ -281,7 +281,7 @@ public class NotificationController : ControllerBase
     }
     
     
-    [HttpPost("setToOfficiallyRead/{id}")]
+    [HttpPost("officiallyread/{id}")]
     public IActionResult SetToOfficiallyRead(int id)
     {
         try
@@ -365,7 +365,7 @@ public class NotificationController : ControllerBase
     }
     
     
-    [HttpGet("missingEquipments", Name = "GetMissingEquipments")]
+    [HttpGet("missingequipments", Name = "GetMissingEquipments")]
     public ActionResult<IEnumerable<NotificationBase>> GetMissingEquipments()
     {
         try
@@ -386,7 +386,7 @@ public class NotificationController : ControllerBase
     
     
     
-    [HttpDelete("delete/{id}")]
+    [HttpDelete("{id}")]
     public ActionResult Delete(int id)
     {
         try

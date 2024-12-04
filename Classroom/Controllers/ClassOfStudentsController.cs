@@ -45,7 +45,7 @@ public class ClassOfStudentsController : ControllerBase
 
     
     
-    [HttpGet("allStudentsWithClasses")]
+    [HttpGet("students")]
     public ActionResult<IEnumerable<StudentWithClassResponse>> GetAllStudentsWithClasses()
     {
         try
@@ -65,7 +65,7 @@ public class ClassOfStudentsController : ControllerBase
     }
     
     
-    [HttpGet("getStudents/{classId}")]
+    [HttpGet("students-of-a-class/{classId}")]
     public ActionResult<IEnumerable<Student>> GetStudents(int classId)
     {
         
@@ -94,7 +94,7 @@ public class ClassOfStudentsController : ControllerBase
 
     
     
-    [HttpGet("getClassesBySubject/{subject}")]
+    [HttpGet("bysubject/{subject}")]
     public ActionResult<IEnumerable<ClassOfStudents>> GetClassesBySubject(string subject)
     {
         StringValidationHelper.IsValidId(subject);

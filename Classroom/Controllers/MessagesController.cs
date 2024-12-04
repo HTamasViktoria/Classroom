@@ -41,7 +41,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpGet("getNewMessagesNum/{id}", Name = "GetNewMessagesNum")]
+    [HttpGet("newmessagesnum/{id}", Name = "GetNewMessagesNum")]
     public ActionResult<int> GetNewMessagesNum(string id)
     {
         StringValidationHelper.IsValidId(id);
@@ -63,7 +63,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpGet("getById/{id}", Name = "GetById")]
+    [HttpGet("{id}", Name = "GetById")]
     public ActionResult<Message> GetById(int id)
     {
         try
@@ -84,7 +84,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpGet("getIncomings/{id}", Name = "GetIncomings")]
+    [HttpGet("incomings/{id}", Name = "GetIncomings")]
     public ActionResult<IEnumerable<Message>> GetIncomings(string id)
     {
         
@@ -111,7 +111,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpGet("getDeleteds/{id}", Name = "GetDeleteds")]
+    [HttpGet("deleteds/{id}", Name = "GetDeleteds")]
     public ActionResult<IEnumerable<Message>> GetDeleteds(string id)
     {
         
@@ -138,7 +138,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpGet("getSents/{id}", Name = "GetSents")]
+    [HttpGet("sents/{id}", Name = "GetSents")]
     public ActionResult<IEnumerable<Message>> GetSents(string id)
     {
         
@@ -165,7 +165,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpGet("getOutgoings/{id}", Name = "GetOutgoings")]
+    [HttpGet("outgoings/{id}", Name = "GetOutgoings")]
     public ActionResult<IEnumerable<Message>> GetOutgoings(string id)
     {
         
@@ -192,7 +192,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpPost("add")]
+    [HttpPost]
     public IActionResult Post([FromBody] MessageRequest request)
     {
        
@@ -214,7 +214,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpDelete("receiverDelete/{messageId}")]
+    [HttpDelete("receiverdelete/{messageId}")]
     public IActionResult DeleteMessageOnReceiverSide(int messageId)
     {
         try
@@ -267,7 +267,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpPost("setToUnread/{messageId}")]
+    [HttpPost("unread/{messageId}")]
     public IActionResult SetToUnread(int messageId)
     {
         try
@@ -289,7 +289,7 @@ public class MessagesController : ControllerBase
     }
 
 
-    [HttpGet("setToRead/{messageId}")]
+    [HttpGet("read/{messageId}")]
     public IActionResult SetToRead(int messageId)
     {
         try

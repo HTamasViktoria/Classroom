@@ -69,7 +69,7 @@ public class StudentController : ControllerBase
     }
 
         
-    [HttpPost("add")]
+    [HttpPost]
     public ActionResult<string> Post([FromBody] StudentRequest request)
     {
        

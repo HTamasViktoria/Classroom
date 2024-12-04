@@ -43,7 +43,7 @@ public class GradeController : ControllerBase
         }
     }
     
-    [HttpGet("gradeValues")]
+    [HttpGet("gradevalues")]
     public ActionResult<IEnumerable<string>> GetAllValues()
     {
         try
@@ -69,7 +69,7 @@ public class GradeController : ControllerBase
     
    
 
-    [HttpPost("add")]
+    [HttpPost]
     public ActionResult<string> Post([FromBody] GradeRequest request)
     {
       
@@ -91,7 +91,7 @@ public class GradeController : ControllerBase
         }
     }
 
-    [HttpGet("getGradesBySubjectByStudent/{subject}/{studentId}")]
+    [HttpGet("bysubject/{subject}/bystudent/{studentId}")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesBySubjectByStudent(string subject, string studentId)
     {
         StringValidationHelper.IsValidId(studentId);
@@ -120,7 +120,7 @@ public class GradeController : ControllerBase
     }
 
 
-    [HttpPut("edit/{id}")]
+    [HttpPut("{id}")]
     public ActionResult<string> Put([FromBody] GradeRequest request, int id)
     {
       
@@ -147,7 +147,7 @@ public class GradeController : ControllerBase
     }
 
     
-    [HttpDelete("delete/{id}")]
+    [HttpDelete("{id}")]
     public ActionResult<string> Delete(int id)
     {
         try
@@ -200,7 +200,7 @@ public class GradeController : ControllerBase
 
     
     
-    [HttpGet("teachersLast/{id}", Name = "GetTeachersLastGrade")]
+    [HttpGet("teacherslast/{id}", Name = "GetTeachersLastGrade")]
     public async Task<ActionResult<LatestGradeResponse>> GetTeachersLastGrade(string id)
     {
         StringValidationHelper.IsValidId(id);
@@ -230,7 +230,7 @@ public class GradeController : ControllerBase
 
     
     
-    [HttpGet("getNewGradesNumber/{id}", Name = "GetNewGradesNumber")]
+    [HttpGet("newgradesnum/{id}", Name = "GetNewGradesNumber")]
     public ActionResult<int> GetNewGradesNumber(string id)
     {
         StringValidationHelper.IsValidId(id);
@@ -253,7 +253,7 @@ public class GradeController : ControllerBase
 
     
     
-    [HttpGet("newGrades/{id}", Name = "GetNewGradesByStudentId")]
+    [HttpGet("newgrades/{id}", Name = "GetNewGradesByStudentId")]
     public ActionResult<IEnumerable<Grade>> GetNewGradesByStudentId(string id)
     {
         
@@ -281,7 +281,7 @@ public class GradeController : ControllerBase
     
     
     
-    [HttpGet("getGradesByClassBySubject/{classId}/{subject}")]
+    [HttpGet("byclass/{classId}/bysubject/{subject}")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesByClassBySubject(int classId, string subject)
     {
         
@@ -311,7 +311,7 @@ public class GradeController : ControllerBase
 
     
     
-    [HttpGet("getGradesByClass/{classId}", Name = "GetGradesByClass")]
+    [HttpGet("byclass/{classId}", Name = "GetGradesByClass")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesByClass(int classId)
     {
         try
@@ -339,7 +339,7 @@ public class GradeController : ControllerBase
 
 
     
-    [HttpGet("class-averages/byStudent/{studentId}")]
+    [HttpGet("class-averages/bystudent/{studentId}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesByStudentId(string studentId)
     {
         StringValidationHelper.IsValidId(studentId);
@@ -361,7 +361,7 @@ public class GradeController : ControllerBase
 
     
     
-    [HttpGet("class-averages/bySubject/{subject}")]
+    [HttpGet("class-averages/bysubject/{subject}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesBySubject(string subject)
     {
         
@@ -383,7 +383,7 @@ public class GradeController : ControllerBase
     }
 
     
-    [HttpPost("setToOfficiallyRead/{id}")]
+    [HttpPost("officiallyread/{id}")]
     public ActionResult SetToOfficiallyRead(int id)
     {
         try

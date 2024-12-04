@@ -67,7 +67,7 @@ namespace Classroom.Controllers
         }
         
         
-        [HttpPost("add")]
+        [HttpPost]
         public ActionResult<string> Post([FromBody] TeacherRequest request)
         {
             try

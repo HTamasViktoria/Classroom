@@ -28,7 +28,7 @@ namespace Classroom.Controllers
         
         
         
-        [HttpPost("sign-up/student")]
+        [HttpPost("signup/student")]
         public async Task<ActionResult<RegistrationResponse>> Register(StudentRequest request)
         {
            
@@ -60,7 +60,7 @@ namespace Classroom.Controllers
         
         
         
-        [HttpPost("sign-up/teacher")]
+        [HttpPost("signup/teacher")]
         public async Task<ActionResult<RegistrationResponse>> Register(TeacherRequest request)
         {
             
@@ -92,7 +92,7 @@ namespace Classroom.Controllers
         
         
 
-        [HttpPost("sign-up/parent")]
+        [HttpPost("sign-p/parent")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<RegistrationResponse>> Register(ParentRequest request)
         { 
@@ -136,7 +136,7 @@ namespace Classroom.Controllers
         }
 
   
-       [HttpPost("sign-in")]
+       [HttpPost("signin")]
 public async Task<ActionResult<UserResponse>> Authenticate([FromBody] AuthRequest request)
 {
    
@@ -211,7 +211,7 @@ public async Task<ActionResult<UserResponse>> Authenticate([FromBody] AuthReques
 
         
       
-        [HttpPost("sign-out")]
+        [HttpPost("signout")]
         public IActionResult Logout()
         {
            

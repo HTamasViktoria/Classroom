@@ -20,7 +20,7 @@ namespace Classroom.Controllers
             _userRepository = userRepository;
         }
 
-        [HttpGet("teachers")]
+        [HttpGet("allteachers")]
         public ActionResult<IEnumerable<Teacher>> GetAllTeachers()
         {
             try
@@ -41,7 +41,7 @@ namespace Classroom.Controllers
         
         
         
-        [HttpGet("parents")]
+        [HttpGet("allparents")]
         public ActionResult<IEnumerable<Parent>> GetAllParents()
         {
             try
@@ -163,7 +163,7 @@ namespace Classroom.Controllers
 
         
         
-        [HttpGet("getTeacherReceivers")]
+        [HttpGet("teacherreceivers")]
         public ActionResult<IEnumerable<IdentityUser>> GetTeacherReceivers()
         {
             try
@@ -186,7 +186,7 @@ namespace Classroom.Controllers
         
         
         
-        [HttpGet("getParentReceivers")]
+        [HttpGet("parentreceivers")]
         public ActionResult<IEnumerable<IdentityUser>> GetParentReceivers()
         {
             try
