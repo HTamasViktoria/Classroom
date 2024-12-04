@@ -115,10 +115,7 @@ namespace Classroom.Controllers
         [HttpPost("teachers")]
         public ActionResult<string> AddTeacher([FromBody] Teacher teacher)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { errors = ModelState });
-            }
+            
             try
             {
                 _userRepository.AddTeacher(teacher);
@@ -141,10 +138,7 @@ namespace Classroom.Controllers
         [HttpPost("parents")]
         public ActionResult<string> AddParent([FromBody] Parent parent)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { errors = ModelState });
-            }
+            
             try
             {
                 _userRepository.AddParent(parent);

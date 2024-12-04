@@ -31,11 +31,7 @@ namespace Classroom.Controllers
         [HttpPost("sign-up/student")]
         public async Task<ActionResult<RegistrationResponse>> Register(StudentRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
+           
             var result = await _authenticationService.RegisterAsync(
                 request.Email,
                 request.Username,
@@ -67,11 +63,7 @@ namespace Classroom.Controllers
         [HttpPost("sign-up/teacher")]
         public async Task<ActionResult<RegistrationResponse>> Register(TeacherRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
+            
             var result = await _authenticationService.RegisterAsync(
                 request.Email,
                 request.Username,
@@ -104,11 +96,7 @@ namespace Classroom.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<RegistrationResponse>> Register(ParentRequest request)
         { 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-                
-            }
+           
             var validationErrors = _userService.ValidateParentRegistration(request.StudentId, request.ChildName);
             if (validationErrors.Any())
             {
@@ -151,10 +139,7 @@ namespace Classroom.Controllers
        [HttpPost("sign-in")]
 public async Task<ActionResult<UserResponse>> Authenticate([FromBody] AuthRequest request)
 {
-    if (!ModelState.IsValid)
-    {
-        return BadRequest(new { message = "Invalid input data.", errors = ModelState });
-    }
+   
 
     var result = await _authenticationService.LoginAsync(request.Email, request.Password);
 

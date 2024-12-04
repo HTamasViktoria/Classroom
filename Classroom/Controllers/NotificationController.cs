@@ -240,10 +240,7 @@ public class NotificationController : ControllerBase
     [HttpPost("add")]
     public IActionResult Post([FromBody] NotificationRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { errors = ModelState });
-        }
+      
         try
         {
             _notificationService.PostToDb(request);

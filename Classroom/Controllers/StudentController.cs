@@ -72,10 +72,7 @@ public class StudentController : ControllerBase
     [HttpPost("add")]
     public ActionResult<string> Post([FromBody] StudentRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { errors = ModelState });
-        }
+       
         try
         {
             _studentRepository.Add(request);

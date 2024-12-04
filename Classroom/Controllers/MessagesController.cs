@@ -195,10 +195,7 @@ public class MessagesController : ControllerBase
     [HttpPost("add")]
     public IActionResult Post([FromBody] MessageRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { errors = ModelState });
-        }
+       
         try
         {
             _messagesRepository.AddMessage(request);

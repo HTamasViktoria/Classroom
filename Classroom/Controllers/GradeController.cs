@@ -72,10 +72,7 @@ public class GradeController : ControllerBase
     [HttpPost("add")]
     public ActionResult<string> Post([FromBody] GradeRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { errors = ModelState });
-        }
+      
         try
         {
             _gradeRepository.Add(request);
@@ -126,10 +123,7 @@ public class GradeController : ControllerBase
     [HttpPut("edit/{id}")]
     public ActionResult<string> Put([FromBody] GradeRequest request, int id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { errors = ModelState });
-        }
+      
         try
         {
             _gradeRepository.Edit(request, id);

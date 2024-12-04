@@ -70,10 +70,6 @@ namespace Classroom.Controllers
         [HttpPost("add")]
         public ActionResult<string> Post([FromBody] TeacherRequest request)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new { errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage) });
-            }
             try
             {
                 _teacherRepository.Add(request);

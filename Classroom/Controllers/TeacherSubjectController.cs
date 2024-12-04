@@ -52,10 +52,7 @@ public class TeacherSubjectController : ControllerBase
     [HttpPost("add")]
     public ActionResult<object> Post([FromBody] TeacherSubjectRequest request)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { errors = ModelState });
-        }
+        
         try
         {
             _teacherSubjectRepository.Add(request);
