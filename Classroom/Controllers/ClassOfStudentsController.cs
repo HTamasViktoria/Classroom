@@ -123,7 +123,7 @@ public class ClassOfStudentsController : ControllerBase
 
 
     
-    [HttpPost("add")]
+    [HttpPost]
     public ActionResult<string> Post([FromBody] ClassOfStudentsRequest request)
     {
         
