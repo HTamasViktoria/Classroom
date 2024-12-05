@@ -41,7 +41,7 @@ public class StudentController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, "An error occurred while retrieving students.");
-            return StatusCode(500, new { Message = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -49,14 +49,15 @@ public class StudentController : ControllerBase
     [HttpGet("{id}", Name = "GetStudentById")]
     public ActionResult<Student> GetStudentById(string id)
     {
-        StringValidationHelper.IsValidId(id);
+       
         try
         {
+            StringValidationHelper.IsValidId(id);
             var student = _studentRepository.GetStudentById(id);
             
             if (student == null)
             {
-                return NotFound(new { Message = $"Student with ID {id} not found." });
+                return StatusCode(400, $"Bad request:Student with the given id not found");
             }
             
             return Ok(student);
@@ -64,7 +65,7 @@ public class StudentController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, "An error occurred while retrieving student data.");
-            return StatusCode(500, new { Message = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -72,26 +73,26 @@ public class StudentController : ControllerBase
     [HttpPost]
     public ActionResult<string> Post([FromBody] StudentRequest request)
     {
-       
         try
         {
             _studentRepository.Add(request);
-            return Ok(new { message = "Successfully added new student", student = new { request.FirstName, request.FamilyName } });
+            
+            return CreatedAtAction(nameof(GetStudentById), new { id = request.Username }, "Successfully added new student");
         }
         catch (ArgumentException e)
         {
             _logger.LogError(e, e.Message);
-            return BadRequest(new { message = e.Message });
+            return StatusCode(400, $"Bad request: {e.Message}");
         }
         catch (DbUpdateException dbEx)
         {
             _logger.LogError(dbEx, "Database update error.");
-            return StatusCode(500, new { message = "An error occurred while saving to the database." });
+            return StatusCode(500, $"Internal server error: {dbEx.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 

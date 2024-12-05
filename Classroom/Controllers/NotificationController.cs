@@ -11,11 +11,11 @@ namespace Classroom.Controllers;
 
 public class NotificationController : ControllerBase
 {
-    private readonly ILogger<StudentController> _logger;
+    private readonly ILogger<NotificationController> _logger;
     private readonly INotificationRepository _notificationRepository;
     private readonly INotificationService _notificationService;
 
-    public NotificationController(ILogger<StudentController> logger, INotificationRepository notificationRepository, INotificationService notificationService)
+    public NotificationController(ILogger<NotificationController> logger, INotificationRepository notificationRepository, INotificationService notificationService)
     {
         _logger = logger;
         _notificationRepository = notificationRepository;
@@ -63,7 +63,7 @@ public class NotificationController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -84,12 +84,12 @@ public class NotificationController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, $"Nincs ilyen azonosító:{id}");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az értesítések lekérdezése közben.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -113,12 +113,12 @@ public class NotificationController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, $"Érvénytelen azonosító: {studentId} vagy {parentId}");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az értesítések lekérdezése közben.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -139,12 +139,12 @@ public class NotificationController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, $"Érvénytelen azonosító: {studentId} vagy {parentId}");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az értesítések számának lekérdezése közben.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -169,12 +169,12 @@ public class NotificationController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, $"Érvénytelen azonosító: {studentId} vagy {parentId}");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az új értesítések lekérdezése közben.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -199,12 +199,12 @@ public class NotificationController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, $"Érvénytelen azonosító:{id}");
-            return BadRequest(new { message = "A megadott tanár azonosító érvénytelen." });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az értesítések lekérdezése közben.");
-            return StatusCode(500, new { message = $"Belső szerverhiba: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -227,7 +227,7 @@ public class NotificationController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, $"Érvénytelen azonosító:{id}");
-            return BadRequest(new { message = "A megadott tanár azonosító érvénytelen." });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception e)
         {
@@ -244,17 +244,17 @@ public class NotificationController : ControllerBase
         try
         {
             _notificationService.PostToDb(request);
-            return Ok(new { message = "Értesítés sikeresen elmentve az adatbázisba." });
+            return CreatedAtAction(nameof(GetByTeacherId), new { id = request.TeacherId }, new { message = "Értesítés sikeresen elmentve az adatbázisba." });
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, "Hibás értesítési adat történt a 'Post' metódusban.");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az értesítés mentése során a 'Post' metódusban.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -266,17 +266,18 @@ public class NotificationController : ControllerBase
         try
         {
             _notificationRepository.SetToRead(id);
-            return Ok(new { message = "Értesítés sikeresen elmentve az adatbázisba." });
+            return StatusCode(200, $"Értesítés olvasottra állítva");
+            
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, "Hibás értesítési adat.");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az értesítés mentése során.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
     
@@ -287,17 +288,17 @@ public class NotificationController : ControllerBase
         try
         {
             _notificationRepository.SetToOfficiallyRead(id);
-            return Ok(new { message = "Az értesítés hivatalosan elolvasva lett." });
+            return StatusCode(200, $"Értesítés olvasottra állítva");
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, "Hibás értesítési adat: Az értesítés nem található.");
-            return BadRequest(new { message = "Az értesítés nem található. Kérem, ellenőrizze a megadott adatokat." });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az értesítés mentése során.");
-            return StatusCode(500, new { message = "Belső rendszerhiba történt. Kérem próbálja újra később." });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 

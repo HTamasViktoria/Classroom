@@ -20,30 +20,31 @@ public class TeacherSubjectController : ControllerBase
         _logger = logger;
         _teacherSubjectRepository = teacherSubjectRepository;
     }
-    
-    
+
+
     [HttpGet("byteacher/{teacherId}")]
     public ActionResult<IEnumerable<TeacherSubject>> GetSubjectsByTeacherId(string teacherId)
     {
-        StringValidationHelper.IsValidId(teacherId);
         try
         {
+            StringValidationHelper.IsValidId(teacherId);
             var subjects = _teacherSubjectRepository.GetSubjectsByTeacherId(teacherId);
             if (!subjects.Any())
             {
                 return Ok(new List<TeacherSubject>());
             }
+
             return Ok(subjects);
         }
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return BadRequest(new { message = e.Message });
+            return StatusCode(400, $"Bad request:{e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, "An error occurred while retrieving subjects for the teacher.");
-            return StatusCode(500, new { message = "An error occurred while retrieving the subjects. Please try again later." });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -52,25 +53,25 @@ public class TeacherSubjectController : ControllerBase
     [HttpPost]
     public ActionResult<object> Post([FromBody] TeacherSubjectRequest request)
     {
-        
         try
         {
             _teacherSubjectRepository.Add(request);
-            return CreatedAtAction("GetSubjectsByTeacherId", new { teacherId = request.TeacherId }, new { Message = "Successfully added new teacherSubject" });
+      
+            return CreatedAtAction(nameof(GetSubjectsByTeacherId), new { teacherId = request.TeacherId }, "Successfully added new teacherSubject" );
+
         }
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return BadRequest(new { message = e.Message });
+            return StatusCode(400, $"Bad request: {e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { Error = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
-    
     
     [HttpGet("studentsof/{teacherSubjectId}")]
     public async Task<IActionResult> GetStudentsByTeacherSubjectId(int teacherSubjectId)
@@ -81,18 +82,19 @@ public class TeacherSubjectController : ControllerBase
 
             if (classOfStudents == null)
             {
-                return NotFound(new { message = $"No ClassOfStudents found for TeacherSubject ID {teacherSubjectId}." });
+                return StatusCode(400, $"Bad request: No ClassOfStudents found for TeacherSubject ID {teacherSubjectId}.");
             }
-            
+
             var students = classOfStudents.Students;
             return Ok(students);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving students for TeacherSubjectId.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
 
 
 

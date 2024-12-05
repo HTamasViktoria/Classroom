@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Classroom.Service.Repositories;
 using Classroom.Model.DataModels;
+using Classroom.Model.ResponseModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Classroom.Service;
@@ -65,16 +66,11 @@ namespace Classroom.Controllers
         [HttpGet("teachers/{teacherId}")]
         public ActionResult<Teacher> GetTeacherById(string teacherId)
         {
-            StringValidationHelper.IsValidId(teacherId);
+            
             try
             {
+                StringValidationHelper.IsValidId(teacherId);
                 var teacher = _userRepository.GetTeacherById(teacherId);
-        
-                if (teacher == null)
-                {
-                    return NotFound(new { message = $"Teacher with ID {teacherId} not found." });
-                }
-                
                 return Ok(teacher);
             }
             catch (ArgumentException ex)
@@ -89,14 +85,13 @@ namespace Classroom.Controllers
             }
         }
 
-        
-     
+
         [HttpGet("parents/{parentId}")]
         public ActionResult<Parent> GetParentById(string parentId)
         {
-            StringValidationHelper.IsValidId(parentId);
             try
             {
+                StringValidationHelper.IsValidId(parentId);
                 var parent = _userRepository.GetParentById(parentId);
                 return Ok(parent);
             }
@@ -111,6 +106,8 @@ namespace Classroom.Controllers
                 return StatusCode(500, new { message = $"Internal server error: {e.Message}" });
             }
         }
+        
+        
         
         [HttpPost("teachers")]
         public ActionResult<string> AddTeacher([FromBody] Teacher teacher)
@@ -132,6 +129,9 @@ namespace Classroom.Controllers
                 return StatusCode(500, new { message = $"Internal server error: {e.Message}" });
             }
         }
+        
+        
+        
         
         
 
@@ -175,7 +175,7 @@ namespace Classroom.Controllers
                     return Ok(users);
                 }
     
-                return Ok(new List<IdentityUser>());
+                return Ok(new List<ReceiverResponse>());
             }
             catch (Exception ex)
             {
@@ -198,7 +198,7 @@ namespace Classroom.Controllers
                     return Ok(users);
                 }
     
-                return Ok(new List<IdentityUser>());
+                return Ok(new List<ReceiverResponse>());
             }
             catch (Exception ex)
             {
