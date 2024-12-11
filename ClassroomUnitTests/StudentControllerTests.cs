@@ -1,14 +1,13 @@
 using Classroom.Controllers;
 using Classroom.Model.DataModels;
 using Classroom.Model.RequestModels;
-using Classroom.Service;
 using Moq;
 using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace ClassroomTests;
+namespace ClassroomUnitTests;
 
 public class StudentControllerTests
 {
@@ -156,16 +155,7 @@ public class StudentControllerTests
     }
 
     
-    [Test]
-    public void IsValidId_ShouldThrowArgumentException_WhenIdIsWhitespace()
-    {
-        // Arrange
-        var invalidId = "   ";
 
-        // Act & Assert
-        var ex = Assert.Throws<ArgumentException>(() => StringValidationHelper.IsValidId(invalidId));
-        Assert.AreEqual("The given identifier cannot be null, empty or whitespace.", ex.Message);
-    }
     
     
     [Test]

@@ -2,14 +2,13 @@ using Classroom.Controllers;
 using Classroom.Model.DataModels;
 using Classroom.Model.ResponseModels;
 using Classroom.Service.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace ClassroomTests
+namespace ClassroomUnitTests
 {
     public class UserControllerTests
     {

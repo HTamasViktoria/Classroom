@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Newtonsoft.Json;
 
-namespace ClassroomTests;
+
+namespace ClassroomUnitTests;
 
 public class TeacherControllerTests
 {

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace ClassroomTests;
+namespace ClassroomUnitTests;
 
 public class NotificationControllerTests
 {
@@ -1024,12 +1024,4 @@ public class NotificationControllerTests
         Assert.AreEqual(500, errorResult.StatusCode);
         Assert.AreEqual("Internal server error: Unexpected error", errorResult.Value);
     }
-
-    
-    
-    
-    
-    
-    
-
 }

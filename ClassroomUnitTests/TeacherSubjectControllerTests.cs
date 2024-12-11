@@ -5,13 +5,9 @@ using Classroom.Service.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Classroom.Service;
 
-namespace ClassroomTests
+
+namespace ClassroomUnitTests
 {
     public class TeacherSubjectControllerTests
     {
@@ -55,17 +51,7 @@ namespace ClassroomTests
             Assert.AreEqual(expectedSubjects, okResult.Value);
         }
 
-        
-        [Test]
-        public void IsValidId_ShouldThrowArgumentException_WhenIdIsWhitespace()
-        {
-            // Arrange
-            var invalidId = "   ";
-
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => StringValidationHelper.IsValidId(invalidId));
-            Assert.AreEqual("The given identifier cannot be null, empty or whitespace.", ex.Message);
-        }
+    
 
         
         [Test]

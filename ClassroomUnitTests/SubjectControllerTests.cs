@@ -2,10 +2,9 @@ using Classroom.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NUnit.Framework;
-using System.Collections.Generic;
 
-namespace ClassroomTests
+
+namespace ClassroomUnitTests
 {
     public class SubjectControllerTests
     {
