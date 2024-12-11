@@ -64,12 +64,12 @@ public class MessagesRepository : IMessagesRepository
     public bool DeleteOnReceiverSide(int messageId)
     {
         var message = _dbContext.Messages.FirstOrDefault(m => m.Id == messageId);
-    
+
         if (message == null)
         {
             throw new ArgumentException($"Üzenet nem található a következő ID-val: {messageId}");
         }
-    
+
         message.DeletedByReceiver = true;
         _dbContext.SaveChanges();
         return true;

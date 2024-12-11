@@ -22,14 +22,14 @@ public class ParentController : ControllerBase
     [HttpGet("{id}", Name = "GetByParentId")]
     public ActionResult<Parent> GetByParentId(string id)
     {
-        StringValidationHelper.IsValidId(id);
+        
         try
         {
             var parent = _parentRepository.GetParentById(id);
 
             if (parent == null)
             {
-                return NotFound(new { message = "No parent found with the given id." });
+                return StatusCode(400, $"Bad request: No parent found with the given id");
             }
         
             return Ok(parent);
@@ -37,15 +37,13 @@ public class ParentController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
  
-    
     [HttpGet("bystudent/{id}", Name = "GetByParentByStudentId")]
     public ActionResult<IEnumerable<Parent>> GetParentsByStudentId(string id)
     {
-        StringValidationHelper.IsValidId(id);
         try
         {
             var parents = _parentRepository.GetParentsByStudentId(id);
@@ -57,12 +55,18 @@ public class ParentController : ControllerBase
 
             return Ok(parents);
         }
+        catch (ArgumentException e)
+        {
+            _logger.LogWarning(e, e.Message);
+            return StatusCode(400, $"Bad request: {e.Message}");
+        }
         catch (Exception e)
         {
             _logger.LogError(e, "An error occurred while retrieving parents.");
-            return StatusCode(500, new { Message = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+
 
 
         

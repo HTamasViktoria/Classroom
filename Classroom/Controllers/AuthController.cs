@@ -92,7 +92,7 @@ namespace Classroom.Controllers
         
         
 
-        [HttpPost("sign-p/parent")]
+        [HttpPost("signup/parent")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<RegistrationResponse>> Register(ParentRequest request)
         { 

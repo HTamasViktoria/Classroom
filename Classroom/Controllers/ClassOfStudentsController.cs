@@ -22,14 +22,16 @@ public class ClassOfStudentsController : ControllerBase
         _classOfStudentsRepository = classOfStudentsRepository;
     }
 
+    
+    
     [HttpGet(Name = "classes")]
     public ActionResult<IEnumerable<ClassOfStudents>> GetAll()
     {
         try
         {
             var classes = _classOfStudentsRepository.GetAll();
-        
-            if ( !classes.Any())
+
+            if (!classes.Any())
             {
                 return Ok(new List<ClassOfStudents>());
             }
@@ -39,7 +41,7 @@ public class ClassOfStudentsController : ControllerBase
         catch (Exception e)
         {
             _logger.LogError(e, "An error occurred while fetching classes.");
-            return StatusCode(500, new { message = "An error occurred, please try again later." });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -83,7 +85,7 @@ public class ClassOfStudentsController : ControllerBase
         catch (KeyNotFoundException knfEx)
         {
             _logger.LogError(knfEx, knfEx.Message);
-            return NotFound(knfEx.Message);
+            return StatusCode(400, $"Bad request: {knfEx.Message}");
         }
         catch (Exception e)
         {
@@ -97,7 +99,6 @@ public class ClassOfStudentsController : ControllerBase
     [HttpGet("bysubject/{subject}")]
     public ActionResult<IEnumerable<ClassOfStudents>> GetClassesBySubject(string subject)
     {
-        StringValidationHelper.IsValidId(subject);
         try
         {
             var classes = _classOfStudentsRepository.GetClassesBySubject(subject);
@@ -112,7 +113,7 @@ public class ClassOfStudentsController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(ex.Message);
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception e)
         {
@@ -123,57 +124,57 @@ public class ClassOfStudentsController : ControllerBase
 
 
     
-    [HttpPost("add")]
-    public ActionResult<string> Post([FromBody] ClassOfStudentsRequest request)
+    [HttpPost]
+    public IActionResult Post([FromBody] ClassOfStudentsRequest request)
     {
         
         try
         {
             _classOfStudentsRepository.Add(request);
-            return Ok(new { message = "Successfully added new class" });
+            return CreatedAtAction(nameof(Post), new { id = request.Id }, new { message = "Osztály sikeresen elmentve az adatbázisba." });
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (InvalidOperationException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
 
     
     [HttpPost("addStudent")]
-    public ActionResult<string> Post([FromBody] AddingStudentToClassRequest request)
+    public IActionResult Post([FromBody] AddingStudentToClassRequest request)
     {
         
         try
         {
             _classOfStudentsRepository.AddStudent(request);
-            return Ok(new { message = "Successfully added new student" });
+            return StatusCode(200, "Student added to class");
         }
         catch (InvalidOperationException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (KeyNotFoundException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return NotFound(new { error = ex.Message });
+            return StatusCode(404, $"Not found: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal Server error: {ex.Message}");
         }
     }
 

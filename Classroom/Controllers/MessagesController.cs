@@ -36,7 +36,7 @@ public class MessagesController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenetek lekérésekor.");
-            return StatusCode(500, new { message = "Internal server error: " + ex.Message });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -44,7 +44,6 @@ public class MessagesController : ControllerBase
     [HttpGet("newmessagesnum/{id}", Name = "GetNewMessagesNum")]
     public ActionResult<int> GetNewMessagesNum(string id)
     {
-        StringValidationHelper.IsValidId(id);
         try
         {
             var newMessagesNum = _messagesRepository.GetNewMessagesNum(id);
@@ -53,7 +52,7 @@ public class MessagesController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return NotFound(new { message = ex.Message });
+            return StatusCode(404, $"ˇNot found: {ex.Message}");
         }
         catch (Exception e)
         {
@@ -74,12 +73,12 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return NotFound(new { message = e.Message });
+            return StatusCode(404, $"ˇNot found: {e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = "Internal server error: " + e.Message });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -88,7 +87,6 @@ public class MessagesController : ControllerBase
     public ActionResult<IEnumerable<Message>> GetIncomings(string id)
     {
         
-        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetIncomings(id);
@@ -101,12 +99,12 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return NotFound(new { message = e.Message });
+            return StatusCode(404, $"ˇNot found: {e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = "Internal server error: " + e.Message });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -114,8 +112,6 @@ public class MessagesController : ControllerBase
     [HttpGet("deleteds/{id}", Name = "GetDeleteds")]
     public ActionResult<IEnumerable<Message>> GetDeleteds(string id)
     {
-        
-        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetDeleteds(id);
@@ -128,12 +124,12 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return NotFound(new { message = e.Message });
+            return StatusCode(404, $"ˇNot found: {e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = "Internal server error: " + e.Message });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -142,7 +138,6 @@ public class MessagesController : ControllerBase
     public ActionResult<IEnumerable<Message>> GetSents(string id)
     {
         
-        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetSents(id);
@@ -155,12 +150,12 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return NotFound(new { message = e.Message });
+            return StatusCode(404, $"ˇNot found: {e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = "Internal server error: " + e.Message });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -169,7 +164,6 @@ public class MessagesController : ControllerBase
     public ActionResult<IEnumerable<Message>> GetOutgoings(string id)
     {
         
-        StringValidationHelper.IsValidId(id);
         try
         {
             var messages = _messagesRepository.GetOutgoings(id);
@@ -182,12 +176,12 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return NotFound(new { message = e.Message });
+            return StatusCode(404, $"ˇNot found: {e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { message = "Internal server error: " + e.Message }); // 500-as válasz
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -199,17 +193,17 @@ public class MessagesController : ControllerBase
         try
         {
             _messagesRepository.AddMessage(request);
-            return Ok(new { message = "Üzenet sikeresen elmentve az adatbázisba." });
+            return CreatedAtAction(nameof(Post), new { id = request.Id }, new { message = "Üzenet sikeresen elmentve az adatbázisba." });
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, "Hibás üzenet-adat történt az 'Add' metódusban.");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request:{ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenet mentése során a 'Add' metódusban.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -221,48 +215,43 @@ public class MessagesController : ControllerBase
         {
             var result = _messagesRepository.DeleteOnReceiverSide(messageId);
 
-            if (result)
-            {
-                return Ok(new { message = "Üzenet sikeresen törölve a fogadó fél oldalán." });
-            }
-            else
-            {
-                return BadRequest(new { message = "Hiba történt az üzenet törlésekor, vagy az üzenet nem található." });
-            }
+                return StatusCode(200,"Üzenet sikeresen törölve a fogadó fél oldalán.");
         }
         catch (ArgumentException ex)
         {
-            _logger.LogError(ex, "Nem található üzenet ilyen id-val.");
-            return BadRequest(new { message = ex.Message });
+            _logger.LogError(ex, "Nem található üzenet ilyen ID-val.");
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenet törlésénél.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
+    
+    
+    
+    
 
     [HttpGet("restore/{messageId}/{userId}")]
     public IActionResult Restore(int messageId, string userId)
     {
         
-        StringValidationHelper.IsValidId(userId);
         try
         {
             var result = _messagesRepository.Restore(messageId, userId);
 
-            return Ok(new { message = "Üzenet sikeresen visszaállítva." });
+            return StatusCode(200,"Üzenet sikeresen visszaállítva.");
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, "Nem megfelelő userId vagy messageId");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenet visszaállításakor.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -274,17 +263,17 @@ public class MessagesController : ControllerBase
         {
             var result = _messagesRepository.SetToUnread(messageId);
 
-            return Ok(new { message = "Üzenet sikeresen olvasatlanná állítva." });
+            return StatusCode(200,"Üzenet sikeresen olvasatlanra állítva.");
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenet olvasatlanná állításakor.");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenet olvasatlanná állításakor.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -296,17 +285,17 @@ public class MessagesController : ControllerBase
         {
             var result = _messagesRepository.SetToRead(messageId);
 
-            return Ok(new { message = "Üzenet sikeresen olvasottá állítva." });
+            return StatusCode(200,"Üzenet sikeresen olvasottra állítva.");
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenet olvasottá állításakor.");
-            return BadRequest(new { message = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Hiba történt az üzenet olvasottá állításakor.");
-            return StatusCode(500, new { message = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 }
