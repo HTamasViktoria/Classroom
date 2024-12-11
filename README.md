@@ -49,7 +49,7 @@ Switching between different schools or academic years is not supported, as these
 
 Here is a screenshot of the application in action:
 
-![Screenshot](path/to/your/screenshot.png)
+![Screenshot](screenshot_1.jpeg)
 
 
 ## Roadmap
