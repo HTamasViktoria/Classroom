@@ -52,7 +52,7 @@ public class StudentController : ControllerBase
        
         try
         {
-            StringValidationHelper.IsValidId(id);
+         
             var student = _studentRepository.GetStudentById(id);
             
             if (student == null)

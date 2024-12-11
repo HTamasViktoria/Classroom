@@ -69,7 +69,6 @@ namespace Classroom.Controllers
             
             try
             {
-                StringValidationHelper.IsValidId(teacherId);
                 var teacher = _userRepository.GetTeacherById(teacherId);
                 return Ok(teacher);
             }
@@ -91,7 +90,6 @@ namespace Classroom.Controllers
         {
             try
             {
-                StringValidationHelper.IsValidId(parentId);
                 var parent = _userRepository.GetParentById(parentId);
                 return Ok(parent);
             }

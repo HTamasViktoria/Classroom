@@ -27,7 +27,6 @@ public class TeacherSubjectController : ControllerBase
     {
         try
         {
-            StringValidationHelper.IsValidId(teacherId);
             var subjects = _teacherSubjectRepository.GetSubjectsByTeacherId(teacherId);
             if (!subjects.Any())
             {

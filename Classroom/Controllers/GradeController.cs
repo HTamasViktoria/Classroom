@@ -43,6 +43,8 @@ public class GradeController : ControllerBase
         }
     }
     
+    
+    
     [HttpGet("gradevalues")]
     public ActionResult<IEnumerable<string>> GetAllValues()
     {
@@ -50,12 +52,13 @@ public class GradeController : ControllerBase
         {
             var gradeValues = Enum.GetValues(typeof(GradeValues))
                 .Cast<GradeValues>()
+                .OrderBy(gv => gv)  // Ezt a sort adjuk hozzá, hogy biztosítva legyen a sorrend.
                 .Select(gv => $"{gv.ToString()} = {(int)gv}")
                 .ToList();
 
             if (!gradeValues.Any())
             {
-                return NotFound(new { error = "No grade values found." });
+                return StatusCode(404, "No gradevalues found");
             }
 
             return Ok(gradeValues);
@@ -66,36 +69,37 @@ public class GradeController : ControllerBase
             return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+
     
    
 
     [HttpPost]
-    public ActionResult<string> Post([FromBody] GradeRequest request)
+    public IActionResult Post([FromBody] GradeRequest request)
     {
-      
         try
         {
             _gradeRepository.Add(request);
-
-            return Ok(new { message = "Successfully added new grade" });
+            return CreatedAtAction(nameof(GetAllValues), new { }, new { message = "Értesítés sikeresen elmentve az adatbázisba." });
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
+
+    
+    
+    
 
     [HttpGet("bysubject/{subject}/bystudent/{studentId}")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesBySubjectByStudent(string subject, string studentId)
     {
-        StringValidationHelper.IsValidId(studentId);
-        StringValidationHelper.IsValidId(subject);
         try
         {
             var grades = await _gradeRepository.GetGradesBySubjectByStudent(subject, studentId);
@@ -110,60 +114,60 @@ public class GradeController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { error = $"Internal server error: {ex.Message}" });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
-
     [HttpPut("{id}")]
-    public ActionResult<string> Put([FromBody] GradeRequest request, int id)
+    public IActionResult Put([FromBody] GradeRequest request, int id)
     {
-      
         try
         {
             _gradeRepository.Edit(request, id);
+        
             return Ok(new { message = "Successfully updated grade" });
         }
         catch (KeyNotFoundException knfEx)
         {
             _logger.LogError(knfEx, knfEx.Message);
-            return NotFound(knfEx.Message);
+            return StatusCode(404, $"Grade with Id {id} not found.");
         }
         catch (ArgumentException argEx)
         {
             _logger.LogError(argEx, argEx.Message);
-            return BadRequest(new { error = argEx.Message });
+            return StatusCode(400, $"Bad request: {argEx.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
+
     
     [HttpDelete("{id}")]
-    public ActionResult<string> Delete(int id)
+    public IActionResult Delete(int id)
     {
         try
         {
             _gradeRepository.Delete(id);
-            return Ok(new { message = "Successfully deleted grade" });
+            return StatusCode(200,"Osztályzat sikeresen törölve.");
         }
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return NotFound(new { error = ex.Message });
+            return StatusCode(404, $"Grade with Id {id} not found.");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -173,7 +177,6 @@ public class GradeController : ControllerBase
     [HttpGet("{id}", Name = "GetGradesByStudentId")]
     public ActionResult<IEnumerable<Grade>> GetGradesByStudentId(string id)
     {
-        StringValidationHelper.IsValidId(id);
         try
         {
             var grades = _gradeRepository.GetByStudentId(id);
@@ -188,12 +191,12 @@ public class GradeController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -203,7 +206,7 @@ public class GradeController : ControllerBase
     [HttpGet("teacherslast/{id}", Name = "GetTeachersLastGrade")]
     public async Task<ActionResult<LatestGradeResponse>> GetTeachersLastGrade(string id)
     {
-        StringValidationHelper.IsValidId(id);
+       
         try
         {
             var grade = await _gradeRepository.GetTeachersLastGradeAsync(id);
@@ -218,12 +221,12 @@ public class GradeController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return StatusCode(400, $"Bad request: {ex.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = $"Internal server error: {e.Message}" });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -233,31 +236,32 @@ public class GradeController : ControllerBase
     [HttpGet("newgradesnum/{id}", Name = "GetNewGradesNumber")]
     public ActionResult<int> GetNewGradesNumber(string id)
     {
-        StringValidationHelper.IsValidId(id);
         try
         {
             var newGradesNumber = _gradeRepository.GetNewGradesNumber(id);
+
             return Ok(newGradesNumber);
         }
         catch (ArgumentException ex)
         {
-            _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            _logger.LogError(ex, "Invalid student ID: {0}", ex.Message);
+            return BadRequest($"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { error = "Hiba történt a kérés feldolgozása során." });
+            _logger.LogError(ex, "An error occurred while fetching new grades: {0}", ex.Message);
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
+
+    
+    
     
     
     [HttpGet("newgrades/{id}", Name = "GetNewGradesByStudentId")]
     public ActionResult<IEnumerable<Grade>> GetNewGradesByStudentId(string id)
     {
-        
-        StringValidationHelper.IsValidId(id);
         try
         {
             var newGrades = _gradeRepository.GetNewGradesByStudentId(id);
@@ -270,12 +274,12 @@ public class GradeController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return BadRequest($"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { error = "Hiba történt a kérés feldolgozása során." });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
     
@@ -284,8 +288,6 @@ public class GradeController : ControllerBase
     [HttpGet("byclass/{classId}/bysubject/{subject}")]
     public async Task<ActionResult<IEnumerable<Grade>>> GetGradesByClassBySubject(int classId, string subject)
     {
-        
-        StringValidationHelper.IsValidId(subject);
         try
         {
             var grades = await _gradeRepository.GetGradesByClassBySubject(classId, subject);
@@ -300,12 +302,12 @@ public class GradeController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return BadRequest($"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { error = "Internal server error: " + ex.Message });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -328,12 +330,12 @@ public class GradeController : ControllerBase
         catch (ArgumentException ex)
         {
             _logger.LogError(ex, ex.Message);
-            return BadRequest(new { error = ex.Message });
+            return BadRequest($"Bad request: {ex.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, e.Message);
-            return StatusCode(500, new { error = "Internal server error: " + e.Message });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 
@@ -342,7 +344,6 @@ public class GradeController : ControllerBase
     [HttpGet("class-averages/bystudent/{studentId}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesByStudentId(string studentId)
     {
-        StringValidationHelper.IsValidId(studentId);
         try
         {
             var averages = await _gradeRepository.GetClassAveragesByStudentId(studentId);
@@ -350,12 +351,12 @@ public class GradeController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest($"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { message = "An error occurred while processing the request." });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -364,8 +365,6 @@ public class GradeController : ControllerBase
     [HttpGet("class-averages/bysubject/{subject}")]
     public async Task<ActionResult<Dictionary<string, double>>> GetClassAveragesBySubject(string subject)
     {
-        
-        StringValidationHelper.IsValidId(subject);
         try
         {
             var averages = await _gradeRepository.GetClassAveragesBySubject(subject);
@@ -373,12 +372,12 @@ public class GradeController : ControllerBase
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { message = ex.Message });
+            return BadRequest($"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { message = "An error occurred while processing the request." });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 
@@ -389,21 +388,21 @@ public class GradeController : ControllerBase
         try
         {
             _gradeRepository.SetToOfficiallyRead(id);
-            return Ok(new { message = "Grade marked as officially read." });
+            return StatusCode(200, "Grade marked as officially read.");
         }
         catch (ArgumentException ex)
         {
             if (ex.Message.Contains("not found"))
             {
-                return NotFound(new { message = ex.Message });
+                return StatusCode(404, $"{ex.Message}");
             }
             
-            return BadRequest(new { message = ex.Message });
+            return BadRequest($"Bad request: {ex.Message}");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, ex.Message);
-            return StatusCode(500, new { message = "An error occurred while processing the request." });
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
 

@@ -25,8 +25,6 @@ public class ParentController : ControllerBase
         
         try
         {
-            
-            StringValidationHelper.IsValidId(id);
             var parent = _parentRepository.GetParentById(id);
 
             if (parent == null)
@@ -46,7 +44,6 @@ public class ParentController : ControllerBase
     [HttpGet("bystudent/{id}", Name = "GetByParentByStudentId")]
     public ActionResult<IEnumerable<Parent>> GetParentsByStudentId(string id)
     {
-        StringValidationHelper.IsValidId(id);
         try
         {
             var parents = _parentRepository.GetParentsByStudentId(id);

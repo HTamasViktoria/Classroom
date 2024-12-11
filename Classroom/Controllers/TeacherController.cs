@@ -28,7 +28,6 @@ namespace Classroom.Controllers
         {
             try
             {
-                StringValidationHelper.IsValidId(id);
                 var teacher = _teacherRepository.GetTeacherById(id);
 
                 if (teacher == null)
