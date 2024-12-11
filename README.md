@@ -36,15 +36,21 @@ Switching between different schools or academic years is not supported, as these
 ### Parent Capabilities
 - View various statistics about grades.
 - View new notifications and messages.
-
+- 
 ## Built With
-- **Frontend**: React.js
-- **Backend**: C#, ASP.NET Core Web API
-- **Data Management**: Entity Framework Core, Microsoft SQL Server (MSSQL)
-- **Authentication**: JWT (JSON Web Tokens)
+* [![React][React.js]][React-url]
+* [![Backend][ASP.NET-Core]][ASP.NET-Core-url]
+* [![Entity Framework][EF-Core]][EF-Core-url]
+* [![SQL Server][MSSQL]][MSSQL-url]
+* [![JWT][JWT]][JWT-url]
+
 
 ## Usage
-Coming soon.
+
+Here is a screenshot of the application in action:
+
+![Screenshot](path/to/your/screenshot.png)
+
 
 ## Roadmap
 Coming soon.
@@ -57,5 +63,19 @@ For any inquiries, please contact [Your Name] at [your-email@example.com].
 
 
 
+[React.js]: https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black
+[React-url]: https://reactjs.org/
+
+[ASP.NET-Core]: https://img.shields.io/badge/ASP.NET_Core-5C2D91?logo=dotnet&logoColor=white
+[ASP.NET-Core-url]: https://dotnet.microsoft.com/en-us/apps/aspnet
+
+[EF-Core]: https://img.shields.io/badge/Entity_Framework_Core-9B85A8?logo=ef&logoColor=white
+[EF-Core-url]: https://docs.microsoft.com/en-us/ef/core/
+
+[MSSQL]: https://img.shields.io/badge/Microsoft_SQL_Server-CC2927?logo=microsoft-sql-server&logoColor=white
+[MSSQL-url]: https://www.microsoft.com/en-us/sql-server
+
+[JWT]: https://img.shields.io/badge/JSON_Web_Tokens-000000?logo=json-web-tokens&logoColor=white
+[JWT-url]: https://jwt.io/
 
 
