@@ -1,6 +1,6 @@
 # Classroom Project
 
-The goal of the Classroom project is to create a Kréta-like application. Primarily, this project was intended for practicing ASP.NET MVC projects, Entity Framework, and Identity. As a regular Kréta user, I found the task intriguing.
+The goal of the Classroom project is to create a Kréta-like application. Primarily, this project was intended for practicing ASP.NET MVC projects, Entity Framework, and Identity. As a regular Kréta user, I found the task intriguing.(Kréta is a popular school management system used in many educational institutions, and this project aims to replicate some of its core functionalities.)
 
 ## Table of Contents
 - [About The Project](#about-the-project)
@@ -11,7 +11,6 @@ The goal of the Classroom project is to create a Kréta-like application. Primar
 - [Built With](#built-with)
 - [Usage](#usage)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
 - [Contact](#contact)
 
 ## About the Project
@@ -82,7 +81,8 @@ This is the messages page of a teacher:
 
 
 
-
+## Contact
+For any inquiries, please contact [Viktória Hajduné Tamás] at [tmsvktr@gmail.com].
 
 
 [React.js]: https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black
