@@ -47,19 +47,41 @@ Switching between different schools or academic years is not supported, as these
 
 ## Usage
 
-Here is a screenshot of the application in action:
+Here are the screenshots of the application in action:
+This is the main page of the parent, after login:
+![Screenshot](pics/screenshot_1.jpeg)
 
-![Screenshot](screenshot_1.jpeg)
+
+This is the grades-page of the parent:
+![Screenshot](pics/screenshot_2.jpeg)
+
+
+
+
+This is the notifications-page of a parent:
+![Screenshot](pics/screenshot_5.jpeg)
+
+
+
+This is the messages page of a parent, if they are sending a new message:
+![Screenshot](pics/screenshot_4.jpeg)
+
+
+
+
+This is the messages page of a teacher:
+![Screenshot](pics/screenshot_3.jpeg)
+
+
 
 
 ## Roadmap
-Coming soon.
+- Implement grade access for admins.
+- Create an interface where teachers can record the material covered in each lesson, and where parents can access this information.
+- Improve the user interface for better user experience.
 
-## Contributing
-Feel free to fork this project and create pull requests. Contributions are welcome!
 
-## Contact
-For any inquiries, please contact [Your Name] at [your-email@example.com].
+
 
 
 
