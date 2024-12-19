@@ -27,112 +27,132 @@ namespace Classroom.Controllers
         
         
         
-        
         [HttpPost("signup/student")]
         public async Task<ActionResult<RegistrationResponse>> Register(StudentRequest request)
         {
-           
-            var result = await _authenticationService.RegisterAsync(
-                request.Email,
-                request.Username,
-                request.Password,
-                role: "Student",
-                request.FirstName,
-                request.FamilyName,
-                DateTime.Parse(request.BirthDate),
-                request.BirthPlace,
-                request.StudentNo,
-                childName: null,
-                studentId: null
-            );
-
-            if (!result.Success)
+            try
             {
-   
-                var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
-        
-                return _authenticationService.HandleErrors(errorMessages);
-            }
+                var result = await _authenticationService.RegisterAsync(
+                    request.Email,
+                    request.Username,
+                    request.Password,
+                    role: "Student",
+                    request.FirstName,
+                    request.FamilyName,
+                    DateTime.Parse(request.BirthDate),
+                    request.BirthPlace,
+                    request.StudentNo,
+                    childName: null,
+                    studentId: null
+                );
 
-            var response = new RegistrationResponse(result.Email, result.UserName);
-            return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
+                if (!result.Success)
+                {
+                    var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
+                    return _authenticationService.HandleErrors(errorMessages);
+                }
+
+                var response = new RegistrationResponse(result.Email, result.UserName);
+                return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Invalid input: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
+
         
         
         
         [HttpPost("signup/teacher")]
         public async Task<ActionResult<RegistrationResponse>> Register(TeacherRequest request)
         {
-            
-            var result = await _authenticationService.RegisterAsync(
-                request.Email,
-                request.Username,
-                request.Password,
-                role:"Teacher",
-                request.FirstName,
-                request.FamilyName,
-                null,
-                null,
-                null,
-                childName: null,
-                studentId:null
-            );
-
-            if (!result.Success)
+            try
             {
-   
-                var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
-        
-                return _authenticationService.HandleErrors(errorMessages);
-            }
-            var response = new RegistrationResponse(result.Email, result.UserName);
+                var result = await _authenticationService.RegisterAsync(
+                    request.Email,
+                    request.Username,
+                    request.Password,
+                    role: "Teacher",
+                    request.FirstName,
+                    request.FamilyName,
+                    null,
+                    null,
+                    null,
+                    childName: null,
+                    studentId: null
+                );
 
-            return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
+                if (!result.Success)
+                {
+                    var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
+
+                    
+                    return BadRequest($"Bad request: {errorMessages}");
+                }
+
+                var response = new RegistrationResponse(result.Email, result.UserName);
+                return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Internal server error: {e.Message}");
+            }
         }
+
         
         
 
         [HttpPost("signup/parent")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<RegistrationResponse>> Register(ParentRequest request)
-        { 
-           
-            var validationErrors = _userService.ValidateParentRegistration(request.StudentId, request.ChildName);
-            if (validationErrors.Any())
+        {
+            try
             {
-            
-                foreach (var error in validationErrors)
+                var validationErrors = _userService.ValidateParentRegistration(request.StudentId, request.ChildName);
+                if (validationErrors.Any())
                 {
-                    ModelState.AddModelError("ValidationError", error);
+                    foreach (var error in validationErrors)
+                    {
+                        ModelState.AddModelError("ValidationError", error);
+                    }
+                    return BadRequest(ModelState);
                 }
-                return BadRequest(ModelState);
+
+                var result = await _authenticationService.RegisterAsync(
+                    request.Email,
+                    request.Username,
+                    request.Password,
+                    role: "Parent",
+                    firstName: request.FirstName,
+                    familyName: request.FamilyName,
+                    birthDate: null,
+                    birthPlace: null,
+                    studentNo: null,
+                    childName: request.ChildName,
+                    studentId: request.StudentId
+                );
+
+                if (!result.Success)
+                {
+                    var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
+                    return BadRequest($"Bad request: {string.Join(", ", errorMessages.Values)}");
+                }
+
+                var response = new RegistrationResponse(result.Email, result.UserName);
+                return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
             }
-        
-
-            var result = await _authenticationService.RegisterAsync(
-                request.Email,
-                request.Username,
-                request.Password,
-                role: "Parent",
-                firstName: request.FirstName,
-                familyName: request.FamilyName,
-                birthDate: null,
-                birthPlace: null,
-                studentNo: null,
-                childName: request.ChildName,
-                studentId: request.StudentId
-            );
-
-            if (!result.Success)
+            catch (ArgumentException e)
             {
-   
-                var errorMessages = result.ErrorMessages.ToDictionary(e => e.Key, e => e.Value);
-        
-                return _authenticationService.HandleErrors(errorMessages);
+                return BadRequest($"Bad request: {e.Message}");
             }
-            var response = new RegistrationResponse(result.Email, result.UserName);
-
-            return CreatedAtAction(nameof(Register), new { email = result.Email }, response);
+            catch (Exception e)
+            {
+                return StatusCode(500, $"Internal server error: {e.Message}");
+            }
         }
 
   
