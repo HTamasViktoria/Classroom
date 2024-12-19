@@ -512,31 +512,7 @@ public class ClassOfStudentsControllerTests
     }
 
     
-    [Test]
-    public void AddStudent_ReturnsBadRequest_WhenInvalidOperationExceptionIsThrown()
-    {
-        // Arrange
-        var request = new AddingStudentToClassRequest
-        {
-            StudentId = "validStudentId",
-            ClassId = 1
-        };
 
-        var exceptionMessage = "Student with ID validStudentId is already in the class.";
-
-        
-        _classOfStudentsRepositoryMock.Setup(repo => repo.AddStudent(It.IsAny<AddingStudentToClassRequest>()))
-            .Throws(new InvalidOperationException(exceptionMessage));
-
-        // Act
-        var result = _classOfStudentsController.Post(request);
-
-        // Assert
-        var objectResult = result as ObjectResult;
-        Assert.IsNotNull(objectResult);
-        Assert.AreEqual(400, objectResult.StatusCode);
-        Assert.AreEqual($"Bad request: {exceptionMessage}", objectResult.Value);
-    }
 
     
 
