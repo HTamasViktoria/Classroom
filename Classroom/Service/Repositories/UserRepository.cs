@@ -90,24 +90,39 @@ namespace Classroom.Service.Repositories
     
         public void AddParent(Parent parent)
         {
-            _dbContext.Parents.Add(parent);
-            _dbContext.SaveChanges();
+            try
+            {
+                _dbContext.Parents.Add(parent);
+                _dbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unexpected error");
+            }
         }
 
 
         public IEnumerable<ReceiverResponse> GetTeachersAsReceivers()
         {
-            var teachers = _dbContext.Teachers.ToList();
-  
-            var responseList = teachers.Select(t => new ReceiverResponse
+            try
             {
-                Name = t.FirstName + " " + t.FamilyName,
-                Id = t.Id,  
-                Role = t.Role
-            }).ToList();
+                var teachers = _dbContext.Teachers.ToList();
+    
+                var responseList = teachers.Select(t => new ReceiverResponse
+                {
+                    Name = t.FirstName + " " + t.FamilyName,
+                    Id = t.Id,
+                    Role = t.Role
+                }).ToList();
 
-            return responseList;
+                return responseList;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error occurred while fetching teachers.", ex);
+            }
         }
+
         
         
         public IEnumerable<ReceiverResponse> GetParentsAsReceivers()
