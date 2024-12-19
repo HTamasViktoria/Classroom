@@ -110,7 +110,6 @@ namespace Classroom.Controllers
         [HttpPost("teachers")]
         public ActionResult<string> AddTeacher([FromBody] Teacher teacher)
         {
-            
             try
             {
                 _userRepository.AddTeacher(teacher);
@@ -118,15 +117,21 @@ namespace Classroom.Controllers
             }
             catch (ArgumentException ex)
             {
-                _logger.LogWarning(ex, "Attempted to add an existing teacher.");
+                _logger.LogWarning(ex, "Failed to add a teacher.");
                 return BadRequest(new { message = ex.Message });
+            }
+            catch (DbUpdateException dbEx)
+            {
+                _logger.LogError(dbEx, "Database update error while adding teacher.");
+                return StatusCode(500, new { message = "An error occurred while saving to the database." });
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "An error occurred while adding the teacher.");
+                _logger.LogError(e, "An error occurred while adding a teacher.");
                 return StatusCode(500, new { message = $"Internal server error: {e.Message}" });
             }
         }
+
         
         
         
