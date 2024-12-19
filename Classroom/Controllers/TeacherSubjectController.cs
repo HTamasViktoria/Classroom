@@ -48,6 +48,27 @@ public class TeacherSubjectController : ControllerBase
     }
 
 
+    [HttpGet]
+    public ActionResult<IEnumerable<TeacherSubject>> GetAll()
+    {
+        try
+        {
+            var teacherSubjects = _teacherSubjectRepository.GetAll();
+            if (!teacherSubjects.Any())
+            {
+                return Ok(new List<TeacherSubject>());
+            }
+
+            return Ok(teacherSubjects);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occurred while retrieving all teacher subjects.");
+            return StatusCode(500, $"Internal server error: {e.Message}");
+        }
+    }
+
+    
 
     [HttpPost]
     public ActionResult<object> Post([FromBody] TeacherSubjectRequest request)
