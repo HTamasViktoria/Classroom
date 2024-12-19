@@ -22,8 +22,8 @@ public class ClassOfStudentsController : ControllerBase
         _classOfStudentsRepository = classOfStudentsRepository;
     }
 
-    
-    
+
+
     [HttpGet(Name = "classes")]
     public ActionResult<IEnumerable<ClassOfStudents>> GetAll()
     {
@@ -45,8 +45,7 @@ public class ClassOfStudentsController : ControllerBase
         }
     }
 
-    
-    
+
     [HttpGet("students")]
     public ActionResult<IEnumerable<StudentWithClassResponse>> GetAllStudentsWithClasses()
     {
@@ -151,25 +150,23 @@ public class ClassOfStudentsController : ControllerBase
     }
 
 
-    
     [HttpPost("addStudent")]
     public IActionResult Post([FromBody] AddingStudentToClassRequest request)
     {
-        
         try
         {
             _classOfStudentsRepository.AddStudent(request);
             return StatusCode(200, "Student added to class");
         }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogError(ex, ex.Message);
-            return StatusCode(400, $"Bad request: {ex.Message}");
-        }
         catch (KeyNotFoundException ex)
         {
             _logger.LogError(ex, ex.Message);
             return StatusCode(404, $"Not found: {ex.Message}");
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return StatusCode(400, ex.Message);
         }
         catch (Exception ex)
         {
@@ -178,5 +175,5 @@ public class ClassOfStudentsController : ControllerBase
         }
     }
 
-    
+  
 }
