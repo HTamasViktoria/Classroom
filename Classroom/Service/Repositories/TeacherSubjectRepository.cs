@@ -16,7 +16,9 @@ namespace Classroom.Service.Repositories
 
         public IEnumerable<TeacherSubject> GetAll()
         {
-            return _dbContext.TeacherSubjects.ToList();
+            return _dbContext.TeacherSubjects
+                .Include(ts => ts.Teacher)
+                .ToList();
         }
 
         

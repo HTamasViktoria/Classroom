@@ -106,7 +106,6 @@ namespace Classroom.Service.Repositories
       
         public void AddStudent(AddingStudentToClassRequest request)
         {
-      
             var classOfStudents = _dbContext.ClassesOfStudents
                 .Include(c => c.Students)
                 .FirstOrDefault(c => c.Id == request.ClassId);
@@ -115,24 +114,23 @@ namespace Classroom.Service.Repositories
             {
                 throw new KeyNotFoundException($"Class with ID {request.ClassId} not found.");
             }
-            
+
             var student = _dbContext.Students.Find(request.StudentId);
 
             if (student == null)
             {
                 throw new KeyNotFoundException($"Student with ID {request.StudentId} not found.");
             }
-            
-            if (classOfStudents.Students.All(s => s.Id != student.Id))
+
+            if (classOfStudents.Students.Any(s => s.Id == student.Id))
             {
-                classOfStudents.Students.Add(student);
-                _dbContext.SaveChanges();
+                throw new ArgumentException($"Student with ID {student.Id} is already in the class.");
             }
-            else
-            {
-                throw new InvalidOperationException($"Student with ID {student.Id} is already in the class.");
-            }
+
+            classOfStudents.Students.Add(student);
+            _dbContext.SaveChanges();
         }
+
 
     }
 }
