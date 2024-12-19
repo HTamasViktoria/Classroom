@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace Classroom.Model.DataModels;
@@ -6,8 +7,10 @@ public class Message
 {
     public int Id { get; set; }
     public DateTime Date { get; set; }
+    [JsonIgnore]
     public User Sender { get; set; }
     public string SenderName { get; set; }
+    [JsonIgnore]
     public User Receiver { get; set; }
     public string ReceiverName { get; set; }
     public string HeadText { get; set; }
