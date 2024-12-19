@@ -99,7 +99,7 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return StatusCode(404, $"ˇNot found: {e.Message}");
+            return StatusCode(400, $"ˇNot found: {e.Message}");
         }
         catch (Exception e)
         {
@@ -124,7 +124,7 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return StatusCode(404, $"ˇNot found: {e.Message}");
+            return StatusCode(400, $"ˇNot found: {e.Message}");
         }
         catch (Exception e)
         {
@@ -150,7 +150,7 @@ public class MessagesController : ControllerBase
         catch (ArgumentException e)
         {
             _logger.LogWarning(e, e.Message);
-            return StatusCode(404, $"ˇNot found: {e.Message}");
+            return StatusCode(400, $"Bad request: {e.Message}");
         }
         catch (Exception e)
         {
@@ -255,6 +255,9 @@ public class MessagesController : ControllerBase
         }
     }
 
+    
+    
+    
 
     [HttpPost("unread/{messageId}")]
     public IActionResult SetToUnread(int messageId)
