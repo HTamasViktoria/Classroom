@@ -2,8 +2,7 @@ using Classroom.Model.DataModels;
 using Classroom.Model.RequestModels;
 using Microsoft.AspNetCore.Mvc;
 using Classroom.Service.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Classroom.Service;
+
 
 namespace Classroom.Controllers
 {
@@ -23,7 +22,7 @@ namespace Classroom.Controllers
         }
 
         
-        [HttpGet("{id}", Name = "GetByTeacherId")]
+        [HttpGet("/teacher-by-id/{id}", Name = "GetByTeacherId")]
         public ActionResult<Teacher> GetByTeacherId(string id)
         {
             try
@@ -37,18 +36,12 @@ namespace Classroom.Controllers
 
                 return Ok(teacher);
             }
-            catch (ArgumentException e)
-            {
-                _logger.LogWarning(e, e.Message);
-                return StatusCode(400, $"Bad request:{e.Message}");
-            }
             catch (Exception e)
             {
                 _logger.LogError(e, "An error occurred while retrieving the teacher by ID.");
                 return StatusCode(500, $"Internal server error: {e.Message}");
             }
         }
-
 
         
         
@@ -72,6 +65,7 @@ namespace Classroom.Controllers
         }
         
         
+        
         [HttpPost]
         public ActionResult<string> Post([FromBody] TeacherRequest request)
         {
@@ -84,11 +78,6 @@ namespace Classroom.Controllers
             {
                 _logger.LogError(e, "Invalid teacher data.");
                 return StatusCode(400, $"Bad request:{e.Message}");
-            }
-            catch (DbUpdateException dbEx)
-            {
-                _logger.LogError(dbEx, "Error while updating the database.");
-                return StatusCode(500, $"Internal server error: {dbEx.Message}");
             }
             catch (Exception e)
             {
