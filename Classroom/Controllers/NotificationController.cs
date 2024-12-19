@@ -51,12 +51,18 @@ public class NotificationController : ControllerBase
         try
         {
             var notifications = _notificationRepository.GetByStudentId(studentId, parentId);
+        
             if (!notifications.Any())
             {
                 return Ok(new List<NotificationBase>());
             }
-            
+
             return Ok(notifications);
+        }
+        catch (ArgumentException ex)
+        {
+            _logger.LogError(ex, ex.Message);
+            return BadRequest(ex.Message);
         }
         catch (Exception e)
         {
@@ -382,17 +388,17 @@ public class NotificationController : ControllerBase
         try
         {
             _notificationRepository.Delete(id);
-            return Ok(new { message = "Notification successfully deleted." });
+            return StatusCode(200, "Notification successfully deleted");
         }
         catch (KeyNotFoundException e)
         {
             _logger.LogWarning(e, e.Message);
-            return NotFound(new { error = e.Message });
+            return StatusCode(404, $"Not found: {e.Message}");
         }
         catch (Exception e)
         {
             _logger.LogError(e, "An error occurred while processing the request.");
-            return StatusCode(500, new { error = "An internal server error occurred. Please try again later." });
+            return StatusCode(500, $"Internal server error: {e.Message}");
         }
     }
 

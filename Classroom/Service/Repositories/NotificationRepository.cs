@@ -31,14 +31,29 @@ public class NotificationRepository : INotificationRepository
 
     public IEnumerable<NotificationBase> GetByStudentId(string studentId, string parentId)
     {
-       ValidateUser(studentId);
-       ValidateUser(parentId);
-       var notifications = _dbContext.Notifications
-           .Where(n => n.StudentId == studentId && n.ParentId == parentId)
-           .ToList();
+        ValidateUser(studentId);
+        ValidateUser(parentId);
+        
+        var studentExists = _dbContext.Students.Any(s => s.Id == studentId);
+        var parentExists = _dbContext.Parents.Any(p => p.Id == parentId);
 
-       return notifications;
+        if (!studentExists)
+        {
+            throw new ArgumentException($"Student with ID {studentId} does not exist.");
+        }
+
+        if (!parentExists)
+        {
+            throw new ArgumentException($"Parent with ID {parentId} does not exist.");
+        }
+
+        var notifications = _dbContext.Notifications
+            .Where(n => n.StudentId == studentId && n.ParentId == parentId)
+            .ToList();
+
+        return notifications;
     }
+
 
 
     public int GetNewNotifsNumber(string studentId, string parentId)
