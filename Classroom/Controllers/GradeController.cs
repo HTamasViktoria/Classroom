@@ -52,7 +52,7 @@ public class GradeController : ControllerBase
         {
             var gradeValues = Enum.GetValues(typeof(GradeValues))
                 .Cast<GradeValues>()
-                .OrderBy(gv => gv)  // Ezt a sort adjuk hozzá, hogy biztosítva legyen a sorrend.
+                .OrderBy(gv => gv)
                 .Select(gv => $"{gv.ToString()} = {(int)gv}")
                 .ToList();
 
