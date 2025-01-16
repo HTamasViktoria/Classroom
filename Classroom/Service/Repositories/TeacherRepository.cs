@@ -36,7 +36,8 @@ public class TeacherRepository : ITeacherRepository
         var teacher = new Teacher
         {
             FamilyName = request.FamilyName,
-            FirstName = request.FirstName
+            FirstName = request.FirstName,
+            Role = "Teacher"
         };
         _dbContext.Add(teacher);
         _dbContext.SaveChanges();
