@@ -37,7 +37,8 @@ namespace Classroom.Service.Authentication
                     FamilyName = familyName,
                     BirthDate = birthDate ?? DateTime.Now,
                     BirthPlace = birthPlace,
-                    StudentNo = studentNo
+                    StudentNo = studentNo,
+                    Role = "Student"
                 };
 
                 var result = await _userManager.CreateAsync(student, password);
@@ -64,6 +65,7 @@ namespace Classroom.Service.Authentication
                     FamilyName = familyName,
                     ChildName = childName,
                     StudentId = studentId,
+                    Role = "Parent"
                 };
 
                 var result = await _userManager.CreateAsync(parent, password);
@@ -88,6 +90,7 @@ namespace Classroom.Service.Authentication
                     Email = email,
                     FirstName = firstName,
                     FamilyName = familyName,
+                    Role = "Teacher"
                   
                 };
 

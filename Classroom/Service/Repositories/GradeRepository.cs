@@ -179,39 +179,50 @@ public class GradeRepository : IGradeRepository
 
     public async Task<IEnumerable<Grade>> GetGradesByClassBySubject(int classId, string subject)
     {
-        ValidateClassOfStudents(classId);
-        ValidateSubject(subject);
-
-        var subjectExistsForClass =
-            await _dbContext.TeacherSubjects.AnyAsync(ts => ts.ClassOfStudentsId == classId && ts.Subject == subject);
-        if (!subjectExistsForClass)
+        try
         {
-            throw new ArgumentException($"Class with ID {classId} does not have subject {subject}.");
+            ValidateClassOfStudents(classId);
+            ValidateSubject(subject);
+
+            var subjectExistsForClass =
+                await _dbContext.TeacherSubjects.AnyAsync(ts => ts.ClassOfStudentsId == classId && ts.Subject == subject);
+            if (!subjectExistsForClass)
+            {
+                throw new ArgumentException($"Class with ID {classId} does not have subject {subject}.");  // Továbbra is ArgumentException
+            }
+
+            var studentIds = await _dbContext.ClassesOfStudents
+                .Where(c => c.Id == classId)
+                .SelectMany(c => c.Students.Select(s => s.Id))
+                .ToListAsync();
+
+            var grades = await _dbContext.Grades
+                .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
+                .ToListAsync();
+
+            return grades;
         }
-
-        var studentIds = await _dbContext.ClassesOfStudents
-            .Where(c => c.Id == classId)
-            .SelectMany(c => c.Students.Select(s => s.Id))
-            .ToListAsync();
-
-        var grades = await _dbContext.Grades
-            .Where(g => studentIds.Contains(g.StudentId) && g.Subject == subject)
-            .ToListAsync();
-
-        return grades;
+        catch (ArgumentException ex)
+        {
+           
+            throw new ArgumentException("An error occurred while fetching grades by subject.", ex);
+        }
     }
+
 
 
     public async Task<IEnumerable<Grade>> GetGradesByClass(int classId)
     {
-       ValidateClassOfStudents(classId);
+       
+        await ValidateClassOfStudents(classId);
 
+       
         var studentIds = await _dbContext.ClassesOfStudents
             .Where(c => c.Id == classId)
             .SelectMany(c => c.Students.Select(s => s.Id))
             .ToListAsync();
 
-
+    
         var grades = await _dbContext.Grades
             .Where(g => studentIds.Contains(g.StudentId))
             .ToListAsync();
@@ -379,7 +390,7 @@ public class GradeRepository : IGradeRepository
     }
     
     
-    public async void ValidateClassOfStudents(int classId)
+    public async Task ValidateClassOfStudents(int classId)
     {
         var classExists = await _dbContext.ClassesOfStudents.AnyAsync(c => c.Id == classId);
         if (!classExists)
@@ -387,4 +398,5 @@ public class GradeRepository : IGradeRepository
             throw new ArgumentException($"Class with ID {classId} not found.");
         }
     }
+
 }

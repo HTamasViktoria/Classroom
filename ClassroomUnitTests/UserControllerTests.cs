@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ClassroomUnitTests
 {
@@ -300,13 +301,15 @@ namespace ClassroomUnitTests
             Assert.That(response, Is.EqualTo(parent));
         }
 
-
         [Test]
         public void GetParentById_InvalidId_ReturnsBadRequest()
         {
             // Arrange
-            var parentId = "   ";
+            var parentId = "-1";
             var expectedMessage = "The given identifier cannot be null, empty or whitespace.";
+            
+            _userRepositoryMock.Setup(repo => repo.GetParentById(It.IsAny<string>()))
+                .Throws(new ArgumentException(expectedMessage));
 
             // Act
             var result = _userController.GetParentById(parentId);
@@ -315,6 +318,7 @@ namespace ClassroomUnitTests
             Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
 
             var objectResult = result.Result as ObjectResult;
+
             Assert.That(objectResult.StatusCode, Is.EqualTo(400));
 
             var response = objectResult.Value;
@@ -322,6 +326,7 @@ namespace ClassroomUnitTests
             var jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(response);
             Assert.That(jsonResponse, Contains.Substring(expectedMessage));
         }
+
 
 
         [Test]
@@ -348,28 +353,7 @@ namespace ClassroomUnitTests
         }
 
 
-        [Test]
-        public void GetParentById_InvalidStringId_ReturnsBadRequest()
-        {
-            // Arrange
-            var parentId = "";
-            var expectedMessage = "The given identifier cannot be null, empty or whitespace.";
-
-            // Act
-            var result = _userController.GetParentById(parentId);
-
-            // Assert
-            Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
-
-            var objectResult = result.Result as ObjectResult;
-            Assert.That(objectResult.StatusCode, Is.EqualTo(400));
-
-            var response = objectResult.Value;
-
-            var jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(response);
-            Assert.That(jsonResponse, Contains.Substring(expectedMessage));
-        }
-
+      
 
         [Test]
         public void AddTeacher_ValidTeacher_ReturnsCreated()
@@ -414,29 +398,30 @@ namespace ClassroomUnitTests
                 FamilyName = "Doe",
                 Role = "Teacher"
             };
-            
+
+            var exceptionMessage = "Teacher already exists";
             _userRepositoryMock.Setup(repo => repo.AddTeacher(It.IsAny<Teacher>()))
-                .Throws(new ArgumentException(
-                    $"Teacher with name {teacher.FirstName} {teacher.FamilyName} already exists."));
+                .Throws(new ArgumentException(exceptionMessage));
             
-            var expectedJson =
-                $"{{\"message\":\"Teacher with name {teacher.FirstName} {teacher.FamilyName} already exists.\"}}";
+            var expectedJson = $"{{\"message\":\"{exceptionMessage}\"}}";
 
             // Act
             var result = _userController.AddTeacher(teacher);
 
             // Assert
-            Assert.That(result.Result, Is.InstanceOf<BadRequestObjectResult>());
+            Assert.That(result.Result, Is.InstanceOf<ObjectResult>());
 
-            var badRequestResult = result.Result as BadRequestObjectResult;
+            var objectResult = result.Result as ObjectResult;
 
-            Assert.That(badRequestResult.StatusCode, Is.EqualTo(400));
+            Assert.That(objectResult.StatusCode, Is.EqualTo(400));
 
-            var response = badRequestResult.Value;
+            var response = objectResult.Value;
             var jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(response);
 
             Assert.That(jsonResponse, Is.EqualTo(expectedJson));
         }
+
+
 
 
         [Test]

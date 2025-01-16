@@ -24,7 +24,6 @@ public class StudentController : ControllerBase
     }
     
     [HttpGet(Name = "students")]
-    [Authorize(Roles = "Admin,Teacher")]
 
     public ActionResult<IEnumerable<Student>> GetAll()
     {
@@ -83,11 +82,6 @@ public class StudentController : ControllerBase
         {
             _logger.LogError(e, e.Message);
             return StatusCode(400, $"Bad request: {e.Message}");
-        }
-        catch (DbUpdateException dbEx)
-        {
-            _logger.LogError(dbEx, "Database update error.");
-            return StatusCode(500, $"Internal server error: {dbEx.Message}");
         }
         catch (Exception e)
         {

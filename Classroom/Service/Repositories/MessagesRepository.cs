@@ -81,7 +81,7 @@ public class MessagesRepository : IMessagesRepository
     {
         return await _dbContext.Messages.ToListAsync();
     }
-    
+
    
     
    
@@ -150,7 +150,12 @@ public class MessagesRepository : IMessagesRepository
     
         if (message == null)
         {
-            throw new ArgumentException($"Message with ID {messageId} not found.");
+            throw new ArgumentException($"Message with ID {messageId} not found or .");
+        }
+
+        if (message.Read == false)
+        {
+            throw new ArgumentException("message is unread");
         }
 
         message.Read = false;

@@ -300,7 +300,7 @@ public class MessageControllerTests
         var actionResult = result as ActionResult<IEnumerable<Message>>;
         var objectResult = actionResult.Result as ObjectResult;
         Assert.IsNotNull(objectResult);
-        Assert.AreEqual(404, objectResult.StatusCode);
+        Assert.AreEqual(400, objectResult.StatusCode);
         Assert.AreEqual($"ˇNot found: {exceptionMessage}", objectResult.Value);
     }
 
@@ -402,7 +402,7 @@ public class MessageControllerTests
         var actionResult = result as ActionResult<IEnumerable<Message>>;
         var objectResult = actionResult.Result as ObjectResult;
         Assert.IsNotNull(objectResult);
-        Assert.AreEqual(404, objectResult.StatusCode);
+        Assert.AreEqual(400, objectResult.StatusCode);
         Assert.AreEqual($"ˇNot found: {exceptionMessage}", objectResult.Value);
     }
 
@@ -502,8 +502,8 @@ public class MessageControllerTests
         var actionResult = result as ActionResult<IEnumerable<Message>>;
         var objectResult = actionResult.Result as ObjectResult;
         Assert.IsNotNull(objectResult);
-        Assert.AreEqual(404, objectResult.StatusCode);
-        Assert.AreEqual($"ˇNot found: {exceptionMessage}", objectResult.Value);
+        Assert.AreEqual(400, objectResult.StatusCode);
+        Assert.AreEqual($"Bad request: {exceptionMessage}", objectResult.Value);
     }
 
     

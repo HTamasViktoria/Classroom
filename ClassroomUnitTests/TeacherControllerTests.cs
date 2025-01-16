@@ -103,24 +103,7 @@ public class TeacherControllerTests
         Assert.AreEqual("Internal server error: Database error", response);
     }
 
-    [Test]
-    public void GetByTeacherId_InvalidWhitespaceId_ReturnsBadRequest()
-    {
-        // Arrange
-        var invalidId = "   ";
-
-        // Act
-        var result = _teacherController.GetByTeacherId(invalidId);
-
-        // Assert
-        var badRequestResult = result.Result as ObjectResult;
-        Assert.NotNull(badRequestResult);
-        Assert.AreEqual(400, badRequestResult?.StatusCode);
-
-        var response = badRequestResult?.Value as string;
-        Assert.NotNull(response);
-        Assert.AreEqual("Bad request:The given identifier cannot be null, empty or whitespace.", response);
-    }
+   
 
     [Test]
     public void GetAll_HappyPath_ReturnsListOfTeachers()

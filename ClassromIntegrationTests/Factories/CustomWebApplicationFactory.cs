@@ -1,34 +1,42 @@
 using Classroom.Data;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
-
-namespace ClassromIntegrationTests.Factories;
+using Microsoft.Extensions.Configuration;
+using System;
+using Microsoft.AspNetCore.Hosting;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private readonly string _dbName = Guid.NewGuid().ToString();
+   
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureAppConfiguration((context, config) =>
-        {
-           
-            config.AddJsonFile("appsettings.Test.json", optional: false);
-        });
-
         builder.ConfigureServices(services =>
         {
-            services.AddDbContext<ClassroomContext>(options =>
-                options.UseSqlite("DataSource=:memory:"));
-
-            services.AddScoped<ClassroomContext>(sp =>
+            // Keressük meg és távolítsuk el a meglévő ClassroomContext konfigurációját
+            var classroomDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<ClassroomContext>));
+            if (classroomDescriptor != null)
             {
-                var context = sp.GetRequiredService<ClassroomContext>();
-                context.Database.EnsureCreated();
-                return context;
+                services.Remove(classroomDescriptor);
+            }
+            
+            // Hozzáadjuk a ClassroomContext-et egy in-memory adatbázissal
+            services.AddDbContext<ClassroomContext>(options =>
+            {
+                options.UseInMemoryDatabase(_dbName);
             });
+            
+            // Adatbázis inicializálása
+            using var scope = services.BuildServiceProvider().CreateScope();
+            var classroomContext = scope.ServiceProvider.GetRequiredService<ClassroomContext>();
+            
+            // Adatbázis törlése és létrehozása
+            classroomContext.Database.EnsureDeleted();
+            classroomContext.Database.EnsureCreated();
+            
+            // Ide jöhet további inicializálás (pl. alapadatok betöltése)
+            // classroomContext.SeedData();
         });
     }
 }
