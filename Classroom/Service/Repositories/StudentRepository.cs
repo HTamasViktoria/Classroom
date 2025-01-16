@@ -46,6 +46,7 @@ public class StudentRepository : IStudentRepository
             BirthDate = birthDate,
             BirthPlace = request.BirthPlace,
             StudentNo = request.StudentNo,
+            Role = "Student",
             Grades = new List<Grade>()
         };
         _dbContext.Add(student);
