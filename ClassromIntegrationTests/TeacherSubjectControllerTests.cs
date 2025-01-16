@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 
 namespace ClassromIntegrationTests;
 
+[Collection("IntegrationTests")]
+
 public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -56,6 +58,8 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
         {
             Assert.Contains(teacherSubject.Subject, validSubjects);
         }
+
+        await ClearDatabaseAsync();
     }
     
     
@@ -93,6 +97,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
         Assert.True(teacherSubjectsByTeacherId.All(ts => ts.Subject == expectedSubject));
 
         Assert.True(teacherSubjectsByTeacherId.Count > 0);
+        await ClearDatabaseAsync();
     }
 
     
@@ -127,6 +132,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
         
         Assert.NotNull(teacherSubjectsByTeacherId);
         Assert.Empty(teacherSubjectsByTeacherId);
+        await ClearDatabaseAsync();
     }
 
 
@@ -145,6 +151,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
 
         var contentByTeacherId = await responseByTeacherId.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", contentByTeacherId);
+        await ClearDatabaseAsync();
     }
 
 
@@ -182,6 +189,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
 
         var content = await responseByTeacherId.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", content);
+        await ClearDatabaseAsync();
     }
 
     
@@ -230,6 +238,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
         Assert.Contains("Successfully added new teacherSubject", content);
         
         Assert.True(response.Headers.Location.AbsoluteUri.Contains(teacherId));
+        await ClearDatabaseAsync();
     }
 
     
@@ -267,6 +276,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
 
         var content = await response.Content.ReadAsStringAsync();
         Assert.Contains("Bad request: Already existing teachersubject", content);
+        await ClearDatabaseAsync();
     }
 
     
@@ -314,6 +324,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
 
         var content = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", content);
+        await ClearDatabaseAsync();
     }
 
     
@@ -355,6 +366,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
         
         var content = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", content);
+        await ClearDatabaseAsync();
     }
 
     
@@ -393,6 +405,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
         var studentIds = students.Select(s => s.Id).ToList();
         Assert.True((studentIds.Contains("123d1xd3") && studentIds.Contains("34fcq234")) ||
                     (studentIds.Contains("567d1x1") && studentIds.Contains("789d2x2")));
+        await ClearDatabaseAsync();
     }
 
 
@@ -423,6 +436,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
         var students = JsonConvert.DeserializeObject<List<Student>>(content);
         
         Assert.Empty(students);
+        await ClearDatabaseAsync();
     }
 
     
@@ -523,7 +537,8 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
             FamilyName = "Kovács",
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
-            StudentNo = "S12345"
+            StudentNo = "S12345",
+            Role = "Student"
         };
 
         var student2 = new Student
@@ -534,7 +549,8 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
             FamilyName = "Hajdu",
             BirthDate = new DateTime(2006, 6, 6),
             BirthPlace = "Debrecen",
-            StudentNo = "S67890"
+            StudentNo = "S67890",
+            Role = "Student"
         };
 
         var student3 = new Student
@@ -546,6 +562,7 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
             BirthDate = new DateTime(2007, 7, 7),
             BirthPlace = "Pécs",
             StudentNo = "S11111",
+            Role = "Student"
         };
 
         var student4 = new Student
@@ -556,7 +573,8 @@ public class TeacherSubjectControllerTests : IClassFixture<CustomWebApplicationF
             FamilyName = "János",
             BirthDate = new DateTime(2008, 8, 8),
             BirthPlace = "Szeged",
-            StudentNo = "S22222"
+            StudentNo = "S22222",
+            Role = "Student"
         };
 
         var students = new List<Student> { student1, student2, student3, student4 };

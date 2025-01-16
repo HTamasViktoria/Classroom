@@ -16,7 +16,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
     private readonly HttpClient _mockClient;
-    private readonly HttpClient _studentsClient;
+    
 
     public UserControllerTests(CustomWebApplicationFactory factory)
     {
@@ -34,16 +34,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>
 
         _mockClient = mockFactory.CreateClient();
     
-      
-        var mockStudentFactory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices((context, services) =>
-            {
-                services.AddTransient<IStudentRepository, MockStudentRepository>();
-            });
-        });
-
-        _studentsClient = mockStudentFactory.CreateClient();
+    
     }
 
 
@@ -576,6 +567,7 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>
             { Id = "Parent1Id",
                 FirstName = "Emil",
                 FamilyName = "Kerekes",
+                ChildName = "Kerekes Elek",
                 UserName = "kerekesemil",
                 Email = "emil@gmail.com",
                 StudentId = student1.Id,
@@ -589,7 +581,9 @@ public class UserControllerTests : IClassFixture<CustomWebApplicationFactory>
                 FamilyName = "Tóthné Varga",
                 UserName = "tothnevargaeszter",
                 Email = "eszter@gmail.com",
-                StudentId = student2.Id, Role = "Parent"
+                StudentId = student2.Id, 
+                ChildName = "Tóth Klaudia",
+                Role = "Parent"
             };
 
             await context.Parents.AddRangeAsync(parent1, parent2);

@@ -6,8 +6,9 @@ using Classroom.Model.RequestModels;
 using Classroom.Service.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ClassromIntegrationTests
-{
+namespace ClassromIntegrationTests;
+
+[Collection("IntegrationTests")]
     public class TeacherControllerTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly CustomWebApplicationFactory _factory;
@@ -40,6 +41,7 @@ namespace ClassromIntegrationTests
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("[]", responseBody);
+            await ClearDatabaseAsync();
         }
 
 
@@ -62,7 +64,7 @@ namespace ClassromIntegrationTests
 
             Assert.Contains(teacherList, t => t.FirstName == "John" && t.FamilyName == "Doe" && t.Email == "john.doe@example.com");
             Assert.Contains(teacherList, t => t.FirstName == "Jane" && t.FamilyName == "Smith" && t.Email == "jane.smith@example.com");
-        }
+            await ClearDatabaseAsync(); }
 
 
 
@@ -78,6 +80,7 @@ namespace ClassromIntegrationTests
 
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseContent);
+            await ClearDatabaseAsync();
         }
 
 
@@ -97,6 +100,7 @@ namespace ClassromIntegrationTests
             Assert.NotNull(teacherById);
             Assert.Equal("John", teacherById.FirstName);
             Assert.Equal("Doe", teacherById.FamilyName);
+            await ClearDatabaseAsync();
         }
 
 
@@ -110,6 +114,7 @@ namespace ClassromIntegrationTests
             var nonExistentId = "-1";
             var getByIdResponse = await _client.GetAsync($"/api/teachers/{nonExistentId}");
             Assert.Equal(404, (int)getByIdResponse.StatusCode);
+            await ClearDatabaseAsync();
         }
 
 
@@ -127,6 +132,7 @@ namespace ClassromIntegrationTests
 
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseContent);
+            await ClearDatabaseAsync();
         }
 
 
@@ -141,7 +147,8 @@ namespace ClassromIntegrationTests
                 FamilyName = "Smith",
                 Email = "alice.smith@example.com",
                 Username = "alicesmith",
-                Password = "StrongPassword123"
+                Password = "StrongPassword123",
+                
             };
 
             var response = await _client.PostAsJsonAsync("/api/teachers", newTeacher);
@@ -156,6 +163,7 @@ namespace ClassromIntegrationTests
             var addedTeacher = teachers.FirstOrDefault(t => t.FirstName == "Alice" && t.FamilyName == "Smith");
 
             Assert.NotNull(addedTeacher);
+            await ClearDatabaseAsync();
 
         }
 
@@ -185,6 +193,7 @@ namespace ClassromIntegrationTests
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Contains("Bad request:", responseBody);
             Assert.Contains("Teacher already added", responseBody);
+            await ClearDatabaseAsync();
         }
 
 
@@ -212,6 +221,7 @@ namespace ClassromIntegrationTests
 
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseContent);
+            await ClearDatabaseAsync();
         }
 
 
@@ -282,4 +292,3 @@ namespace ClassromIntegrationTests
         }
 
     }
-}

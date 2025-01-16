@@ -10,14 +10,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace ClassromIntegrationTests;
+[Collection("IntegrationTests")]
 
 public class NotificationControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
-    private readonly HttpClient _studentClient;
-    private readonly HttpClient _parentClient;
-    private readonly HttpClient _teachersClient;
     private readonly HttpClient _mockClient;
 
     
@@ -26,14 +24,7 @@ public class NotificationControllerTests : IClassFixture<CustomWebApplicationFac
         _factory = factory;
         _client = _factory.CreateClient();
         
-        _studentClient = _factory.CreateClient();
-        _studentClient.DefaultRequestHeaders.Add("studentId", "validStudentId");
-
-        _parentClient = _factory.CreateClient();
-        _parentClient.DefaultRequestHeaders.Add("parentId", "validParentId");
-        
-        _teachersClient = _factory.CreateClient();
-        _teachersClient.DefaultRequestHeaders.Add("teacherId", "validTeacherId");
+       
 
         var mockFactory = factory.WithWebHostBuilder(builder =>
         {
@@ -58,6 +49,8 @@ public class NotificationControllerTests : IClassFixture<CustomWebApplicationFac
         var responseBody = await response.Content.ReadAsStringAsync();
 
         Assert.Equal("[]", responseBody);
+
+        await ClearDatabaseAsync();
     }
 
 
@@ -82,6 +75,7 @@ public class NotificationControllerTests : IClassFixture<CustomWebApplicationFac
         Assert.Contains(notifications, n => n.Type == "MissingEquipment");
         Assert.Contains(notifications, n => n.Type == "Exam");
         Assert.Contains(notifications, n => n.Type == "Homework");
+        await ClearDatabaseAsync();
     }
 
 
@@ -93,6 +87,7 @@ public class NotificationControllerTests : IClassFixture<CustomWebApplicationFac
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseBody);
+        await ClearDatabaseAsync();
     }
     
     
@@ -110,6 +105,7 @@ public class NotificationControllerTests : IClassFixture<CustomWebApplicationFac
 
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("User with the given id not found", responseBody);
+        await ClearDatabaseAsync();
     }
 
 
@@ -142,6 +138,7 @@ public async Task GetByStudentId_ReturnsCorrectNotifications()
     Assert.Equal("Exam", notification4?.Type);
     Assert.Equal("Hajdu Kálmán", notification4?.StudentName);
     Assert.Equal("Your grade for the last test is ready.", notification4?.Description);
+    await ClearDatabaseAsync();
 }
 
 
@@ -160,6 +157,7 @@ public async Task GetByStudentId_ReturnsEmptyList_WhenNoNotificationsExist()
     var notifications = JsonConvert.DeserializeObject<List<NotificationBase>>(await response.Content.ReadAsStringAsync());
     
     Assert.Empty(notifications);
+    await ClearDatabaseAsync();
 }
 
 
@@ -179,6 +177,7 @@ public async Task GetByStudentId_ReturnsInternalServerError_WhenExceptionOccurs(
 
     var responseBody = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", responseBody);
+    await ClearDatabaseAsync();
 }
 
 
@@ -196,6 +195,7 @@ public async Task GetByTeacherId_ReturnsFourNotifications_WhenValidTeacherIdIsPr
     
     var notifications = JsonConvert.DeserializeObject<List<NotificationBase>>(await response.Content.ReadAsStringAsync());
     Assert.Equal(4, notifications.Count);
+    await ClearDatabaseAsync();
 }
 
 
@@ -211,6 +211,7 @@ public async Task GetByTeacherId_ReturnsEmptyList_WhenNoNotificationsExistForTea
     
     var notifications = JsonConvert.DeserializeObject<List<NotificationBase>>(await response.Content.ReadAsStringAsync());
     Assert.Empty(notifications);
+    await ClearDatabaseAsync();
 }
 
 
@@ -230,6 +231,7 @@ public async Task GetByTeacherId_ReturnsBadRequest_WhenTeacherIdIsInvalid()
  
     var errorMessage = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -248,6 +250,7 @@ public async Task GetByTeacherId_ReturnsInternalServerError_WhenExceptionIsThrow
 
     var responseBody = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", responseBody);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -278,6 +281,7 @@ public async Task GetLastsByStudentId_ReturnsNotifications_WhenTheyExist()
     {
         Assert.Contains(notifications, n => n.Description == description);
     }
+    await ClearDatabaseAsync();
 }
 
 
@@ -299,6 +303,7 @@ public async Task GetLastsByStudentId_ReturnsEmptyList_WhenNoNotificationsExist(
 
     Assert.NotNull(notifications);
     Assert.Empty(notifications);
+    await ClearDatabaseAsync();
 }
 
 
@@ -315,6 +320,7 @@ public async Task GetLastsByStudentId_ReturnsBadRequest_WhenStudentIdIsInvalid()
     Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     var responseBody = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", responseBody);
+    await ClearDatabaseAsync();
 }
 
 
@@ -332,6 +338,7 @@ public async Task GetLastsByStudentId_ReturnsBadRequest_WhenParentIdIsInvalid()
     Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     var responseBody = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", responseBody);
+    await ClearDatabaseAsync();
 }
 
 
@@ -349,6 +356,7 @@ public async Task GetLastsByStudentId_ReturnsInternalServerError_WhenExceptionIs
     Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
     var responseBody = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", responseBody);
+    await ClearDatabaseAsync();
 }
 
 
@@ -370,6 +378,7 @@ public async Task GetNewNotifsNumber_ShouldReturnNumberOfNewNotifications_WhenVa
     var result = int.Parse(content);
 
     Assert.Equal(expectedNotificationCount, result);
+    await ClearDatabaseAsync();
 }
 
 
@@ -388,6 +397,7 @@ public async Task GetNewNotifsNumber_ShouldReturnBadRequest_WhenArgumentExceptio
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Equal("Bad request:User with the given id not found", content);
+    await ClearDatabaseAsync();
 }
 
 
@@ -406,6 +416,7 @@ public async Task GetNewNotifsNumber_ShouldReturnInternalServerError_WhenExcepti
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", content);
+    await ClearDatabaseAsync();
 }
 
 
@@ -425,6 +436,7 @@ public async Task GetLastsByTeacherId_ShouldReturnEmptyList_WhenNoNotificationsE
     var result = JsonConvert.DeserializeObject<List<NotificationResponse>>(content);
 
     Assert.Empty(result);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -455,6 +467,7 @@ public async Task GetLastsByTeacherId_ShouldReturnNotifications_WhenNotification
 
     Assert.Equal("Hajdu Kálmán", notification.StudentName);
     Assert.Equal("Hajdu Botond", notification.ParentName);
+    await ClearDatabaseAsync();
     
 }
 
@@ -481,6 +494,7 @@ public async Task GetNewestByTeacherId_ShouldReturnEmptyNotification_WhenNoNotif
     Assert.Null(result.StudentId);
     Assert.Null(result.ParentId);
     Assert.Null(result.Description);
+    await ClearDatabaseAsync();
 }
 
 
@@ -499,6 +513,7 @@ public async Task GetLastsByTeacherId_ShouldReturnBadRequest_WhenInvalidTeacherI
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", content);
+    await ClearDatabaseAsync();
 }
 
 
@@ -516,6 +531,7 @@ public async Task GetLastsByTeacherId_ShouldReturnInternalServerError_WhenExcept
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", content);
+    await ClearDatabaseAsync();
 }
 
 
@@ -541,6 +557,7 @@ public async Task GetNewestByTeacherId_ShouldReturnNewestNotification_WhenNotifi
     Assert.Equal("Exam", result.Type);
     Assert.Equal("Your grade for the last test is ready.", result.Description);
     Assert.Equal(DateTime.Now.AddDays(4).Date, result.Date.Date);
+    await ClearDatabaseAsync();
 }
 
 
@@ -559,6 +576,7 @@ public async Task GetNewestByTeacherId_ShouldReturnBadRequest_WhenInvalidTeacher
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", content);
+    await ClearDatabaseAsync();
 }
 
 
@@ -576,6 +594,7 @@ public async Task GetNewestByTeacherId_ShouldReturnInternalServerError_WhenExcep
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", content);
+    await ClearDatabaseAsync();
 }
 
 
@@ -605,6 +624,7 @@ public async Task Post_ShouldReturnCreated_WhenNotificationIsValid()
 
     var result = await response.Content.ReadAsStringAsync();
     Assert.Contains("Értesítés sikeresen elmentve az adatbázisba.", result);
+    await ClearDatabaseAsync();
 }
 
 
@@ -636,6 +656,7 @@ public async Task Post_ShouldReturnBadRequest_WhenNotificationIsInvalid()
 
     var result = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", result);
+    await ClearDatabaseAsync();
 }
 
 
@@ -665,6 +686,7 @@ public async Task Post_ShouldReturnInternalServerError_WhenExceptionIsThrown()
 
     var result = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", result);
+    await ClearDatabaseAsync();
 }
 
 
@@ -687,6 +709,7 @@ public async Task SetToRead_ShouldReturnSuccess_WhenNotificationIsMarkedAsRead()
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Értesítés olvasottra állítva", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -702,6 +725,7 @@ public async Task SetToRead_ShouldReturnBadRequest_WhenInvalidNotificationIdIsPr
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -722,6 +746,7 @@ public async Task SetToRead_ShouldReturnInternalServerError_WhenAnExceptionOccur
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -743,6 +768,7 @@ public async Task SetToOfficiallyRead_ShouldReturnOk_WhenNotificationIsSuccessfu
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Értesítés olvasottra állítva", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -761,6 +787,7 @@ public async Task SetToOfficiallyRead_ShouldReturnBadRequest_WhenInvalidIdIsProv
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -784,6 +811,7 @@ public async Task SetToOfficiallyRead_ShouldReturnInternalServerError_WhenAnExce
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -803,6 +831,7 @@ public async Task GetHomeworks_ShouldReturnHomeworks_WhenHomeworksExist()
 
     Assert.NotEmpty(homeworks);
     Assert.All(homeworks, hw => Assert.Equal("Homework", hw.Type));
+    await ClearDatabaseAsync();
 }
 
 
@@ -819,6 +848,7 @@ public async Task GetHomeworks_ShouldReturnEmptyList_WhenNoHomeworksExist()
     var homeworks = JsonConvert.DeserializeObject<List<NotificationBase>>(content);
 
     Assert.Empty(homeworks);
+    await ClearDatabaseAsync();
 }
 
 
@@ -835,6 +865,7 @@ public async Task GetHomeworks_ShouldReturnInternalServerError_WhenExceptionOccu
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -853,6 +884,7 @@ public async Task GetExams_ShouldReturnExams_WhenExamsExist()
 
     Assert.NotEmpty(exams);
     Assert.All(exams, exam => Assert.Equal("Exam", exam.Type));
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -868,6 +900,7 @@ public async Task GetExams_ShouldReturnEmptyList_WhenNoExamsExist()
     var exams = JsonConvert.DeserializeObject<List<NotificationBase>>(content);
 
     Assert.Empty(exams);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -882,6 +915,7 @@ public async Task GetExams_ShouldReturnInternalServerError_WhenExceptionOccurs()
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -898,6 +932,7 @@ public async Task GetOthers_ShouldReturnOthers_WhenOthersExist()
     var others = JsonConvert.DeserializeObject<List<NotificationBase>>(content);
     
     Assert.All(others, other => Assert.Equal("Other", other.Type));
+    await ClearDatabaseAsync();
 }
 
 
@@ -914,6 +949,7 @@ public async Task GetOthers_ShouldReturnEmptyList_WhenNoOthersExist()
     var others = JsonConvert.DeserializeObject<List<NotificationBase>>(content);
 
     Assert.Empty(others);
+    await ClearDatabaseAsync();
 }
 
 
@@ -930,6 +966,7 @@ public async Task GetOthers_ShouldReturnInternalServerError_WhenExceptionOccurs(
 
     var resultMessage = await result.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -947,6 +984,7 @@ public async Task GetMissingEquipments_ShouldReturnEmptyList_WhenNoMissingEquipm
     var missingEquipments = JsonConvert.DeserializeObject<List<NotificationBase>>(content);
 
     Assert.Empty(missingEquipments);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -963,6 +1001,7 @@ public async Task GetMissingEquipments_ShouldReturnMissingEquipments_WhenMissing
     var missingEquipments = JsonConvert.DeserializeObject<List<NotificationBase>>(content);
 
     Assert.NotEmpty(missingEquipments);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -974,6 +1013,7 @@ public async Task GetMissingEquipments_ShouldReturnInternalServerError_WhenExcep
 
     var resultMessage = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", resultMessage);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -1000,6 +1040,7 @@ public async Task Delete_ShouldReturnOk_WhenNotificationIsDeleted()
     var remainingNotifications = JsonConvert.DeserializeObject<List<NotificationResponse>>(getContent);
 
     Assert.DoesNotContain(remainingNotifications, n => n.Id == notificationId);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1015,6 +1056,7 @@ public async Task Delete_ShouldReturnNotFound_WhenNotificationDoesNotExist()
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Contains("Not found", content);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -1035,6 +1077,7 @@ public async Task Delete_ShouldReturnInternalServerError_WhenExceptionOccurs()
 
     var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", deleteContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1102,6 +1145,7 @@ private async Task ClearDatabaseAsync()
             FamilyName = "Kovács",
             ChildName = "Kovács Béla",
             StudentId = student1.Id,
+            Role = "Parent"
         };
         
         context.Users.AddRange(parent1);
@@ -1201,6 +1245,7 @@ private async Task ClearDatabaseAsync()
             FamilyName = "Kovács",
             ChildName = "Béla Kovács",
             StudentId = student1.Id,
+            Role = "Parent"
         };
 
         var parent2 = new Parent
@@ -1212,6 +1257,7 @@ private async Task ClearDatabaseAsync()
             FamilyName = "Hajdu",
             ChildName = "Kálmán Hajdu",
             StudentId = student2.Id,
+            Role = "Parent"
         };
 
    

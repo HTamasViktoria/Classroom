@@ -47,6 +47,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
         var responseBody = await response.Content.ReadAsStringAsync();
 
         Assert.Equal("[]", responseBody);
+        await ClearDatabaseAsync();
     }
 
 
@@ -68,6 +69,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Contains(students, s => s.FirstName == "Klaudia" && s.FamilyName == "Tóth");
         
         Assert.Equal(2, students.Count);
+        await ClearDatabaseAsync();
     }
 
     
@@ -81,6 +83,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseBody);
+        await ClearDatabaseAsync();
     }
 
     
@@ -98,6 +101,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.NotNull(student);
         Assert.Equal("Elek", student.FirstName);
         Assert.Equal("Kerekes", student.FamilyName);
+        await ClearDatabaseAsync();
     }
 
 
@@ -118,6 +122,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
         var responseBody = await response.Content.ReadAsStringAsync();
         
         Assert.Contains("Bad request:Student with the given id not found", responseBody);
+        await ClearDatabaseAsync();
     }
 
     
@@ -135,6 +140,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
         var responseBody = await response.Content.ReadAsStringAsync();
 
         Assert.Contains("Internal server error", responseBody);
+        await ClearDatabaseAsync();
     }
 
    
@@ -142,28 +148,45 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
     public async Task Post_AddsNewStudent_WhenRequestIsValid()
     {
         await ClearDatabaseAsync();
-    
-        var newStudentRequest = new StudentRequest
-        {
-            FirstName = "János",
-            FamilyName = "Kovács",
-            Email = "janos.kovacs@example.com",
-            Username = "janoskovacs",
-            Password = "password123",
-            BirthDate = "2010-05-01",
-            BirthPlace = "Budapest",
-            StudentNo = "123456"
-        };
 
-        var content = new StringContent(JsonConvert.SerializeObject(newStudentRequest), Encoding.UTF8, "application/json");
-    
-        var response = await _client.PostAsync("/api/students", content);
-    
-        response.EnsureSuccessStatusCode();
-        var responseBody = await response.Content.ReadAsStringAsync();
-    
-        Assert.Contains("Successfully added new student", responseBody);
+        try
+        {
+            var newStudentRequest = new StudentRequest
+            {
+                FirstName = "János",
+                FamilyName = "Kovács",
+                Email = "janos.kovacs@example.com",
+                Username = "janoskovacs",
+                Password = "password123",
+                BirthDate = "2001-01-01",
+                BirthPlace = "Budapest",
+                StudentNo = "wrawervscef",
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(newStudentRequest), Encoding.UTF8, "application/json");
+
+            var response = await _client.PostAsync("/api/students", content);
+            
+            var responseBody = await response.Content.ReadAsStringAsync();
+        
+            Console.WriteLine($"Response Status Code: {response.StatusCode}");
+            Console.WriteLine($"Response Body: {responseBody}");
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Test failed with status code: {response.StatusCode} and response body: {responseBody}");
+            }
+            
+            Assert.Contains("Successfully added new student", responseBody);
+        }
+        finally
+        {
+            await ClearDatabaseAsync();
+        }
     }
+
+
+
 
 
     
@@ -194,6 +217,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("A student with the same student number already exists.", responseBody);
+        await ClearDatabaseAsync();
     }
 
     
@@ -209,7 +233,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
             Password = "password123",
             BirthDate = "2010-05-01",
             BirthPlace = "Budapest",
-            StudentNo = "r3r3r"
+            StudentNo = "r3r3r",
         };
 
         var content = new StringContent(JsonConvert.SerializeObject(newStudentRequest), Encoding.UTF8, "application/json");
@@ -220,6 +244,7 @@ public class StudentControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error:", responseBody);
+        await ClearDatabaseAsync();
     }
 
     private async Task SeedStudentsAsync()

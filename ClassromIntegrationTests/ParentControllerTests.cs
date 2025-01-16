@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace ClassromIntegrationTests;
 
+[Collection("IntegrationTests")]
 public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
@@ -44,6 +45,8 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
         Assert.NotNull(result);
         Assert.IsType<List<Parent>>(result);
         Assert.Empty(result);
+
+        await ClearDatabaseAsync();
     }
 
     [Fact]
@@ -64,6 +67,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
 
         Assert.Contains(result, p => p.Id == "BelaParentId" && p.FirstName == "Etelka" && p.ChildName == "Kovács Béla");
         Assert.Contains(result, p => p.Id == "KalmanParentId" && p.FirstName == "Emőke" && p.ChildName == "Hajdu Kálmán");
+        await ClearDatabaseAsync();
     }
 
     
@@ -77,6 +81,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
 
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseBody);
+        await ClearDatabaseAsync();
     }
     
     
@@ -98,6 +103,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
         Assert.NotEmpty(result);
 
         Assert.Contains(result, p => p.Id == "KalmanParentId" && p.FirstName == "Emőke" && p.ChildName == "Hajdu Kálmán");
+        await ClearDatabaseAsync();
     }
 
    
@@ -117,6 +123,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
         var result = JsonConvert.DeserializeObject<List<Parent>>(responseBody);
         Assert.NotNull(result);
         Assert.Empty(result);
+        await ClearDatabaseAsync();
     }
 
 
@@ -133,6 +140,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", responseBody);
+        await ClearDatabaseAsync();
     }
 
     
@@ -146,6 +154,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
 
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseBody);
+        await ClearDatabaseAsync();
     }
 
     
@@ -169,6 +178,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Equal("Kovács", parent.FamilyName);
         Assert.Equal("Kovács Béla", parent.ChildName);
         Assert.Equal("BelaId", parent.StudentId);
+        await ClearDatabaseAsync();
     }
 
     
@@ -188,6 +198,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
         var responseBody = await response.Content.ReadAsStringAsync();
 
         Assert.Contains("Bad request: No parent found with the given id", responseBody);
+        await ClearDatabaseAsync();
     }
 
     
@@ -204,6 +215,7 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error:", responseBody);
         Assert.Contains("Mock exception for testing", responseBody);
+        await ClearDatabaseAsync();
     }
 
     private async Task ClearDatabaseAsync()
@@ -251,7 +263,8 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
                     FamilyName = "Kovács",
                     BirthDate = new DateTime(2005, 5, 5),
                     BirthPlace = "Budapest",
-                    StudentNo = "S12345"
+                    StudentNo = "S12345",
+                    Role = "Student"
                 },
                 new Student
                 {
@@ -261,7 +274,8 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
                     FamilyName = "Hajdu",
                     BirthDate = new DateTime(2006, 6, 6),
                     BirthPlace = "Debrecen",
-                    StudentNo = "S67890"
+                    StudentNo = "S67890",
+                    Role = "Student"
                 }
             };
 
@@ -273,7 +287,8 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
                     FamilyName = "Kovács",
                     FirstName = "Etelka",
                     ChildName = "Kovács Béla",
-                    StudentId = "BelaId"
+                    StudentId = "BelaId",
+                    Role = "Parent"
                 },
                 new Parent
                 {
@@ -281,7 +296,8 @@ public class ParentControllerTests : IClassFixture<CustomWebApplicationFactory>
                     FamilyName = "Hajdu",
                     FirstName = "Emőke",
                     ChildName = "Hajdu Kálmán",
-                    StudentId = "KalmanId"
+                    StudentId = "KalmanId",
+                    Role = "Parent"
                 }
             };
 

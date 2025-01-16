@@ -14,14 +14,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ClassromIntegrationTests;
 
+[Collection("IntegrationTests")]
 public class GradeControllerTests : IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
     private readonly HttpClient _mockClient;
-    private readonly HttpClient _studentClient;
-    private readonly HttpClient _teacherClient;
-    private readonly HttpClient _classOfStudentsClient;
+    
 
     public GradeControllerTests(CustomWebApplicationFactory factory)
     {
@@ -37,38 +36,7 @@ public class GradeControllerTests : IClassFixture<CustomWebApplicationFactory>
         });
 
         _mockClient = mockFactory.CreateClient();
-  
-        var studentFactory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-             
-            });
-        });
-        _studentClient = studentFactory.CreateClient();
-        
-        
-        
-        
-        var teacherFactory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-             
-            });
-        });
-        _teacherClient = teacherFactory.CreateClient();
-        
-        
-        
-        var classOfStudentsFactory = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-             
-            });
-        });
-        _classOfStudentsClient = classOfStudentsFactory.CreateClient();
+     
     }
     
 
@@ -89,12 +57,15 @@ public class GradeControllerTests : IClassFixture<CustomWebApplicationFactory>
         
         Assert.NotNull(grades);
         Assert.Empty(grades);
+
+        await ClearDatabaseAsync();
     }
 
     
     [Fact]
     public async Task GetAll_ReturnsGrades_WhenGradesExist()
     {
+        await ClearDatabaseAsync();
         await AddStudentsAndClassesAndGradesAsync();
 
         var response = await _client.GetAsync("/api/grades");
@@ -111,6 +82,7 @@ public class GradeControllerTests : IClassFixture<CustomWebApplicationFactory>
         Assert.Contains(GradeValues.Elégséges, gradeValues);
         Assert.Contains(GradeValues.Jeles, gradeValues);
         Assert.Contains(GradeValues.Jó, gradeValues);
+        await ClearDatabaseAsync();
     }
 
     
@@ -118,19 +90,24 @@ public class GradeControllerTests : IClassFixture<CustomWebApplicationFactory>
     [Fact]
     public async Task GetAll_ReturnsInternalServerError_WhenExceptionIsThrown()
     {
-       
+
+        await ClearDatabaseAsync();
+        await AddStudentsAndClassesAndGradesAsync();
         var response = await _mockClient.GetAsync("/api/grades");
 
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         
         var content = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", content);
+        await ClearDatabaseAsync();
     }
 
     
     [Fact]
     public async Task GetAllValues_ReturnsGradeValues_WhenCalled()
     {
+        await ClearDatabaseAsync();
+        await AddStudentsAndClassesAndGradesAsync();
         var response = await _client.GetAsync("/api/grades/gradevalues");
 
         response.EnsureSuccessStatusCode();
@@ -155,6 +132,8 @@ public class GradeControllerTests : IClassFixture<CustomWebApplicationFactory>
         {
             Assert.Contains(expectedValue, gradeValues);
         }
+        
+        await ClearDatabaseAsync();
     }
 
     
@@ -174,7 +153,9 @@ public async Task Post_GradeRequest_ThrowsException_ReturnsInternalServerError()
         FamilyName = "Kovács",
         BirthDate = new DateTime(2005, 5, 5),
         BirthPlace = "Budapest",
-        StudentNo = "S12345"
+        StudentNo = "S12345",
+        Role = "Student"
+       
     };
 
     var teacher = new Teacher
@@ -215,6 +196,7 @@ public async Task Post_GradeRequest_ThrowsException_ReturnsInternalServerError()
 
     var responseBody = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", responseBody);
+    await ClearDatabaseAsync();
 }
 
   
@@ -222,6 +204,8 @@ public async Task Post_GradeRequest_ThrowsException_ReturnsInternalServerError()
     [Fact]
 public async Task Post_ReturnsCreatedResponse_WhenRequestIsValid()
 {
+    await ClearDatabaseAsync();
+    await AddStudentsAndClassesAndGradesAsync();
     using (var scope = _factory.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ClassroomContext>();
@@ -234,7 +218,9 @@ public async Task Post_ReturnsCreatedResponse_WhenRequestIsValid()
             FamilyName = "Kovács",
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
-            StudentNo = "S12345"
+            StudentNo = "S12345",
+            Role = "Student"
+          
         };
 
         context.Students.Add(student);
@@ -296,6 +282,8 @@ public async Task Post_ReturnsCreatedResponse_WhenRequestIsValid()
         var content = await response.Content.ReadAsStringAsync();
         Assert.Contains("Értesítés sikeresen elmentve az adatbázisba", content);
     }
+    
+    await ClearDatabaseAsync();
 }
 
 
@@ -303,7 +291,8 @@ public async Task Post_ReturnsCreatedResponse_WhenRequestIsValid()
 [Fact]
 public async Task Post_GradeRequest_InvalidGradeValue_ReturnsBadRequest()
 {
-    ClearDatabaseAsync();
+    await ClearDatabaseAsync();
+    await AddStudentsAndClassesAndGradesAsync();
     using (var scope = _factory.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ClassroomContext>();
@@ -316,7 +305,9 @@ public async Task Post_GradeRequest_InvalidGradeValue_ReturnsBadRequest()
             FamilyName = "Kovács",
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
-            StudentNo = "S12345"
+            StudentNo = "S12345",
+            Role = "Student"
+          
         };
 
         var teacher = new Teacher
@@ -353,12 +344,16 @@ public async Task Post_GradeRequest_InvalidGradeValue_ReturnsBadRequest()
         var responseBody = await response.Content.ReadAsStringAsync();
         Assert.Contains("Invalid grade value", responseBody);
     }
+    
+    await ClearDatabaseAsync();
 }
 
 
 [Fact]
 public async Task Post_ReturnsInternalServerError_WhenExceptionOccurs()
 {
+    await ClearDatabaseAsync();
+    await AddStudentsAndClassesAndGradesAsync();
     using (var scope = _factory.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ClassroomContext>();
@@ -371,7 +366,9 @@ public async Task Post_ReturnsInternalServerError_WhenExceptionOccurs()
             FamilyName = "Kovács",
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
-            StudentNo = "S12345"
+            StudentNo = "S12345",
+            Role = "Student"
+          
         };
 
         context.Students.Add(student);
@@ -431,6 +428,7 @@ public async Task Post_ReturnsInternalServerError_WhenExceptionOccurs()
         var content = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", content);
     }
+    await ClearDatabaseAsync();
 }
 
 
@@ -475,6 +473,7 @@ public async Task Put_UpdatesGrade_WhenValidRequestIsSent()
     Assert.NotNull(updatedGrade);
 
     Assert.Equal("Jó", updatedGrade?.Value.ToString());
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -507,6 +506,7 @@ public async Task Put_ReturnsBadRequest_WhenInvalidDateIsSent()
     
     var putContent = await putResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", putContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -541,6 +541,7 @@ public async Task Put_ReturnsBadRequest_WhenInvalidGradeValueIsSent()
    
     var putContent = await putResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", putContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -548,7 +549,8 @@ public async Task Put_ReturnsBadRequest_WhenInvalidGradeValueIsSent()
 [Fact]
 public async Task Put_ReturnsBadRequest_WhenInvalidIdIsProvided()
 {
- 
+    await ClearDatabaseAsync();
+    await AddStudentsAndClassesAndGradesAsync();
     var gradeRequest = new GradeRequest
     {
         TeacherId = "dfasfd",
@@ -568,6 +570,7 @@ public async Task Put_ReturnsBadRequest_WhenInvalidIdIsProvided()
     var putContent = await putResponse.Content.ReadAsStringAsync();
 
     Assert.Contains("not found", putContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -603,6 +606,7 @@ public async Task Put_ReturnsInternalServerError_WhenExceptionOccurs()
     var putContent = await putResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", putContent);
     Assert.Contains("Mock exception for testing", putContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -633,6 +637,7 @@ public async Task Delete_ReturnsSuccess_WhenValidIdIsProvided()
     
     var deletedGrade = updatedGrades.FirstOrDefault(g => g.Id == gradeToDelete.Id);
     Assert.Null(deletedGrade);
+    await ClearDatabaseAsync();
 }
 
     
@@ -651,6 +656,7 @@ public async Task Delete_ReturnsNotFound_WhenInvalidIdIsProvided()
     
     var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
     Assert.Contains($"Grade with Id {invalidId} not found.", deleteContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -673,6 +679,7 @@ public async Task Delete_ReturnsInternalServerError_WhenExceptionOccurs()
 
     var deleteContent = await deleteResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", deleteContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -696,6 +703,7 @@ public async Task GetGradesByStudentId_ReturnsGrades_WhenValidStudentIdIsProvide
     var gradesContent = await gradesResponse.Content.ReadAsStringAsync();
     var returnedGrades = JsonConvert.DeserializeObject<List<Grade>>(gradesContent);
     Assert.NotEmpty(returnedGrades);
+    await ClearDatabaseAsync();
 }
 
 
@@ -707,7 +715,7 @@ public async Task GetGradesByStudentId_ReturnsEmptyList_WhenNoGradesAreAdded()
     await ClearDatabaseAsync();
     await AddStudentsAndClassesAsync();
     
-    var getStudentsResponse = await _studentClient.GetAsync("/api/students");
+    var getStudentsResponse = await _client.GetAsync("/api/students");
     getStudentsResponse.EnsureSuccessStatusCode();
     var studentContent = await getStudentsResponse.Content.ReadAsStringAsync();
     var students = JsonConvert.DeserializeObject<List<Student>>(studentContent);
@@ -720,6 +728,7 @@ public async Task GetGradesByStudentId_ReturnsEmptyList_WhenNoGradesAreAdded()
     var grades = JsonConvert.DeserializeObject<List<Grade>>(gradesContent);
     
     Assert.Empty(grades);
+    await ClearDatabaseAsync();
 }
 
 
@@ -738,6 +747,7 @@ public async Task GetGradesByStudentId_ReturnsBadRequest_WhenInvalidStudentIdIsP
     
     var errorMessage = await getGradesResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorMessage);
+    await ClearDatabaseAsync();
     
 }
 
@@ -762,6 +772,7 @@ public async Task GetGradesByStudentId_ReturnsInternalServerError_WhenExceptionO
     
     var errorMessage = await gradesResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -770,7 +781,7 @@ public async Task ByClassBySubject_ShouldReturnCorrectClassAndSubject()
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectAsync();
 
-    var response = await _classOfStudentsClient.GetAsync("api/classes");
+    var response = await _client.GetAsync("api/classes");
     response.EnsureSuccessStatusCode();
 
     var classes = await response.Content.ReadFromJsonAsync<IEnumerable<ClassOfStudents>>();
@@ -787,6 +798,7 @@ public async Task ByClassBySubject_ShouldReturnCorrectClassAndSubject()
     Assert.NotNull(grades);
     Assert.Equal(4, grades.Count());
     Assert.All(grades, grade => Assert.Equal(subject, grade.Subject));
+    await ClearDatabaseAsync();
     
 }
 
@@ -796,7 +808,7 @@ public async Task ByClassBySubject_ShouldReturnEmptyListWhenNoGradesAdded()
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectNoGradesAsync();
 
-    var response = await _classOfStudentsClient.GetAsync("api/classes/");
+    var response = await _client.GetAsync("api/classes/");
     response.EnsureSuccessStatusCode();
 
     var classes = await response.Content.ReadFromJsonAsync<IEnumerable<ClassOfStudents>>();
@@ -811,6 +823,7 @@ public async Task ByClassBySubject_ShouldReturnEmptyListWhenNoGradesAdded()
 
     Assert.NotNull(grades);
     Assert.Empty(grades);
+    await ClearDatabaseAsync();
 }
 
 
@@ -820,7 +833,7 @@ public async Task ByClassBySubject_ShouldReturnBadRequestWhenInvalidClassId()
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectAsync();
 
-    var invalidClassId = -1;
+    var invalidClassId = 999;
     var subject = "Matematika";
 
     var gradeResponse = await _client.GetAsync($"api/grades/byclass/{invalidClassId}/bysubject/{subject}");
@@ -829,6 +842,7 @@ public async Task ByClassBySubject_ShouldReturnBadRequestWhenInvalidClassId()
 
     var errorMessage = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -848,6 +862,7 @@ public async Task ByClassBySubject_ShouldReturnBadRequestWhenInvalidSubject()
 
     var errorMessage = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -865,6 +880,7 @@ public async Task ByClassBySubject_ShouldReturnInternalServerErrorWhenRepository
 
     var errorMessage = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -876,7 +892,7 @@ public async Task GetGradesByClass_ShouldReturnGradesForValidClassId()
     await AddStudentsAndClassWithSingleSubjectAsync();
 
     
-    var response = await _classOfStudentsClient.GetAsync("api/classes/");
+    var response = await _client.GetAsync("api/classes/");
     response.EnsureSuccessStatusCode();
 
     var classes = await response.Content.ReadFromJsonAsync<IEnumerable<ClassOfStudents>>();
@@ -892,6 +908,7 @@ public async Task GetGradesByClass_ShouldReturnGradesForValidClassId()
     Assert.NotNull(grades);
     Assert.Equal(4, grades.Count());
     Assert.All(grades, grade => Assert.Equal(subject, grade.Subject));
+    await ClearDatabaseAsync();
 }
 
 
@@ -901,7 +918,7 @@ public async Task GetGradesByClass_ShouldReturnEmptyList_WhenNoGradesExist()
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectNoGradesAsync();
 
-    var response = await _classOfStudentsClient.GetAsync("api/classes/");
+    var response = await _client.GetAsync("api/classes/");
     response.EnsureSuccessStatusCode();
 
     var classes = await response.Content.ReadFromJsonAsync<IEnumerable<ClassOfStudents>>();
@@ -914,6 +931,7 @@ public async Task GetGradesByClass_ShouldReturnEmptyList_WhenNoGradesExist()
 
     Assert.NotNull(grades);
     Assert.Empty(grades);
+    await ClearDatabaseAsync();
 }
 
 
@@ -923,13 +941,19 @@ public async Task GetGradesByClass_ShouldReturnBadRequest_WhenClassIdIsInvalid()
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectAsync();
 
-    var invalidClassId = 9999;
+    var invalidClassId = -1;
 
     var response = await _client.GetAsync($"api/grades/byclass/{invalidClassId}");
-    response.EnsureSuccessStatusCode();
 
-    Assert.Equal(400, (int)response.StatusCode);
+  
+    Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    
+    var content = await response.Content.ReadAsStringAsync();
+    Assert.Contains("Bad request", content);
+
+    await ClearDatabaseAsync();
 }
+
 
 [Fact]
 public async Task GetGradesByClass_ShouldReturnInternalServerError_WhenExceptionOccurs()
@@ -937,7 +961,7 @@ public async Task GetGradesByClass_ShouldReturnInternalServerError_WhenException
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectAsync();
 
-    var classId = (await _classOfStudentsClient.GetAsync("api/classes/")).Content.ReadFromJsonAsync<IEnumerable<ClassOfStudents>>()
+    var classId = (await _client.GetAsync("api/classes/")).Content.ReadFromJsonAsync<IEnumerable<ClassOfStudents>>()
         .Result.First().Id;
 
     var mockFactory = _factory.WithWebHostBuilder(builder =>
@@ -953,6 +977,7 @@ public async Task GetGradesByClass_ShouldReturnInternalServerError_WhenException
     var response = await mockClient.GetAsync($"api/grades/byclass/{classId}");
     
     Assert.Equal(500, (int)response.StatusCode);
+    await ClearDatabaseAsync();
 }
 
 
@@ -962,7 +987,7 @@ public async Task GetGradesBySubjectByStudent_ShouldReturnGradesForStudent()
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectAsync();
 
-    var response = await _studentClient.GetAsync("api/students");
+    var response = await _client.GetAsync("api/students");
     response.EnsureSuccessStatusCode();
 
     var students = await response.Content.ReadFromJsonAsync<IEnumerable<Student>>();
@@ -977,6 +1002,7 @@ public async Task GetGradesBySubjectByStudent_ShouldReturnGradesForStudent()
     Assert.NotNull(grades);
     Assert.Equal(1, grades.Count());
     Assert.Equal(subject, grades.First().Subject);
+    await ClearDatabaseAsync();
 }
 
 
@@ -986,7 +1012,7 @@ public async Task GetGradesBySubjectByStudent_ShouldReturnEmptyList_WhenNoGrades
     await ClearDatabaseAsync();
     await AddStudentsAndClassWithSingleSubjectNoGradesAsync();
 
-    var response = await _studentClient.GetAsync("api/students/");
+    var response = await _client.GetAsync("api/students/");
     response.EnsureSuccessStatusCode();
 
     var students = await response.Content.ReadFromJsonAsync<IEnumerable<Student>>();
@@ -1000,6 +1026,7 @@ public async Task GetGradesBySubjectByStudent_ShouldReturnEmptyList_WhenNoGrades
 
     Assert.NotNull(grades);
     Assert.Empty(grades);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1018,6 +1045,7 @@ public async Task GetGradesBySubjectByStudent_ShouldReturnBadRequest_WhenInvalid
     Assert.Equal(400, (int)gradeResponse.StatusCode);
     var errorMessage = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1036,6 +1064,7 @@ public async Task GetGradesBySubjectByStudent_ShouldReturnBadRequest_WhenInvalid
     Assert.Equal(400, (int)gradeResponse.StatusCode);
     var errorMessage = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1053,6 +1082,7 @@ public async Task GetGradesBySubjectByStudent_ShouldReturnInternalServerError_Wh
     Assert.Equal(500, (int)gradeResponse.StatusCode);
     var errorMessage = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1071,6 +1101,8 @@ private async Task AddStudentsAndClassWithSingleSubjectNoGradesAsync()
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
             StudentNo = "S12345",
+            Role = "Student"
+           
         };
 
         var student2 = new Student
@@ -1081,7 +1113,9 @@ private async Task AddStudentsAndClassWithSingleSubjectNoGradesAsync()
             FamilyName = "Hajdu",
             BirthDate = new DateTime(2006, 6, 6),
             BirthPlace = "Debrecen",
-            StudentNo = "S67890"
+            StudentNo = "S67890",
+            Role = "Student"
+         
         };
 
         var student3 = new Student
@@ -1093,6 +1127,8 @@ private async Task AddStudentsAndClassWithSingleSubjectNoGradesAsync()
             BirthDate = new DateTime(2007, 7, 7),
             BirthPlace = "Pécs",
             StudentNo = "S11111",
+            Role = "Student"
+          
         };
 
         var student4 = new Student
@@ -1103,7 +1139,9 @@ private async Task AddStudentsAndClassWithSingleSubjectNoGradesAsync()
             FamilyName = "János",
             BirthDate = new DateTime(2008, 8, 8),
             BirthPlace = "Szeged",
-            StudentNo = "S22222"
+            StudentNo = "S22222",
+            Role = "Student"
+          
         };
 
         var students = new List<Student> { student1, student2, student3, student4 };
@@ -1185,6 +1223,7 @@ private async Task ClearDatabaseAsync()
         context.ClassesOfStudents.RemoveRange(context.ClassesOfStudents);
         context.Grades.RemoveRange(context.Grades);
         context.Messages.RemoveRange(context.Messages);
+        context.Parents.RemoveRange(context.Parents);
         context.Students.RemoveRange(context.Students);
         context.Teachers.RemoveRange(context.Teachers);
         context.TeacherSubjects.RemoveRange(context.TeacherSubjects);
@@ -1229,6 +1268,7 @@ public async Task GetTeachersLastGrade_ReturnsLatestGrade_WhenValidTeacherIdIsPr
     Assert.Equal(latestGrade.StudentId, returnedGrade.StudentId);
     Assert.Equal(latestGrade.ForWhat, returnedGrade.ForWhat);
     Assert.Equal(latestGrade.Read, returnedGrade.Read);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1264,6 +1304,8 @@ public async Task GetTeachersLastGrade_ReturnsBasicLatestGradeResponse_WhenTeach
     Assert.False(latestGradeResponse.Read);
 
     Assert.Equal(DateTime.MinValue, latestGradeResponse.Date);
+    await ClearDatabaseAsync();
+    
 }
 
 
@@ -1284,6 +1326,7 @@ public async Task GetTeachersLastGrade_ReturnsBadRequest_WhenInvalidTeacherIdIsP
     
     var errorContent = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1312,6 +1355,7 @@ public async Task GetTeachersLastGrade_ReturnsInternalServerError_WhenUnexpected
     Assert.Equal(HttpStatusCode.InternalServerError, gradeResponse.StatusCode);
     var errorContent = await gradeResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", errorContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1323,7 +1367,7 @@ public async Task GetNewGradesNumber_ReturnsCorrectCount_WhenValidStudentIdIsPro
     
     await AddStudentsAndClassesAndGradesAsync();
     
-    var studentResponse = await _studentClient.GetAsync("/api/students");
+    var studentResponse = await _client.GetAsync("/api/students");
     studentResponse.EnsureSuccessStatusCode();
     var studentContent = await studentResponse.Content.ReadAsStringAsync();
     var students = JsonConvert.DeserializeObject<List<Student>>(studentContent);
@@ -1335,6 +1379,7 @@ public async Task GetNewGradesNumber_ReturnsCorrectCount_WhenValidStudentIdIsPro
     var newGradesContent = await newGradesResponse.Content.ReadAsStringAsync();
     var newGradesCount = int.Parse(newGradesContent);
     Assert.Equal(1, newGradesCount);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -1343,7 +1388,7 @@ public async Task GetNewGradesNumber_ReturnsInternalServerError_WhenRepositoryTh
     await ClearDatabaseAsync();
     await AddStudentsAndClassesAndGradesAsync();
     
-    var studentResponse = await _studentClient.GetAsync("/api/students");
+    var studentResponse = await _client.GetAsync("/api/students");
     studentResponse.EnsureSuccessStatusCode();
     var studentContent = await studentResponse.Content.ReadAsStringAsync();
     var students = JsonConvert.DeserializeObject<List<Student>>(studentContent);
@@ -1356,6 +1401,7 @@ public async Task GetNewGradesNumber_ReturnsInternalServerError_WhenRepositoryTh
 
     var mockClientContent = await mockClientResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", mockClientContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1367,7 +1413,7 @@ public async Task GetNewGradesNumber_ReturnsBadRequest_WhenInvalidStudentIdIsPro
     
     await AddStudentsAndClassesAndGradesAsync();
     
-    var studentResponse = await _studentClient.GetAsync("/api/students");
+    var studentResponse = await _client.GetAsync("/api/students");
     studentResponse.EnsureSuccessStatusCode();
     var studentContent = await studentResponse.Content.ReadAsStringAsync();
     var students = JsonConvert.DeserializeObject<List<Student>>(studentContent);
@@ -1380,6 +1426,7 @@ public async Task GetNewGradesNumber_ReturnsBadRequest_WhenInvalidStudentIdIsPro
     
     var invalidStudentContent = await invalidStudentResponse.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", invalidStudentContent);
+    await ClearDatabaseAsync();
     
 }
 
@@ -1389,7 +1436,7 @@ public async Task GetNewGradesByStudentId_ReturnsEmptyList_WhenNoGradesExistForS
     await ClearDatabaseAsync();
     await AddStudentsAndClassesAsync();
     
-    var studentResponse = await _studentClient.GetAsync("/api/students");
+    var studentResponse = await _client.GetAsync("/api/students");
     studentResponse.EnsureSuccessStatusCode();
     var studentContent = await studentResponse.Content.ReadAsStringAsync();
     var students = JsonConvert.DeserializeObject<List<Student>>(studentContent);
@@ -1404,6 +1451,7 @@ public async Task GetNewGradesByStudentId_ReturnsEmptyList_WhenNoGradesExistForS
     var grades = JsonConvert.DeserializeObject<List<Grade>>(content);
 
     Assert.Empty(grades);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1413,7 +1461,7 @@ public async Task GetNewGradesByStudentId_ReturnsNewGrades_WhenValidStudentIdIsP
     await ClearDatabaseAsync();
     await AddStudentsAndClassesAndGradesAsync();
     
-    var studentResponse = await _studentClient.GetAsync("/api/students");
+    var studentResponse = await _client.GetAsync("/api/students");
     studentResponse.EnsureSuccessStatusCode();
     var studentContent = await studentResponse.Content.ReadAsStringAsync();
     var students = JsonConvert.DeserializeObject<List<Student>>(studentContent);
@@ -1428,6 +1476,7 @@ public async Task GetNewGradesByStudentId_ReturnsNewGrades_WhenValidStudentIdIsP
     var grades = JsonConvert.DeserializeObject<List<Grade>>(content);
 
     Assert.NotEmpty(grades);
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -1444,6 +1493,7 @@ public async Task GetNewGradesByStudentId_ReturnsBadRequest_WhenInvalidStudentId
 
     var content = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", content);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1453,7 +1503,7 @@ public async Task GetNewGradesByStudentId_ReturnsInternalServerError_WhenReposit
     await ClearDatabaseAsync();
     await AddStudentsAndClassesAndGradesAsync();
     
-    var studentResponse = await _studentClient.GetAsync("/api/students");
+    var studentResponse = await _client.GetAsync("/api/students");
     studentResponse.EnsureSuccessStatusCode();
     var studentContent = await studentResponse.Content.ReadAsStringAsync();
     var students = JsonConvert.DeserializeObject<List<Student>>(studentContent);
@@ -1466,6 +1516,7 @@ public async Task GetNewGradesByStudentId_ReturnsInternalServerError_WhenReposit
 
     var mockClientContent = await mockClientResponse.Content.ReadAsStringAsync();
     Assert.Contains("Internal server error", mockClientContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1473,6 +1524,7 @@ public async Task GetNewGradesByStudentId_ReturnsInternalServerError_WhenReposit
 
 private async Task AddStudentsAndClassesAsync()
 {
+   
     using (var scope = _factory.Services.CreateScope())
     {
         var context = scope.ServiceProvider.GetRequiredService<ClassroomContext>();
@@ -1485,7 +1537,9 @@ private async Task AddStudentsAndClassesAsync()
             FamilyName = "Kovács",
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
-            StudentNo = "S12345"
+            StudentNo = "S12345",
+            Role = "Student"
+            
         };
 
        
@@ -1606,6 +1660,8 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
             StudentNo = "S12345",
+            Role = "Student"
+           
         };
 
         var student2 = new Student
@@ -1616,7 +1672,9 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             FamilyName = "Hajdu",
             BirthDate = new DateTime(2006, 6, 6),
             BirthPlace = "Debrecen",
-            StudentNo = "S67890"
+            StudentNo = "S67890",
+            Role = "Student"
+           
         };
 
         var student3 = new Student
@@ -1628,6 +1686,8 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             BirthDate = new DateTime(2007, 7, 7),
             BirthPlace = "Pécs",
             StudentNo = "S11111",
+            Role = "Student"
+            
         };
 
         var student4 = new Student
@@ -1638,7 +1698,9 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             FamilyName = "János",
             BirthDate = new DateTime(2008, 8, 8),
             BirthPlace = "Szeged",
-            StudentNo = "S22222"
+            StudentNo = "S22222",
+            Role = "Student"
+           
         };
 
         var students = new List<Student> { student1, student2, student3, student4 };
@@ -1783,6 +1845,8 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             BirthDate = new DateTime(2005, 5, 5),
             BirthPlace = "Budapest",
             StudentNo = "S12345",
+            Role = "Student"
+           
         };
 
         var student2 = new Student
@@ -1793,7 +1857,9 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             FamilyName = "Hajdu",
             BirthDate = new DateTime(2006, 6, 6),
             BirthPlace = "Debrecen",
-            StudentNo = "S67890"
+            StudentNo = "S67890",
+            Role = "Student"
+         
         };
 
         var student3 = new Student
@@ -1805,6 +1871,8 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             BirthDate = new DateTime(2007, 7, 7),
             BirthPlace = "Pécs",
             StudentNo = "S11111",
+            Role = "Student"
+         
         };
 
         var student4 = new Student
@@ -1815,7 +1883,9 @@ private async Task AddStudentsAndClassWithSingleSubjectAsync()
             FamilyName = "János",
             BirthDate = new DateTime(2008, 8, 8),
             BirthPlace = "Szeged",
-            StudentNo = "S22222"
+            StudentNo = "S22222",
+            Role = "Student"
+           
         };
 
         var students = new List<Student> { student1, student2, student3, student4 };

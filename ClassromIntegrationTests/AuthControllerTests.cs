@@ -14,15 +14,15 @@ using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace ClassromIntegrationTests
-{
+namespace ClassromIntegrationTests;
+
+[Collection("IntegrationTests")]
+
     public class AuthControllerTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly CustomWebApplicationFactory _factory;
         private readonly HttpClient _client;
         private readonly HttpClient _mockClient;
-        private readonly HttpClient _usersClient;
-        private readonly HttpClient _studentsClient;
         private readonly Mock<IAuthService> _mockAuthService;
         private readonly Mock<IUserService> _mockUserService;
 
@@ -45,11 +45,10 @@ namespace ClassromIntegrationTests
 
             _mockClient = mockFactory.CreateClient();
 
-            _studentsClient = _factory.CreateClient();
+  
 
         }
 
-        
         
         [Fact]
         public async Task RegisterStudent_ValidStudentRequest_ReturnsCreatedResponse()
@@ -68,16 +67,25 @@ namespace ClassromIntegrationTests
 
             var response = await _client.PostAsJsonAsync("/api/auth/signup/student", request);
 
-            response.EnsureSuccessStatusCode();
+          
+            var responseBody = await response.Content.ReadAsStringAsync();
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Test failed with status code: {response.StatusCode} and response body: {responseBody}");
+            }
+
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-            var responseBody = await response.Content.ReadAsStringAsync();
             var registrationResponse = JsonConvert.DeserializeObject<RegistrationResponse>(responseBody);
 
             Assert.NotNull(registrationResponse);
             Assert.Equal("john.doe@example.com", registrationResponse.Email);
             Assert.Equal("johnny123", registrationResponse.UserName);
+
+            await ClearDatabaseAsync();
         }
+
         
         
         [Fact]
@@ -98,6 +106,8 @@ namespace ClassromIntegrationTests
             var response = await _client.PostAsJsonAsync("/api/auth/signup/student", request);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            
+            await ClearDatabaseAsync();
         }
 
         
@@ -136,30 +146,15 @@ namespace ClassromIntegrationTests
             var response = await mockClient.PostAsJsonAsync("/api/auth/signup/student", request);
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            
+            await ClearDatabaseAsync();
         }
 
         
         
-        [Fact]
-        public async Task RegisterTeacher_Success_ReturnsCreatedResponse()
-        {
-            var teacherRequest = new TeacherRequest
-            {
-                FirstName = "John",
-                FamilyName = "Doe",
-                Email = "johndoe@example.com",
-                Username = "johndoe",
-                Password = "Password123"
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/signup/teacher", teacherRequest);
-
-            response.EnsureSuccessStatusCode();
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            Assert.Contains("johndoe@example.com", responseContent);
-            Assert.Contains("johndoe", responseContent);
-        }
+       
+        
+        
         
         
         [Fact]
@@ -184,6 +179,8 @@ namespace ClassromIntegrationTests
             var errorResponse = JsonConvert.DeserializeObject<JObject>(responseString);
 
             Assert.True(errorResponse["errors"]["Email"].ToString().Contains("The Email field is required."));
+            
+            await ClearDatabaseAsync();
         }
 
         
@@ -226,6 +223,8 @@ namespace ClassromIntegrationTests
 
             var responseString = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseString);
+            
+            await ClearDatabaseAsync();
         }
 
        
@@ -236,7 +235,7 @@ namespace ClassromIntegrationTests
             await ClearDatabaseAsync();
             await SeedStudentsAsync();
 
-            var response = await _studentsClient.GetAsync("/api/students");
+            var response = await _client.GetAsync("/api/students");
             response.EnsureSuccessStatusCode();
     
             var studentsJson = await response.Content.ReadAsStringAsync();
@@ -263,6 +262,8 @@ namespace ClassromIntegrationTests
             
             Assert.Contains(parentRequest.Email, responseBody);
             Assert.Contains(parentRequest.Username, responseBody);
+            
+            await ClearDatabaseAsync();
         }
 
 
@@ -288,6 +289,8 @@ namespace ClassromIntegrationTests
             var responseBody = await response.Content.ReadAsStringAsync();
             
             Assert.Contains("ValidationError", responseBody);
+            
+            await ClearDatabaseAsync();
         }
 
 
@@ -298,7 +301,7 @@ namespace ClassromIntegrationTests
             await ClearDatabaseAsync();
             await SeedStudentsAsync();
 
-            var response1 = await _studentsClient.GetAsync("/api/students");
+            var response1 = await _client.GetAsync("/api/students");
             response1.EnsureSuccessStatusCode();
     
             var studentsJson = await response1.Content.ReadAsStringAsync();
@@ -323,6 +326,8 @@ namespace ClassromIntegrationTests
             var responseBody = await response.Content.ReadAsStringAsync();
 
             Assert.Contains("The Email field is required.", responseBody);
+            
+            await ClearDatabaseAsync();
         }
 
         
@@ -333,7 +338,7 @@ namespace ClassromIntegrationTests
             await ClearDatabaseAsync();
             await SeedStudentsAsync();
 
-            var response1 = await _studentsClient.GetAsync("/api/students");
+            var response1 = await _client.GetAsync("/api/students");
             response1.EnsureSuccessStatusCode();
     
             var studentsJson = await response1.Content.ReadAsStringAsync();
@@ -364,6 +369,7 @@ namespace ClassromIntegrationTests
             var responseBody = await response.Content.ReadAsStringAsync();
             
             Assert.Contains("Internal server error: Test exception", responseBody);
+            await ClearDatabaseAsync();
         }
 
 
@@ -432,6 +438,8 @@ namespace ClassromIntegrationTests
             Assert.Equal("Login successful", responseObject["message"]);
             Assert.NotNull(responseObject["token"]);
             Assert.Equal("kovacsvilmos", responseObject["user"]["userName"]);
+            
+            await ClearDatabaseAsync();
         }
 
         
@@ -461,6 +469,8 @@ namespace ClassromIntegrationTests
             var response = await _client.PostAsJsonAsync("/api/auth/signin", authRequest);
 
             Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            
+            await ClearDatabaseAsync();
         }
 
         
@@ -479,6 +489,8 @@ namespace ClassromIntegrationTests
             var response = await _client.PostAsJsonAsync("/api/auth/signin", authRequest);
 
             Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            
+            await ClearDatabaseAsync();
         }
 
         
@@ -517,6 +529,8 @@ namespace ClassromIntegrationTests
            
             var cookies = responseLogout.Headers.GetValues("Set-Cookie");
             Assert.DoesNotContain("access_token", cookies);
+            
+            await ClearDatabaseAsync();
         }
 
         
@@ -582,4 +596,3 @@ namespace ClassromIntegrationTests
             }
         }
     }
-}

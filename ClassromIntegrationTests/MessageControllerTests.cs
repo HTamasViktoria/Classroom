@@ -11,13 +11,14 @@ using Newtonsoft.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace ClassromIntegrationTests;
+[Collection("IntegrationTests")]
 
 public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 {
     private readonly CustomWebApplicationFactory _factory;
     private readonly HttpClient _client;
     private readonly HttpClient _mockClient;
-    private readonly HttpClient _usersClient;
+
 
     public MessageControllerTests(CustomWebApplicationFactory factory)
     {
@@ -35,15 +36,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         _mockClient = mockFactory.CreateClient();
         
         
-        var usersMock = factory.WithWebHostBuilder(builder =>
-        {
-            builder.ConfigureServices(services =>
-            {
-                services.AddTransient<IUserRepository, UserRepository>();
-            });
-        });
-
-        _usersClient = mockFactory.CreateClient();
+   
     }
 
 
@@ -59,6 +52,8 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var responseString = await response.Content.ReadAsStringAsync();
         var messages = JsonSerializer.Deserialize<List<Message>>(responseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         Assert.Empty(messages);
+
+        await ClearDatabaseAsync();
     }
 
 
@@ -77,6 +72,8 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         Assert.NotEmpty(messages);
         Assert.Equal(2, messages.Count);
+        
+        await ClearDatabaseAsync();
        
     }
 
@@ -91,6 +88,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseString);
+        await ClearDatabaseAsync();
     }
 
     
@@ -114,6 +112,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var newMessagesCount = int.Parse(await newMessagesResponse.Content.ReadAsStringAsync());
 
         Assert.Equal(1, newMessagesCount);
+        await ClearDatabaseAsync();
     }
 
 
@@ -129,6 +128,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var newMessagesResponse = await _client.GetAsync($"/api/messages/newmessagesnum/{invalidId}");
         
         Assert.Equal(System.Net.HttpStatusCode.NotFound, newMessagesResponse.StatusCode);
+        await ClearDatabaseAsync();
     }
 
 
@@ -149,6 +149,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var newMessagesResponse = await _mockClient.GetAsync($"/api/messages/newmessagesnum/{id}");
 
         Assert.Equal(System.Net.HttpStatusCode.InternalServerError, newMessagesResponse.StatusCode);
+        await ClearDatabaseAsync();
     }
 
 
@@ -180,6 +181,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         {
             throw new Exception("Message HeadText doesn't match expected value.");
         }
+         await ClearDatabaseAsync();
     }
 
     
@@ -199,6 +201,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var errorMessage = await getMessageResponse.Content.ReadAsStringAsync();
     
         Assert.Contains("Not found", errorMessage);
+        await ClearDatabaseAsync();
     }
 
 
@@ -224,6 +227,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var errorMessage = await getMessageResponse.Content.ReadAsStringAsync();
     
         Assert.Contains("Internal server error", errorMessage);
+        await ClearDatabaseAsync();
     }
 
     
@@ -249,6 +253,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var incomings = JsonSerializer.Deserialize<List<Message>>(incomingsResponseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         Assert.Single(incomings);
+        await ClearDatabaseAsync();
     }
 
 
@@ -273,6 +278,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var incomings = JsonSerializer.Deserialize<List<Message>>(incomingsResponseString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         Assert.Empty(incomings);
+        await ClearDatabaseAsync();
     }
 
     
@@ -287,6 +293,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         Assert.Equal(400, (int)getIncomingsResponse.StatusCode);
         Assert.Contains("Not found", responseString);
+        await ClearDatabaseAsync();
     }
 
     [Fact]
@@ -309,6 +316,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var responseString2 = await getIncomingsResponse.Content.ReadAsStringAsync();
     
         Assert.Contains("Internal server error", responseString2);
+        await ClearDatabaseAsync();
     }
 
 
@@ -335,6 +343,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var messages = JsonSerializer.Deserialize<List<Message>>(responseString2, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         Assert.Empty(messages);
+        await ClearDatabaseAsync();
     }
 
     
@@ -344,7 +353,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
     {
         await ClearDatabaseAsync();
         await AddDeletedMessage();
-        var getAllParentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var getAllParentsResponse = await _client.GetAsync("/api/users/allparents");
         getAllParentsResponse.EnsureSuccessStatusCode();
 
         var responseString = await getAllParentsResponse.Content.ReadAsStringAsync();
@@ -361,6 +370,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         var deletedMessage = deletedMessages.First();
         
         Assert.True(deletedMessage.DeletedByReceiver);
+        await ClearDatabaseAsync();
     }
 
 
@@ -377,6 +387,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(400, (int)getDeletedsResponse.StatusCode);
         var responseString = await getDeletedsResponse.Content.ReadAsStringAsync();
         Assert.Contains("Not found", responseString);
+        await ClearDatabaseAsync();
     }
 
     [Fact]
@@ -384,7 +395,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
     {
         await ClearDatabaseAsync();
         await AddDeletedMessage();
-        var getAllParentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var getAllParentsResponse = await _client.GetAsync("/api/users/allparents");
         getAllParentsResponse.EnsureSuccessStatusCode();
 
         var responseString = await getAllParentsResponse.Content.ReadAsStringAsync();
@@ -397,6 +408,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(500, (int)getDeletedsResponse.StatusCode);
         var responseString2 = await getDeletedsResponse.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseString2);
+        await ClearDatabaseAsync();
     }
     
     
@@ -406,11 +418,11 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         await ClearDatabaseAsync();
         await AddUsersWithoutMessages();
 
-        var usersResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var usersResponse = await _client.GetAsync("/api/users/allparents");
         usersResponse.EnsureSuccessStatusCode();
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await usersResponse.Content.ReadAsStringAsync());
 
-        usersResponse = await _usersClient.GetAsync("/api/users/allteachers");
+        usersResponse = await _client.GetAsync("/api/users/allteachers");
         usersResponse.EnsureSuccessStatusCode();
         var teachers = JsonConvert.DeserializeObject<List<Teacher>>(await usersResponse.Content.ReadAsStringAsync());
 
@@ -433,6 +445,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         response.EnsureSuccessStatusCode();
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Üzenet sikeresen elmentve az adatbázisba.", responseString);
+        await ClearDatabaseAsync();
     }
 
 
@@ -442,7 +455,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         await ClearDatabaseAsync();
         await AddUsersWithoutMessages();
 
-        var usersResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var usersResponse = await _client.GetAsync("/api/users/allparents");
         usersResponse.EnsureSuccessStatusCode();
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await usersResponse.Content.ReadAsStringAsync());
         
@@ -466,6 +479,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", responseString);
+        await ClearDatabaseAsync();
     }
 
 
@@ -476,11 +490,11 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         await ClearDatabaseAsync();
         await AddUsersWithoutMessages();
 
-        var usersResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var usersResponse = await _client.GetAsync("/api/users/allparents");
         usersResponse.EnsureSuccessStatusCode();
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await usersResponse.Content.ReadAsStringAsync());
 
-        usersResponse = await _usersClient.GetAsync("/api/users/allteachers");
+        usersResponse = await _client.GetAsync("/api/users/allteachers");
         usersResponse.EnsureSuccessStatusCode();
         var teachers = JsonConvert.DeserializeObject<List<Teacher>>(await usersResponse.Content.ReadAsStringAsync());
 
@@ -502,6 +516,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseString);
+         await ClearDatabaseAsync();
     }
 
    
@@ -533,6 +548,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var updatedMessage = messages.First(m => m.Id == messageId);
         Assert.True(updatedMessage.Read);
+        await ClearDatabaseAsync();
     }
     
     
@@ -551,6 +567,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", responseString);
+        await ClearDatabaseAsync();
     }
 
 
@@ -574,6 +591,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseString);
+        await ClearDatabaseAsync();
     }
 
 
@@ -606,6 +624,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var updatedMessage = messages.First(m => m.Id == messageId);
         Assert.False(updatedMessage.Read);
+        await ClearDatabaseAsync();
     }
 
     
@@ -629,6 +648,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", responseString);
+        await ClearDatabaseAsync();
     }
 
     
@@ -646,6 +666,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", responseString);
+        await ClearDatabaseAsync();
     }
 
     [Fact]
@@ -676,6 +697,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", responseString);
+        await ClearDatabaseAsync();
     }
 
     
@@ -705,6 +727,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var updatedMessage = updatedMessages.First(m => m.Id == messageId);
         Assert.True(updatedMessage.DeletedByReceiver, "A DeletedByReceiver érték nem true.");
+        await ClearDatabaseAsync();
     }
 
     
@@ -721,6 +744,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
         var errorMessage = await response.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", errorMessage);
+        await ClearDatabaseAsync();
     }
 
     
@@ -746,6 +770,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         
         var errorMessage = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", errorMessage);
+        await ClearDatabaseAsync();
     }
 
     
@@ -756,7 +781,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         await ClearDatabaseAsync();
         await AddUsersWithMessages();
 
-        var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var parentsResponse = await _client.GetAsync("/api/users/allparents");
         parentsResponse.EnsureSuccessStatusCode();
 
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -776,6 +801,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.False(message.Read);
         Assert.False(message.DeletedBySender);
         Assert.False(message.DeletedByReceiver);
+        await ClearDatabaseAsync();
     }
 
     
@@ -789,7 +815,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         await AddUsersWithMessages();  
 
 
-        var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var parentsResponse = await _client.GetAsync("/api/users/allparents");
         parentsResponse.EnsureSuccessStatusCode();
 
   
@@ -814,6 +840,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
         Assert.False(message.Read);
         Assert.False(message.DeletedBySender);
         Assert.False(message.DeletedByReceiver);
+        await ClearDatabaseAsync();
     }
 
     
@@ -826,7 +853,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
     
         await AddUsersWithoutMessages();  
 
-        var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var parentsResponse = await _client.GetAsync("/api/users/allparents");
         parentsResponse.EnsureSuccessStatusCode();
 
     
@@ -846,6 +873,7 @@ public class MessageControllerTests:IClassFixture<CustomWebApplicationFactory>
 
      
         Assert.Empty(messages);
+        await ClearDatabaseAsync();
     }
 
     
@@ -867,6 +895,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
  
     var errorMessage = await response.Content.ReadAsStringAsync();
     Assert.Contains("Bad request", errorMessage);
+    await ClearDatabaseAsync();
 }
 
 
@@ -877,7 +906,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
         await AddUsersWithMessages();
 
   
-        var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var parentsResponse = await _client.GetAsync("/api/users/allparents");
         parentsResponse.EnsureSuccessStatusCode();
     
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -889,6 +918,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
 
         var errorMessage = await response.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", errorMessage);
+        await ClearDatabaseAsync();
     }
 
     
@@ -899,7 +929,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
         await ClearDatabaseAsync();
         await AddDeletedMessage();
 
-        var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var parentsResponse = await _client.GetAsync("/api/users/allparents");
         parentsResponse.EnsureSuccessStatusCode();
 
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -925,6 +955,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
 
         var restoredMessage = updatedMessages.First(m => m.Id == messageId);
         Assert.False(restoredMessage.DeletedByReceiver, "A DeletedByReceiver érték nem lett false.");
+        await ClearDatabaseAsync();
     }
 
     
@@ -952,6 +983,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
     
         var errorMessage = await restoreResponse.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", errorMessage);
+        await ClearDatabaseAsync();
     }
 
     
@@ -962,7 +994,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
         await ClearDatabaseAsync();
         await AddDeletedMessage();
 
-        var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var parentsResponse = await _client.GetAsync("/api/users/allparents");
         parentsResponse.EnsureSuccessStatusCode();
 
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -982,6 +1014,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
     
         var errorMessage = await restoreResponse.Content.ReadAsStringAsync();
         Assert.Contains("Bad request", errorMessage);
+        await ClearDatabaseAsync();
     }
 
     
@@ -992,7 +1025,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
         await ClearDatabaseAsync();
         await AddDeletedMessage();
         
-        var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+        var parentsResponse = await _client.GetAsync("/api/users/allparents");
         parentsResponse.EnsureSuccessStatusCode();
 
         var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -1009,6 +1042,7 @@ public async Task GetSents_InvalidId_ReturnsBadRequest()
 
         var errorMessage = await restoreResponse.Content.ReadAsStringAsync();
         Assert.Contains("Internal server error", errorMessage);
+        await ClearDatabaseAsync();
     }
 
  
@@ -1021,7 +1055,7 @@ public async Task GetOutgoings_EmptyList_ReturnsEmptyList()
     await AddUsersWithoutMessages();
 
 
-    var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+    var parentsResponse = await _client.GetAsync("/api/users/allparents");
     parentsResponse.EnsureSuccessStatusCode();
 
     var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -1038,6 +1072,7 @@ public async Task GetOutgoings_EmptyList_ReturnsEmptyList()
 
 
     Assert.Empty(messages);
+    await ClearDatabaseAsync();
 }
 
 
@@ -1048,7 +1083,7 @@ public async Task GetOutgoings_InvalidId_ThrowsArgumentException()
     await ClearDatabaseAsync();
 
   
-    var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+    var parentsResponse = await _client.GetAsync("/api/users/allparents");
     parentsResponse.EnsureSuccessStatusCode();
 
     var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -1061,6 +1096,7 @@ public async Task GetOutgoings_InvalidId_ThrowsArgumentException()
 
 
     Assert.Equal(404, (int)response.StatusCode); 
+    await ClearDatabaseAsync();
 }
 
 [Fact]
@@ -1070,7 +1106,7 @@ public async Task GetOutgoings_InternalServerError_Throws500Error()
     await AddUsersWithMessages();
 
 
-    var parentsResponse = await _usersClient.GetAsync("/api/users/allparents");
+    var parentsResponse = await _client.GetAsync("/api/users/allparents");
     parentsResponse.EnsureSuccessStatusCode();
 
     var parents = JsonConvert.DeserializeObject<List<Parent>>(await parentsResponse.Content.ReadAsStringAsync());
@@ -1083,6 +1119,7 @@ public async Task GetOutgoings_InternalServerError_Throws500Error()
 
 
     Assert.Equal(500, (int)response.StatusCode);
+    await ClearDatabaseAsync();
 }
 
 

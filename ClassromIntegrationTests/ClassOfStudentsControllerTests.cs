@@ -10,8 +10,9 @@ using Classroom.Model.ResponseModels;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace ClassromIntegrationTests
-{
+namespace ClassromIntegrationTests;
+
+    [Collection("IntegrationTests")]
     public class ClassOfStudentsControllerTests : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly CustomWebApplicationFactory _factory;
@@ -44,6 +45,8 @@ namespace ClassromIntegrationTests
             response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Equal("[]", responseBody);
+
+            await ClearDatabaseAsync();
         }
 
 
@@ -64,6 +67,8 @@ namespace ClassromIntegrationTests
 
             Assert.Contains(classes, c => c.Name == "Math 101" && c.Grade == "10" && c.Section == "A");
             Assert.Contains(classes, c => c.Name == "Science 101" && c.Grade == "10" && c.Section == "B");
+            
+            await ClearDatabaseAsync();
         }
 
 
@@ -91,6 +96,8 @@ namespace ClassromIntegrationTests
 
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseContent);
+            
+            await ClearDatabaseAsync();
         }
 
 
@@ -109,12 +116,6 @@ namespace ClassromIntegrationTests
 
             Assert.NotEmpty(studentsWithClasses);
             
-            foreach (var student in studentsWithClasses)
-            {
-                Console.WriteLine(
-                    $"Id: {student.Id}, FirstName: {student.FirstName}, FamilyName: {student.FamilyName}, NameOfClass: {student.NameOfClass}");
-            }
-
            
             Assert.Contains(studentsWithClasses, s =>
                 s.NameOfClass == "Math 101" && s.FirstName == "Béla" && s.FamilyName == "Kovács");
@@ -125,6 +126,9 @@ namespace ClassromIntegrationTests
                 s.NameOfClass == "Science 101" && s.FirstName == "Károly" && s.FamilyName == "Péter");
             Assert.Contains(studentsWithClasses, s =>
                 s.NameOfClass == "Science 101" && s.FirstName == "László" && s.FamilyName == "János");
+            
+            
+            await ClearDatabaseAsync();
         }
 
 
@@ -148,6 +152,8 @@ namespace ClassromIntegrationTests
 
             var responseBody = await response.Content.ReadAsStringAsync();
             Assert.Contains("Mock exception for testing.", responseBody);
+            
+            await ClearDatabaseAsync();
         }
 
 
@@ -189,6 +195,7 @@ namespace ClassromIntegrationTests
             Assert.NotEmpty(studentsInScienceClass);
             Assert.Contains(studentsInScienceClass, s => s.Id == "567d1x1" && s.FirstName == "Károly" && s.FamilyName == "Péter");
             Assert.Contains(studentsInScienceClass, s => s.Id == "789d2x2" && s.FirstName == "László" && s.FamilyName == "János");
+            await ClearDatabaseAsync();
         }
 
 
@@ -206,6 +213,7 @@ namespace ClassromIntegrationTests
     
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Bad request", responseContent);
+            await ClearDatabaseAsync();
         }
 
 
@@ -231,35 +239,8 @@ namespace ClassromIntegrationTests
             
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseContent);
-        }
-
-        
-        /*[Fact]
-        public async Task GetClassesBySubject_ShouldReturnClasses_WhenSubjectExists()
-        {
-            // Arrange
             await ClearDatabaseAsync();
-            await AddStudentsClassesTeachersAndSubjectsAsync();
-
-            // Act
-            var response = await _client.GetAsync("/api/classes/bysubject/Matematika"); 
-
-            // Assert
-            response.EnsureSuccessStatusCode();
-    
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var classes = JsonConvert.DeserializeObject<List<ClassOfStudents>>(responseContent);
-    
-            Assert.NotEmpty(classes);
-    
-            // Módosított Assert
-            Assert.Contains(classes, c => c.Name == "Math 101" && c.Grade == "10" && c.Section == "A");
-            Assert.DoesNotContain(classes, c => c.Name == "Science 101" && c.Grade == "10" && c.Section == "B");
         }
-        */
-
-
-
 
         [Fact]
         public async Task GetClassesBySubject_ShouldReturnEmptyList_WhenNoClassesExistForSubject()
@@ -273,6 +254,7 @@ namespace ClassromIntegrationTests
             var responseContent = await response.Content.ReadAsStringAsync();
 
             Assert.Equal("[]", responseContent);
+            await ClearDatabaseAsync();
         }
         
 
@@ -287,6 +269,7 @@ namespace ClassromIntegrationTests
     
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Bad request", responseContent);
+            await ClearDatabaseAsync();
         }
     
 
@@ -313,6 +296,7 @@ namespace ClassromIntegrationTests
             
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseContent);
+            await ClearDatabaseAsync();
         }
 
         
@@ -329,7 +313,8 @@ namespace ClassromIntegrationTests
                 Role = "Student",
                 StudentNo = "S12345",
                 BirthDate = DateTime.Now.AddYears(-16),
-                BirthPlace = "Budapest"
+                BirthPlace = "Budapest",
+               
             };
 
             var student2 = new Student
@@ -366,65 +351,64 @@ namespace ClassromIntegrationTests
     
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Osztály sikeresen elmentve az adatbázisba", responseContent);
+            await ClearDatabaseAsync();
         }
 
-        
-       
-        
-        
+
         [Fact]
-public async Task Post_ShouldReturnBadRequest_WhenClassAlreadyExists()
-{
-    var existingClass = new ClassOfStudentsRequest
-    {
-        Id = 1,
-        Grade = "10",
-        Section = "A",
-        Students = new List<Student> 
-        { 
-            new Student 
-            { 
-                Id = "5r6j7z5", 
-                FirstName = "John", 
-                FamilyName = "Doe", 
-                StudentNo = "12345", 
-                Role = "Student",
-                BirthPlace = "Budapest",
-                BirthDate = new DateTime(2005, 5, 15)
-            } 
-        }
-    };
+        public async Task Post_ShouldReturnBadRequest_WhenClassAlreadyExists()
+        {
+            var existingClass = new ClassOfStudentsRequest
+            {
+                Id = 1,
+                Grade = "10",
+                Section = "A",
+                Students = new List<Student>
+                {
+                    new Student
+                    {
+                        Id = "5r6j7z5",
+                        FirstName = "John",
+                        FamilyName = "Doe",
+                        StudentNo = "12345",
+                        Role = "Student",
+                        BirthPlace = "Budapest",
+                        BirthDate = new DateTime(2005, 5, 15)
+                    }
+                }
+            };
 
-    
-    await _client.PostAsJsonAsync("/api/classes", existingClass);
-    
-    var request = new ClassOfStudentsRequest
-    {
-        Id = 2,
-        Grade = "10",
-        Section = "A",
-        Students = new List<Student> 
-        { 
-            new Student 
-            { 
-                Id = "2", 
-                FirstName = "Jane", 
-                FamilyName = "Smith", 
-                StudentNo = "67890", 
-                Role = "Student",
-                BirthPlace = "Debrecen",
-                BirthDate = new DateTime(2005, 6, 20)
-            } 
-        }
-    };
-    
-    var response = await _client.PostAsJsonAsync("/api/classes", request);
-    
-    Assert.Equal(400, (int)response.StatusCode);
 
-    var responseContent = await response.Content.ReadAsStringAsync();
-    Assert.Contains("already exists", responseContent);
-}
+            await _client.PostAsJsonAsync("/api/classes", existingClass);
+
+            var request = new ClassOfStudentsRequest
+            {
+                Id = 2,
+                Grade = "10",
+                Section = "A",
+                Students = new List<Student>
+                {
+                    new Student
+                    {
+                        Id = "2",
+                        FirstName = "Jane",
+                        FamilyName = "Smith",
+                        StudentNo = "67890",
+                        Role = "Student",
+                        BirthPlace = "Debrecen",
+                        BirthDate = new DateTime(2005, 6, 20)
+                    }
+                }
+            };
+
+            var response = await _client.PostAsJsonAsync("/api/classes", request);
+
+            Assert.Equal(400, (int)response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.Contains("already exists", responseContent);
+            await ClearDatabaseAsync();
+        }
 
 
         
@@ -472,6 +456,7 @@ public async Task Post_ShouldReturnBadRequest_WhenClassAlreadyExists()
             
             var responseContent = await response.Content.ReadAsStringAsync();
             Assert.Contains("Internal server error", responseContent);
+            await ClearDatabaseAsync();
         }
 
         
@@ -525,6 +510,7 @@ public async Task AddingStudentToClass_ShouldReturnOk_WhenStudentSuccessfullyAdd
     var responseContent = await response.Content.ReadAsStringAsync();
 
     Assert.Contains("Student added to class", responseContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -570,6 +556,7 @@ public async Task AddingStudentToClass_ShouldReturnBadRequest_WhenStudentIsAlrea
     var responseContent = await response.Content.ReadAsStringAsync();
     
     Assert.Contains($"Student with ID {studentId} is already in the class", responseContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -611,6 +598,7 @@ public async Task AddingStudentToClass_ShouldReturnNotFound_WhenClassIdIsInvalid
     var responseContent = await response.Content.ReadAsStringAsync();
 
     Assert.Contains($"Class with ID {request.ClassId} not found.", responseContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -671,6 +659,7 @@ public async Task AddStudent_ShouldReturnInternalServerError_WhenExceptionOccurs
 
     var responseContent = await response.Content.ReadAsStringAsync();
     Assert.Contains("Internal Server error", responseContent);
+    await ClearDatabaseAsync();
 }
 
 
@@ -858,4 +847,3 @@ public async Task AddStudent_ShouldReturnInternalServerError_WhenExceptionOccurs
 
 
     }
-}
